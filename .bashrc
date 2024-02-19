@@ -115,7 +115,3 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-
-# CUSTOM STUFF
-# Use to interact with configuration repository
-alias config='/usr/bin/git --git-dir=/home/pentaxis93/.cfg/ --work-tree=/home/pentaxis93'
