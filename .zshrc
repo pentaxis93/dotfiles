@@ -102,6 +102,7 @@ source $ZSH/oh-my-zsh.sh
 
 # Use to interact with configuration repository
 alias config='/usr/bin/git --git-dir=/home/pentaxis93/.cfg/ --work-tree=/home/pentaxis93'
+alias vi='nvim'
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
