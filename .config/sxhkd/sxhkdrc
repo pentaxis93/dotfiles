@@ -15,6 +15,60 @@ super + Escape
 	pkill -USR1 -x sxhkd
 
 #
+# Volume control
+#
+
+# Volume control with multimedia keys (Fn+F1/F2/F3 on laptops)
+XF86AudioMute
+	wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+
+XF86AudioLowerVolume
+	wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+
+XF86AudioRaiseVolume
+	wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+
+# Alternative volume control with Super+F1/F2/F3
+super + F1
+	wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+
+super + F2
+	wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+
+super + F3
+	wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+
+#
+# Brightness controls
+#
+
+# Brightness down (Fn+F7)
+XF86MonBrightnessDown
+	bash -c 'b=/sys/class/backlight/intel_backlight; echo $(( $(cat $b/brightness) - $(cat $b/max_brightness) / 20 )) | sudo tee $b/brightness'
+
+# Brightness up (Fn+F8)
+XF86MonBrightnessUp
+	bash -c 'b=/sys/class/backlight/intel_backlight; echo $(( $(cat $b/brightness) + $(cat $b/max_brightness) / 20 )) | sudo tee $b/brightness'
+
+# Alternative brightness controls with Super key
+super + F7
+	bash -c 'b=/sys/class/backlight/intel_backlight; echo $(( $(cat $b/brightness) - $(cat $b/max_brightness) / 20 )) | sudo tee $b/brightness'
+
+super + F8
+	bash -c 'b=/sys/class/backlight/intel_backlight; echo $(( $(cat $b/brightness) + $(cat $b/max_brightness) / 20 )) | sudo tee $b/brightness'
+
+#
+# Microphone controls
+#
+
+# Microphone mute toggle (Fn+F4 on some models)
+XF86AudioMicMute
+	wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+
+super + F4
+	wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+
+#
 # bspwm hotkeys
 #
 
