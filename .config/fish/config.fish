@@ -15,6 +15,9 @@ end
 set -gx EDITOR vim
 set -gx VISUAL vim
 
+# Set SHELL to fish (fixes tmux and other programs)
+set -gx SHELL /bin/fish
+
 # Enable vi mode for command line editing
 fish_vi_key_bindings
 
