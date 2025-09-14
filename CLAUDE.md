@@ -125,6 +125,19 @@ cat /sys/class/backlight/intel_backlight/brightness
 echo 10000 | sudo tee /sys/class/backlight/intel_backlight/brightness
 ```
 
+## Documentation Lookup
+
+### Using Context7 for Documentation
+When you need documentation for tools, libraries, or terminal emulators, use the context7 MCP server instead of web searches. This provides more accurate and up-to-date documentation.
+
+Examples of when to use context7:
+- Terminal emulator documentation (kitty, alacritty, wezterm)
+- Tool configurations (tmux, vim, neovim, fish)
+- Programming libraries and frameworks
+- System tools and utilities
+
+To use: Ask Claude Code to "use context7 to get documentation for [tool/library]"
+
 ## Development Patterns
 
 ### Configuration Philosophy
