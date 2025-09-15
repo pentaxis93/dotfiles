@@ -1,6 +1,19 @@
+# Dotfiles Management Context
+
+**Working Directory**: `~/.config/dotfiles/`
+**Launch Command**: Use `dotclaude` to start a dotfiles management session
+**Repository Type**: Bare git repo with work-tree in `$HOME`
+
+## Important Notes
+- Always use absolute paths when adding files: `dots add ~/path/to/file`
+- This CLAUDE.md only loads when working from the dotfiles workspace
+- Use `dotclaude` instead of `claude code` for dotfiles work
+
+---
+
 # System Configuration Context
 
-When Claude Code is invoked in this directory (`/home/pentaxis93`), we are likely working on **system configuration and dotfiles management**.
+When Claude Code is invoked in this directory (`~/.config/dotfiles`), we are working on **system configuration and dotfiles management**.
 
 ## 🔧 Automated Bootstrap System
 
@@ -29,7 +42,7 @@ The dotfiles now include a comprehensive bootstrap system that automates all ins
    - Enables systemd services
    - Fixes file permissions
 
-3. **`~/.config/bootstrap/`** - Package list directory (minimalist)
+3. **`~/.config/dotfiles/bootstrap/`** - Package list directory (minimalist)
    - `packages-core.txt` - Essential packages (WM, terminal, shell, polybar utilities)
    - `packages-tools.txt` - CLI enhancements (only tools we actually use)
    - `packages-aur.txt` - AUR packages (fonts for terminal/polybar, themes)
@@ -44,10 +57,10 @@ When you install a new tool that should be part of the dotfiles:
 
 ```bash
 # Add to appropriate package list
-echo "package-name" >> ~/.config/bootstrap/packages-tools.txt
+echo "package-name" >> ~/.config/dotfiles/bootstrap/packages-tools.txt
 
 # Document why it's needed
-vi ~/.config/bootstrap/DEPENDENCIES.md
+vi ~/.config/dotfiles/bootstrap/DEPENDENCIES.md
 
 # Test that it installs correctly
 ~/.local/bin/bootstrap.sh --dry-run
@@ -56,10 +69,10 @@ vi ~/.config/bootstrap/DEPENDENCIES.md
 #### Checking Current Dependencies
 ```bash
 # View all package lists
-ls ~/.config/bootstrap/packages-*.txt
+ls ~/.config/dotfiles/bootstrap/packages-*.txt
 
 # Check which packages are installed
-for pkg in $(cat ~/.config/bootstrap/packages-core.txt | grep -v '^#'); do
+for pkg in $(cat ~/.config/dotfiles/bootstrap/packages-core.txt | grep -v '^#'); do
     pacman -Q $pkg 2>/dev/null && echo "✓ $pkg" || echo "✗ $pkg"
 done
 ```

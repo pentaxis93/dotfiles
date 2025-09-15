@@ -8,7 +8,7 @@
 #   properly. Handles both official repository and AUR packages intelligently.
 #
 # How it works:
-#   1. Reads package lists from ~/.config/bootstrap/
+#   1. Reads package lists from ~/.config/dotfiles/bootstrap/
 #   2. Checks which packages are already installed
 #   3. Installs missing packages in batches
 #   4. Runs post-installation setup if requested
@@ -42,9 +42,9 @@
 #   3 - User cancelled
 #
 # Related files:
-#   ~/.config/bootstrap/packages-core.txt    - Essential packages
-#   ~/.config/bootstrap/packages-tools.txt   - CLI tools
-#   ~/.config/bootstrap/packages-aur.txt     - AUR packages
+#   ~/.config/dotfiles/bootstrap/packages-core.txt    - Essential packages
+#   ~/.config/dotfiles/bootstrap/packages-tools.txt   - CLI tools
+#   ~/.config/dotfiles/bootstrap/packages-aur.txt     - AUR packages
 #   ~/.local/bin/setup-system.sh            - Post-install setup
 #
 # Author: pentaxis93's dotfiles
@@ -106,7 +106,7 @@ header() {
 # by command-line arguments or environment variables.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_DIR="${HOME}/.config/bootstrap"
+CONFIG_DIR="${HOME}/.config/dotfiles/bootstrap"
 DRY_RUN=false
 MINIMAL=false
 RUN_SETUP=false

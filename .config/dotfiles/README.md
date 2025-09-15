@@ -102,10 +102,10 @@ The dotfiles include an automated bootstrap system for **minimalist** dependency
 
 ```bash
 # View all dependencies and their purposes
-cat ~/.config/bootstrap/DEPENDENCIES.md
+cat ~/.config/dotfiles/bootstrap/DEPENDENCIES.md
 
 # Package lists (only what's actually used)
-~/.config/bootstrap/
+~/.config/dotfiles/bootstrap/
 ├── packages-core.txt    # Essential packages + polybar utilities
 ├── packages-tools.txt   # CLI tools we actually use
 └── packages-aur.txt     # Fonts & themes only
@@ -139,9 +139,10 @@ bootstrap.sh [OPTIONS]
 │   └── sxhkd/          # Hotkey daemon
 ├── .local/
 │   └── bin/            # User scripts
+├── .config/
+│   └── dotfiles/       # Documentation & bootstrap
 ├── .gitconfig          # Git configuration
-├── .gitignore          # Ignore sensitive files
-└── CLAUDE.md           # AI assistant context
+└── .gitignore          # Ignore sensitive files
 ```
 
 ## ⌨️ Key Bindings
@@ -203,13 +204,13 @@ Create `~/.config/fish/local.fish` for machine-specific configurations that won'
 
 ## 📚 Documentation
 
-- [CLAUDE.md](CLAUDE.md) - Detailed system context and configuration notes
-- [CHANGELOG.md](CHANGELOG.md) - Version history and changes
-- [DEPENDENCIES.md](.config/bootstrap/DEPENDENCIES.md) - Complete package documentation
+- [CLAUDE.md](./CLAUDE.md) - Detailed system context and configuration notes
+- [CHANGELOG.md](./docs/CHANGELOG.md) - Version history and changes
+- [DEPENDENCIES.md](./bootstrap/DEPENDENCIES.md) - Complete package documentation
 
 ## 🐛 Troubleshooting
 
-See the troubleshooting section in [CLAUDE.md](CLAUDE.md#troubleshooting).
+See the troubleshooting section in [CLAUDE.md](./CLAUDE.md#troubleshooting).
 
 ## 📝 License
 

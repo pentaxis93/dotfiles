@@ -61,7 +61,10 @@ abbr -a orphans 'pacman -Qtdq'
 abbr -a config 'cd ~/.config'
 abbr -a downloads 'cd ~/Downloads'
 abbr -a documents 'cd ~/Documents'
-abbr -a dotfiles 'cd ~/.dotfiles'
+
+# Dotfiles workspace shortcuts
+abbr -a dcd 'cd ~/.config/dotfiles'
+abbr -a dcl 'dotclaude'
 
 # Editor shortcuts
 abbr -a hx helix
@@ -79,3 +82,8 @@ abbr -a polybarconfig 'helix ~/.config/polybar/config.ini'
 if test -f ~/.config/fish/local.fish
     source ~/.config/fish/local.fish
 end
+# Added by Zenvestor setup script - Dart pub global packages
+set -gx PATH /home/pentaxis93/.pub-cache/bin $PATH
+
+# Added by Zenvestor setup script - Flutter via FVM
+set -gx PATH /home/pentaxis93/fvm/default/bin $PATH
