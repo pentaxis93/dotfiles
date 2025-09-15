@@ -97,7 +97,7 @@ This creates a secure sudoers rule that allows brightness control without passwo
 - **Hardware**: ThinkPad (Model: 20W4002HUS)
 - **Shell**: Fish (default)
 - **Terminal**: Alacritty
-- **Editor**: Vim
+- **Editor**: Helix
 
 ## Dotfiles Management
 
@@ -208,7 +208,7 @@ When you need documentation for tools, libraries, or terminal emulators, use the
 
 Examples of when to use context7:
 - Terminal emulator documentation (kitty, alacritty, wezterm)
-- Tool configurations (tmux, vim, neovim, fish)
+- Tool configurations (tmux, helix, fish)
 - Programming libraries and frameworks
 - System tools and utilities
 
@@ -244,7 +244,7 @@ The Gruvbox "aqua" colors (`#8ec07c` and `#689d6a`) intentionally lean toward gr
 - **Window Manager**: BSPWM with aqua borders (`#8ec07c`)
 - **Status Bar**: Polybar with cyan accent hierarchy
 - **Prompt**: Starship with clean aqua accents
-- **Editor**: Helix and Vim with gruvbox_dark_hard
+- **Editor**: Helix with gruvbox_dark_hard
 - **File Manager**: Thunar with custom GTK overrides
 - **Icons**: Papirus-Dark with teal folders (closest to our aqua)
 - **GTK Theme**: Gruvbox-Teal-Dark with custom CSS overrides in `~/.config/gtk-3.0/gtk.css`

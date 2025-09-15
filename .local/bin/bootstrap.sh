@@ -375,8 +375,7 @@ starship        # Cross-shell prompt customization
 
 # Essential Utilities
 git             # Version control (required for dotfiles management)
-vim             # Text editor (fallback editor)
-helix           # Modern modal text editor (primary editor)
+helix           # Modern modal text editor (the only editor we need)
 dmenu           # Dynamic menu for launching programs
 xclip           # X11 clipboard utility (copy/paste support)
 curl            # URL retrieval utility
