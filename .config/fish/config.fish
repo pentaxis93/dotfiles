@@ -1,6 +1,11 @@
-source /usr/share/cachyos-fish-config/cachyos-config.fish
+# Selective CachyOS config loading (performance optimized)
+# We skip the full config which overwrites our greeting and loads unnecessary plugins
+# Instead, we just set up the essential paths and features we actually use
 
-# Simple greeting instead of fastfetch
+# Add ~/.local/bin to PATH (from CachyOS config, but done more efficiently)
+contains ~/.local/bin $PATH; or set -gxa PATH ~/.local/bin $PATH
+
+# Simple greeting (must be defined AFTER any CachyOS sourcing to prevent overwrite)
 function fish_greeting
     echo "Welcome to" (set_color cyan)"CachyOS"(set_color normal) "with" (set_color yellow)"fish"(set_color normal) "shell!"
     echo "Type" (set_color green)"help"(set_color normal) "for instructions on how to use fish"
