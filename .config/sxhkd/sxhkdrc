@@ -14,6 +14,14 @@ super + @space
 super + Escape
 	pkill -USR1 -x sxhkd
 
+# toggle polybar visibility manually
+# Useful when: auto-hide isn't working, want to hide bar temporarily,
+# watching videos in tiled mode, need more screen space
+# Works with: polybar-autohide.sh daemon (won't conflict)
+# Requires: polybar IPC enabled (enable-ipc = true in config.ini)
+super + b
+	polybar-msg cmd toggle
+
 #
 # Volume control
 #

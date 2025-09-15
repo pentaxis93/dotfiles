@@ -5,9 +5,29 @@ pgrep -x sxhkd > /dev/null || sxhkd &
 # Launch polybar
 $HOME/.config/polybar/launch.sh
 
-# Auto-hide polybar when mpv is in monocle mode
+# ============================================================================
+# POLYBAR AUTO-HIDE DAEMON
+# ============================================================================
+# Purpose: Automatically hide polybar when watching videos in monocle mode
+# How it works:
+#   1. Monitors BSPWM events (focus changes, layout switches)
+#   2. When mpv/vlc is focused in monocle mode → hides polybar
+#   3. When leaving monocle or focusing other windows → shows polybar
+#
+# The daemon is self-healing and will restart if bspc disconnects.
+# Log file: /tmp/polybar-autohide.log (for debugging)
+# Manual toggle: Super+B (defined in sxhkdrc)
+#
+# Why nohup: Ensures the daemon survives after bspwmrc exits
+# Why kill first: Prevents multiple instances from accumulating on reload
+# Why sleep: Gives the old process time to fully terminate
+
+# Kill any existing instances to prevent duplicates
 pkill -f polybar-autohide.sh 2>/dev/null
-$HOME/.config/bspwm/polybar-autohide.sh &
+sleep 0.5  # Brief pause to ensure clean termination
+
+# Start the daemon with nohup so it survives parent shell exit
+nohup "$HOME/.config/bspwm/polybar-autohide.sh" >/dev/null 2>&1 &
 
 bspc monitor -d I II III IV V VI VII VIII IX X
 

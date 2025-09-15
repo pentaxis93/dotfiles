@@ -1,5 +1,43 @@
 #!/bin/bash
-# Smart mpv wrapper: opens lf for file selection when called without arguments
+# ============================================================================
+# MPV WRAPPER WITH LF FILE BROWSER INTEGRATION
+# ============================================================================
+# Purpose:
+#   This wrapper enhances mpv to work seamlessly with dmenu by providing
+#   a file browser (lf) when launched without arguments. This solves the
+#   problem of dmenu only passing the command name without file arguments.
+#
+# Behavior:
+#   - WITH arguments (e.g., 'mpv video.mp4'): Passes through to real mpv
+#   - WITHOUT arguments (from dmenu): Opens lf file browser for selection
+#
+# Dependencies:
+#   - mpv: The actual video player (/usr/bin/mpv)
+#   - lf: Terminal file manager for browsing/selecting videos
+#   - alacritty: Terminal emulator to display lf
+#
+# Usage Examples:
+#   From dmenu:     Select 'mpv' → Opens lf → Navigate to video → Enter
+#   From terminal:  mpv ~/Videos/movie.mp4  (works normally)
+#   With options:   mpv --volume=50 file.mp4  (all options pass through)
+#
+# Installation:
+#   Place in /usr/local/bin/mpv to shadow the system mpv
+#   Ensure it's executable: chmod +x /usr/local/bin/mpv
+#
+# Related Files:
+#   ~/.config/mpv/mpv.conf - MPV configuration (resume, history, etc.)
+#   ~/.config/mpv/input.conf - Custom keybindings
+#   ~/.config/bspwm/polybar-autohide.sh - Auto-hides polybar in monocle
+#
+# Troubleshooting:
+#   - If lf doesn't open: Check alacritty is installed
+#   - If mpv doesn't play: Verify /usr/bin/mpv exists
+#   - Check logs: ~/.local/state/mpv/watch_history.jsonl
+#
+# Author: System configuration for pentaxis93
+# Date: September 2024
+# ============================================================================
 
 # If arguments provided, pass through to real mpv
 if [ $# -gt 0 ]; then
@@ -7,11 +45,11 @@ if [ $# -gt 0 ]; then
 fi
 
 # No arguments - open lf for file selection
-# Determine starting directory
+# Determine starting directory (prefer Videos, then Downloads, then home)
 if [ -d "$HOME/Videos" ] && [ "$(ls -A "$HOME/Videos" 2>/dev/null)" ]; then
     START_DIR="$HOME/Videos"
 elif [ -d "$HOME/Downloads" ]; then
-    START_DIR="$HOME/Downloads"  
+    START_DIR="$HOME/Downloads"
 else
     START_DIR="$HOME"
 fi
@@ -63,5 +101,5 @@ if [ -f "$SELECTION_FILE" ] && [ -s "$SELECTION_FILE" ]; then
     fi
 fi
 
-# Clean up
+# Clean up temporary files
 rm -f "$SELECTION_FILE" /tmp/lf-select-video.sh
