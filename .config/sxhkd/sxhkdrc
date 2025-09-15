@@ -31,20 +31,20 @@ XF86AudioMute
 	wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
 
 XF86AudioLowerVolume
-	wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+	wpctl set-volume @DEFAULT_AUDIO_SINK@ 10%-
 
 XF86AudioRaiseVolume
-	wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+	wpctl set-volume @DEFAULT_AUDIO_SINK@ 10%+
 
 # Alternative volume control with Super+F1/F2/F3
 super + F1
 	wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
 
 super + F2
-	wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+	wpctl set-volume @DEFAULT_AUDIO_SINK@ 10%-
 
 super + F3
-	wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+	wpctl set-volume @DEFAULT_AUDIO_SINK@ 10%+
 
 #
 # Brightness controls

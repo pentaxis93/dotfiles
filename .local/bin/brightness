@@ -21,7 +21,7 @@
 BACKLIGHT="/sys/class/backlight/intel_backlight"
 MAX=$(cat "$BACKLIGHT/max_brightness")
 CURRENT=$(cat "$BACKLIGHT/brightness")
-STEP=$((MAX / 20))  # 5% steps
+STEP=$((MAX / 10))  # 10% steps
 
 # Function to write brightness and handle errors
 write_brightness() {

@@ -80,15 +80,15 @@ The following function keys are configured in SXHKD:
 
 ### Volume Controls
 - **Fn+F1** or **Super+F1** → Mute/unmute audio
-- **Fn+F2** or **Super+F2** → Volume down (5%)
-- **Fn+F3** or **Super+F3** → Volume up (5%)
+- **Fn+F2** or **Super+F2** → Volume down (10%)
+- **Fn+F3** or **Super+F3** → Volume up (10%)
 
 ### Microphone
 - **Fn+F4** or **Super+F4** → Mute/unmute microphone
 
 ### Display & Brightness
-- **Fn+F7** or **Super+F7** → Brightness down (5%)
-- **Fn+F8** or **Super+F8** → Brightness up (5%)
+- **Fn+F7** or **Super+F7** → Brightness down (10%)
+- **Fn+F8** or **Super+F8** → Brightness up (10%)
 
 ## Common Tasks
 
