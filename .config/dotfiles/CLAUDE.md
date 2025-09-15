@@ -99,6 +99,53 @@ This creates a secure sudoers rule that allows brightness control without passwo
 - **Terminal**: Alacritty
 - **Editor**: Helix
 
+## Tri-Modal Navigation Philosophy
+
+### Standardized Directional Controls
+All applications in this system support **three forms of directional input** wherever possible:
+1. **Vim keys** (h/j/k/l) - For keyboard enthusiasts
+2. **Arrow keys** - Universal standard
+3. **Numpad keys** (2/4/6/8) - For numpad users
+
+This consistency reduces cognitive load when switching between applications.
+
+### Implementation Status
+
+#### ✅ Full Tri-Modal Support
+- **BSPWM/SXHKD**: Window navigation with Super modifier
+  - `Super + {h,j,k,l}` / `Super + arrows` / `Super + numpad`
+- **Tmux**: Tab navigation with Alt+Shift modifier (tab-only mode, no panes)
+  - `Alt+Shift + {h,l}` / `Alt+Shift + arrows` / `Alt+Shift + numpad`
+  - Alternative vim keys: `Alt+Shift + {j,k}` for previous/next
+- **MPV**: Video seeking (5 sec, 60 sec, 5 min intervals)
+  - Basic: `{h,l,j,k}` / `arrows` / `numpad`
+  - Modified: `Shift/Ctrl + keys` for larger jumps
+- **Btop**: Process navigation with vim_keys enabled
+
+#### ⚡ Native Support (Partial)
+- **Helix**: Native vim + arrow support (external app, no numpad possible)
+- **Fish Shell**: Vi mode with hjkl + native arrow support
+
+### Key Design Decisions
+
+1. **Modifier Choice**: Each app uses appropriate modifiers to avoid conflicts:
+   - BSPWM: Super (system-wide window management)
+   - Tmux: Alt+Shift (avoids Fish shell Alt+l conflict)
+   - MPV: No modifier for basic navigation
+
+2. **Tab-Only Tmux**: We disabled tmux panes entirely to avoid the "nested panes problem"
+   where tmux panes inside BSPWM tiles create navigation confusion. BSPWM handles tiling,
+   tmux handles only terminal tabs.
+
+3. **Terminal Encoding**: Alt+Shift+letter sends Alt+UPPERCASE in terminals,
+   so tmux uses `M-H` instead of `M-S-h` in its configuration.
+
+### Testing Navigation
+To verify tri-modal navigation works in any app:
+1. Test vim keys: h (left), l (right), j (down), k (up)
+2. Test arrow keys: ←, →, ↓, ↑
+3. Test numpad: 4 (left), 6 (right), 2 (down), 8 (up) with NumLock ON
+
 ## Dotfiles Management
 
 This system uses a **bare Git repository** for dotfiles management, accessible via the `dots` command.
