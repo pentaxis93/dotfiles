@@ -414,6 +414,58 @@ git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME status
 - List audio sinks: `pactl list sinks short`
 - Check current default: `wpctl status`
 
+### Brightness keys not working
+If brightness keys prompt for password or don't work:
+1. Run the one-time setup command:
+   ```bash
+   echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/tee /sys/class/backlight/intel_backlight/brightness" | sudo tee /etc/sudoers.d/brightness
+   ```
+2. Test manually: `~/.local/bin/brightness up`
+3. Check backlight exists: `ls /sys/class/backlight/`
+4. Verify max brightness: `cat /sys/class/backlight/intel_backlight/max_brightness`
+
+### Polybar issues
+- Not appearing: Check logs at `/tmp/polybar.log`
+- Not hiding for videos:
+  - Check daemon: `pgrep -f polybar-autohide.sh`
+  - View logs: `tail -f /tmp/polybar-autohide.log`
+  - Restart: `pkill -f polybar-autohide.sh && nohup ~/.config/bspwm/polybar-autohide.sh &`
+- Manual toggle not working: Ensure `enable-ipc = true` in polybar config
+
+### Terminal colors look wrong
+- Verify terminal reports 256 colors: `echo $TERM`
+- Test colors: `for i in {0..255}; do printf "\x1b[38;5;${i}mcolor%-5i\x1b[0m" $i ; if ! (( ($i + 1 ) % 8 )); then echo ; fi ; done`
+- Check Alacritty config: `alacritty --print-events` (look for config errors)
+- Ensure font installed: `fc-list | grep -i meslo`
+
+### Fish shell issues
+- Abbreviations not working: Run `abbr --list` to see current abbreviations
+- Slow startup: Check for issues with `fish --profile-startup /tmp/fish-profile`
+- Config not loading: Verify file exists at `~/.config/fish/config.fish`
+
+### Window manager problems
+- BSPWM not starting: Check `~/.xsession-errors` or journalctl
+- Windows not tiling: Verify bspwm is running: `pgrep bspwm`
+- Can't switch workspaces: Check if sxhkd is running: `pgrep sxhkd`
+
+### Git/Dotfiles issues
+- `dots` command not found: Source fish config: `source ~/.config/fish/config.fish`
+- Permission denied on push: Check SSH key is loaded: `ssh-add -l`
+- Conflicts on checkout: Back up conflicting files first (see README.md)
+
+### Font rendering issues
+- Install required fonts:
+  ```bash
+  yay -S nerd-fonts-meslo ttf-font-awesome
+  fc-cache -fv
+  ```
+- Verify font in terminal: `fc-match "MesloLGS Nerd Font"`
+
+### System performance
+- High CPU from polybar: Check for infinite loops in scripts
+- Slow window switching: Disable compositor effects temporarily
+- Memory issues: Check for memory leaks: `ps aux --sort=-%mem | head`
+
 ---
 
 *This file helps Claude Code understand the system context and common workflows. Update it when making significant system changes.*
