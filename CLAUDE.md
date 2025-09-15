@@ -166,9 +166,45 @@ The Gruvbox "aqua" colors (`#8ec07c` and `#689d6a`) intentionally lean toward gr
 
 ## Configuration Documentation Best Practices
 
-When modifying configuration files, follow these guidelines to ensure maintainability:
+### In-File Documentation Philosophy
+**Documentation should live as close to the code as possible.** Future developers (including yourself) will look at the file itself, not external documentation. Well-documented configurations are self-contained and self-explanatory.
 
-### 1. Always Explain the "Why"
+### The Documentation Hierarchy
+
+1. **File Header Block**: Purpose, behavior, dependencies
+2. **Section Headers**: Group related settings with clear titles
+3. **Inline Comments**: Explain the WHY, not just the what
+4. **Examples**: Show usage patterns where helpful
+
+### Best Practices for Discoverable Documentation
+
+#### 1. Start with a Comprehensive Header
+Every script or complex config should have:
+```bash
+# ============================================================================
+# TITLE IN CAPS
+# ============================================================================
+# Purpose:
+#   What problem does this solve?
+#
+# How it works:
+#   High-level overview of the mechanism
+#
+# Dependencies:
+#   What needs to be installed/configured
+#
+# Usage:
+#   Examples of how to use it
+#
+# Troubleshooting:
+#   Common issues and solutions
+#
+# Related Files:
+#   Other configs that interact with this
+# ============================================================================
+```
+
+#### 2. Always Explain the "Why"
 Don't just document what a setting does - explain why you chose it.
 
 **Bad:**
@@ -178,10 +214,51 @@ bspc config focused_border_color "#8ec07c"  # Set border color
 
 **Good:**
 ```bash
-bspc config focused_border_color "#8ec07c"  # Bright aqua - matches our terminal accent color
+bspc config focused_border_color "#8ec07c"  # Bright aqua - matches terminal accent, draws attention to focused window
 ```
 
-### 2. Document Color Semantics
+**Better:**
+```bash
+volume=70                        # Default volume level (0-100)
+                                # WHY: Safe starting volume that won't blast your ears
+```
+
+#### 3. Group Related Settings with Section Headers
+```bash
+# ============================================================================
+# WATCH LATER / RESUME FEATURES
+# ============================================================================
+# These settings ensure you never lose your place in a video...
+
+save-position-on-quit=yes       # Auto-save position when quitting
+resume-playback=yes              # Auto-resume from saved position
+```
+
+#### 4. Document Non-Obvious Interactions
+```bash
+# Kill any existing instances to prevent duplicates
+pkill -f polybar-autohide.sh 2>/dev/null
+sleep 0.5  # Brief pause to ensure clean termination
+
+# Start with nohup so it survives parent shell exit
+nohup "$HOME/.config/bspwm/polybar-autohide.sh" >/dev/null 2>&1 &
+```
+
+#### 5. Include Debugging Information
+```bash
+# Debugging:
+#   - Check if running: pgrep -f polybar-autohide.sh
+#   - View logs: tail -f /tmp/polybar-autohide.log
+#   - Manual restart: pkill -f polybar-autohide.sh && nohup ~/.config/bspwm/polybar-autohide.sh &
+```
+
+#### 6. Document Configuration Points
+```bash
+# To add more video players, add them to this regex pattern (e.g., |kodi|plex)
+if [[ "$win_class" =~ ^(mpv|vlc|mplayer|smplayer|celluloid|haruna)$ ]]; then
+```
+
+#### 7. Document Color Semantics
 Explain what each color represents in your UI hierarchy.
 
 ```css
@@ -192,20 +269,20 @@ Explain what each color represents in your UI hierarchy.
  */
 ```
 
-### 3. Include Both Hex Codes and Names
+#### 8. Include Both Hex Codes and Names
 Always provide both for clarity:
 ```css
 color: #8ec07c;  /* bright aqua */
 ```
 
-### 4. Cross-Reference Related Configs
+#### 9. Cross-Reference Related Configs
 Note when settings should match across tools:
 ```bash
 # This should match the border color in ~/.config/bspwm/bspwmrc
 set -g pane-active-border-style 'fg=#8ec07c'
 ```
 
-### 5. Explain Non-Obvious Choices
+#### 10. Explain Non-Obvious Choices
 Document anything that might confuse future you:
 ```css
 /* Using 30% opacity to keep text readable while showing selection.
@@ -213,7 +290,7 @@ Document anything that might confuse future you:
 background-color: rgba(142, 192, 124, 0.3);
 ```
 
-### 6. Document Overrides and Workarounds
+#### 11. Document Overrides and Workarounds
 Explain why you're overriding defaults:
 ```css
 /* Override Gruvbox-Teal theme selection color (#89b482)
