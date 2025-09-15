@@ -1,5 +1,21 @@
 # Alacritty Configuration
 # https://alacritty.org/config-alacritty.html
+#
+# ==========================================
+# SYNCHRONIZED MOUSE SELECTION BEHAVIOR
+# ==========================================
+# This configuration is synchronized with tmux for consistent behavior:
+# - Click+drag: Select text (stays visible) + auto-copy to clipboard
+# - Double-click: Select word + auto-copy
+# - Triple-click: Select line + auto-copy
+# - Middle-click: Paste from clipboard (Linux standard)
+# - Right-click: Paste from clipboard
+#
+# When inside tmux:
+# - Same behavior as above (tmux configured to match)
+# - Shift+select: Bypass tmux for pure terminal selection
+#
+# This ensures muscle memory works identically everywhere!
 
 [window]
 padding = { x = 10, y = 10 }
@@ -30,6 +46,24 @@ save_to_clipboard = true
 
 [mouse]
 hide_when_typing = true
+
+# ==========================================
+# MOUSE BINDINGS (Synchronized with tmux)
+# ==========================================
+# Unified selection/paste behavior:
+# - Click+drag selects and auto-copies (via save_to_clipboard above)
+# - Middle-click and right-click paste from clipboard
+# - Matches tmux behavior for consistency
+
+[[mouse.bindings]]
+# Middle-click to paste (Linux standard)
+mouse = "Middle"
+action = "Paste"
+
+[[mouse.bindings]]
+# Right-click to paste (matches tmux config)
+mouse = "Right"
+action = "Paste"
 
 # Gruvbox Dark Hard color scheme
 # Matches your Helix gruvbox_dark_hard theme
