@@ -80,6 +80,29 @@ magenta = '#8f3f71'
 cyan    = '#427b58'
 white   = '#928374'
 
+# Search colors (used when searching within terminal)
+[colors.search.matches]
+foreground = '#1d2021'
+background = '#fabd2f'
+
+[colors.search.focused_match]
+foreground = '#1d2021'
+background = '#fe8019'
+
+# Hint colors (for URL/path detection)
+[colors.hints.start]
+foreground = '#1d2021'
+background = '#d79921'
+
+[colors.hints.end]
+foreground = '#1d2021'
+background = '#98971a'
+
+# Footer bar colors (used in search/vi mode)
+[colors.footer_bar]
+foreground = '#ebdbb2'
+background = '#3c3836'
+
 [bell]
 animation = "EaseOutExpo"
 duration = 100
