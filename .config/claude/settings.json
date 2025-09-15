@@ -1,0 +1,5 @@
+{
+  "hooks": {
+    "user-prompt-submit": "/home/pentaxis93/Code/zenvestor/.claude/hooks/notification-hook.sh"
+  }
+}

@@ -1,0 +1,5 @@
+# GitHub CLI authentication tokens (contains OAuth secrets)
+.config/gh/hosts.yml
+
+# Other sensitive files that shouldn't be in version control
+.config/gh/state.yml
