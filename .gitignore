@@ -1,5 +1,187 @@
-# GitHub CLI authentication tokens (contains OAuth secrets)
-.config/gh/hosts.yml
+# ============================================================================
+# COMPREHENSIVE GITIGNORE FOR DOTFILES
+# ============================================================================
+# This file prevents sensitive data and system-specific files from being
+# accidentally committed to the dotfiles repository.
+#
+# Organization:
+#   1. Authentication & Secrets
+#   2. SSH Keys & Certificates
+#   3. Application Tokens & State
+#   4. Cache & Temporary Files
+#   5. System-Specific Files
+# ============================================================================
 
-# Other sensitive files that shouldn't be in version control
+# ====================
+# Authentication & Secrets
+# ====================
+
+# GitHub CLI - contains OAuth tokens and API keys
+.config/gh/hosts.yml
 .config/gh/state.yml
+
+# GPG keys
+.gnupg/
+*.gpg
+*.pgp
+*.asc
+
+# Generic secret patterns
+*_token
+*_secret
+*.key
+*.pem
+*.p12
+
+# ====================
+# SSH Keys & Certificates
+# ====================
+
+# SSH directory (critical security)
+.ssh/
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+*.pub
+known_hosts
+authorized_keys
+config.d/
+
+# ====================
+# Application Tokens & State
+# ====================
+
+# Discord
+.config/discord/
+
+# Spotify
+.config/spotify/
+.cache/spotify/
+
+# Browser profiles (contain cookies, passwords, history)
+.mozilla/
+.config/google-chrome/
+.config/chromium/
+.config/BraveSoftware/
+
+# Password managers
+.password-store/
+.config/keepassxc/
+.config/bitwarden/
+
+# Cloud sync tokens
+.config/rclone/
+.dropbox/
+.config/MEGA/
+
+# ====================
+# Cache & Temporary Files
+# ====================
+
+# General cache
+.cache/
+*.cache
+*_cache/
+cache/
+
+# Logs
+*.log
+*.log.*
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.#*
+\#*#
+
+# Trash
+.Trash/
+.local/share/Trash/
+
+# ====================
+# System-Specific Files
+# ====================
+
+# Machine-specific configs
+.config/fish/local.fish
+.config/machine-id
+
+# Hardware-specific
+.config/pulse/
+.config/pavucontrol.ini
+
+# Session data
+.dbus/
+.local/share/systemd/
+
+# History files (may contain sensitive commands)
+.bash_history
+.zsh_history
+.python_history
+.node_repl_history
+.mysql_history
+.psql_history
+.sqlite_history
+
+# Virtual environments
+.venv/
+venv/
+.env
+.env.*
+
+# ====================
+# IDE & Editor Files
+# ====================
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# JetBrains
+.idea/
+*.iml
+
+# Vim
+.vim/plugged/
+.vim/bundle/
+.viminfo
+
+# ====================
+# OS-Specific Files
+# ====================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Linux
+.directory
+
+# ====================
+# Backup Files
+# ====================
+*.bak
+*.backup
+*.old
+*.orig
+
+# ====================
+# Build Artifacts
+# ====================
+node_modules/
+__pycache__/
+*.pyc
+build/
+dist/
+*.o
+*.so
