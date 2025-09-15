@@ -1,0 +1,32 @@
+[user]
+	name = pentaxis93
+	email = 13393192+pentaxis93@users.noreply.github.com
+[core]
+	editor = helix
+
+# Gruvbox Dark Hard color scheme for Git
+[color]
+	ui = auto
+	branch = auto
+	diff = auto
+	status = auto
+
+[color "branch"]
+	current = yellow bold
+	local = green
+	remote = cyan
+
+[color "diff"]
+	meta = yellow
+	frag = magenta bold
+	old = red
+	new = green
+	commit = yellow bold
+	whitespace = red reverse
+
+[color "status"]
+	added = green
+	changed = yellow
+	untracked = cyan
+	deleted = red
+	branch = magenta

@@ -1,0 +1,73 @@
+# Lazygit Configuration with Gruvbox Dark Hard Theme
+
+gui:
+  # Gruvbox Dark Hard color theme
+  theme:
+    # Light text on dark background
+    lightTheme: false
+
+    # Panel colors
+    activeBorderColor:
+      - "#8ec07c"  # Bright cyan for active borders (our favorite!)
+      - bold
+    inactiveBorderColor:
+      - "#3c3836"  # Dark gray for inactive borders
+
+    # List colors
+    selectedLineBgColor:
+      - "#3c3836"  # Subtle background for selected lines
+    selectedRangeBgColor:
+      - "#504945"  # Darker background for selected ranges
+
+    # Commit graph colors
+    cherryPickedCommitFgColor:
+      - "#8ec07c"  # Bright cyan
+    cherryPickedCommitBgColor:
+      - "#3c3836"
+
+    # Status colors
+    unstagedChangesColor:
+      - "#fb4934"  # Bright red for unstaged
+    defaultFgColor:
+      - "#ebdbb2"  # Default text color
+
+    # Search colors
+    searchingActiveBorderColor:
+      - "#fabd2f"  # Bright yellow when searching
+
+    # Options popup colors
+    optionsTextColor:
+      - "#689d6a"
+
+# Key bindings (optional - defaults are fine)
+keybinding:
+  universal:
+    quit: 'q'
+    quit-alt1: '<c-c>'
+    return: '<esc>'
+
+# Git configuration
+git:
+  paging:
+    colorArg: always
+    useConfig: true
+  commit:
+    signOff: false
+  merging:
+    manualCommit: false
+
+# UI Configuration
+os:
+  editPreset: 'helix'  # Use helix as the default editor
+
+# Refresh
+refresher:
+  refreshInterval: 10
+  fetchInterval: 60
+
+# Performance
+performance:
+  maxDeltaBasesCacheSize: 16
+
+# Confirmation prompts
+notARepository: 'skip'  # Skip confirmation when not in a git repo

@@ -1,0 +1,22 @@
+# Bat configuration with Gruvbox Dark theme
+
+# Set the theme to gruvbox-dark
+--theme="gruvbox-dark"
+
+# Show line numbers
+--style="numbers,changes,header"
+
+# Use italic text for emphasis
+--italic-text=always
+
+# Map specific file types
+--map-syntax="*.conf:INI"
+--map-syntax=".zshrc:Bourne Again Shell (bash)"
+--map-syntax=".bashrc:Bourne Again Shell (bash)"
+--map-syntax="*.fish:Bourne Again Shell (bash)"
+
+# Pager (less with mouse support)
+--pager="less -FR"
+
+# Tab width
+--tabs=4
