@@ -1,0 +1,65 @@
+#!/bin/bash
+# ============================================================================
+# SIMPLE BRIGHTNESS CONTROL
+# ============================================================================
+# Purpose: Control brightness with a clean interface
+# Usage: brightness up | down | set <percent>
+#
+# IMPORTANT SETUP REQUIRED (one-time, needs sudo):
+# ------------------------------------------------
+# Run this command after cloning dotfiles:
+#
+#   echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/tee /sys/class/backlight/intel_backlight/brightness" | sudo tee /etc/sudoers.d/brightness
+#
+# This creates a sudoers rule allowing passwordless brightness control
+# for ONLY this specific file, keeping your system secure.
+#
+# If you see "sudo: a password is required" when using brightness keys,
+# you need to run the setup command above.
+# ============================================================================
+
+BACKLIGHT="/sys/class/backlight/intel_backlight"
+MAX=$(cat "$BACKLIGHT/max_brightness")
+CURRENT=$(cat "$BACKLIGHT/brightness")
+STEP=$((MAX / 20))  # 5% steps
+
+# Function to write brightness and handle errors
+write_brightness() {
+    if ! echo "$1" | sudo -n tee "$BACKLIGHT/brightness" >/dev/null 2>&1; then
+        echo "ERROR: Brightness control requires setup!" >&2
+        echo "" >&2
+        echo "Run this command to enable passwordless brightness control:" >&2
+        echo "  echo \"\$USER ALL=(ALL) NOPASSWD: /usr/bin/tee /sys/class/backlight/intel_backlight/brightness\" | sudo tee /etc/sudoers.d/brightness" >&2
+        echo "" >&2
+        echo "This is a one-time setup that allows brightness control without passwords." >&2
+        exit 1
+    fi
+}
+
+case "$1" in
+    up)
+        NEW=$((CURRENT + STEP))
+        [ $NEW -gt $MAX ] && NEW=$MAX
+        write_brightness $NEW
+        echo "Brightness: $((NEW * 100 / MAX))%"
+        ;;
+    down)
+        NEW=$((CURRENT - STEP))
+        [ $NEW -lt $((MAX / 100)) ] && NEW=$((MAX / 100))  # Min 1%
+        write_brightness $NEW
+        echo "Brightness: $((NEW * 100 / MAX))%"
+        ;;
+    set)
+        if [ -n "$2" ] && [ "$2" -ge 0 ] && [ "$2" -le 100 ]; then
+            NEW=$((MAX * $2 / 100))
+            write_brightness $NEW
+            echo "Brightness: $2%"
+        else
+            echo "Usage: brightness set <0-100>"
+        fi
+        ;;
+    *)
+        echo "Usage: brightness {up|down|set <percent>}"
+        echo "Current: $((CURRENT * 100 / MAX))%"
+        ;;
+esac

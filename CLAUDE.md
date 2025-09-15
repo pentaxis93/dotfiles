@@ -2,6 +2,16 @@
 
 When Claude Code is invoked in this directory (`/home/pentaxis93`), we are likely working on **system configuration and dotfiles management**.
 
+## 🔧 Required Setup After Cloning Dotfiles
+
+### Enable Brightness Control (Required for ThinkPad Function Keys)
+Run this command to enable passwordless brightness control:
+```bash
+echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/tee /sys/class/backlight/intel_backlight/brightness" | sudo tee /etc/sudoers.d/brightness
+```
+
+This creates a secure sudoers rule that allows brightness control without password prompts. Without this, the brightness keys (Fn+F7/F8) will not work or will prompt for passwords.
+
 ## System Overview
 
 - **OS**: CachyOS Linux (Arch-based distribution)
@@ -302,10 +312,48 @@ Explain why you're overriding defaults:
 
 ## Development Patterns
 
+### Test-and-Commit Checkpoint Pattern
+When making configuration changes, follow this critical pattern:
+
+1. **Make a single, atomic change** - One feature/fix at a time
+2. **Test the change thoroughly** - Verify it works as expected
+3. **Commit immediately if successful** - Create a checkpoint
+4. **Document any setup requirements** - In the file where users will look
+
+**Why this matters:**
+- **Atomic commits** make it easy to identify which change broke something
+- **Immediate testing** catches problems before they compound
+- **Frequent commits** create restore points you can revert to
+- **In-file documentation** ensures setup requirements are discoverable
+
+**Example workflow:**
+```bash
+# 1. Make change
+vi ~/.config/sxhkd/sxhkdrc
+
+# 2. Test immediately
+pkill -USR1 -x sxhkd  # Reload
+# Test the actual keybinding
+
+# 3. Commit if working
+dots add ~/.config/sxhkd/sxhkdrc
+dots commit -m "Fix: Improve keybinding for X feature"
+
+# 4. Move to next change
+# Repeat pattern
+```
+
+**Bad pattern (avoid this):**
+- Making 10 changes across multiple files
+- Testing everything at the end
+- One giant commit with "Various improvements"
+- Finding something broken with no idea which change caused it
+
 ### Configuration Philosophy
 - **Simplicity First**: Prefer direct inline commands over helper scripts when possible
 - **Version Control**: All configuration changes should be committed to the dotfiles repo
 - **Documentation**: Update this file when adding new tools or changing workflows
+- **Test Checkpoints**: Always test-and-commit after each discrete change
 
 ### Commit Message Philosophy
 - **Clean Messages**: Focus on what changed and why, not who made the change

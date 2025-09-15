@@ -49,21 +49,26 @@ super + F3
 #
 # Brightness controls
 #
+# NOTE: Requires one-time setup for passwordless brightness control!
+# If these keys prompt for password or don't work, run:
+#   echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/tee /sys/class/backlight/intel_backlight/brightness" | sudo tee /etc/sudoers.d/brightness
+#
+# This allows brightness control without passwords while keeping it secure.
 
 # Brightness down (Fn+F7)
 XF86MonBrightnessDown
-	bash -c 'b=/sys/class/backlight/intel_backlight; echo $(( $(cat $b/brightness) - $(cat $b/max_brightness) / 20 )) | sudo tee $b/brightness'
+	~/.local/bin/brightness down
 
 # Brightness up (Fn+F8)
 XF86MonBrightnessUp
-	bash -c 'b=/sys/class/backlight/intel_backlight; echo $(( $(cat $b/brightness) + $(cat $b/max_brightness) / 20 )) | sudo tee $b/brightness'
+	~/.local/bin/brightness up
 
 # Alternative brightness controls with Super key
 super + F7
-	bash -c 'b=/sys/class/backlight/intel_backlight; echo $(( $(cat $b/brightness) - $(cat $b/max_brightness) / 20 )) | sudo tee $b/brightness'
+	~/.local/bin/brightness down
 
 super + F8
-	bash -c 'b=/sys/class/backlight/intel_backlight; echo $(( $(cat $b/brightness) + $(cat $b/max_brightness) / 20 )) | sudo tee $b/brightness'
+	~/.local/bin/brightness up
 
 #
 # Microphone controls
