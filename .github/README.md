@@ -1,6 +1,6 @@
 # pentaxis93's Dotfiles
 
-Personal configuration files for CachyOS Linux with BSPWM, managed using a bare Git repository.
+Minimalist configuration files for CachyOS Linux with BSPWM, managed using a bare Git repository.
 
 ## 🎨 Theme
 
@@ -11,10 +11,10 @@ Entire system uses **Gruvbox Dark Hard** with cyan accent hierarchy for consiste
 ### Prerequisites
 
 - Git
-- Fish shell
 - CachyOS Linux (or Arch-based distribution)
+- sudo privileges
 
-### Installation
+### Automated Installation (Recommended)
 
 1. **Clone the bare repository:**
 ```bash
@@ -48,38 +48,81 @@ dots checkout
 dots config --local status.showUntrackedFiles no
 ```
 
-5. **Switch to Fish shell (if not already using):**
+5. **Run the bootstrap script:**
 ```bash
-chsh -s /usr/bin/fish
+# Full installation with all packages and system setup
+~/.local/bin/bootstrap.sh --setup
+
+# OR minimal installation (core packages only)
+~/.local/bin/bootstrap.sh --minimal --setup
+
+# OR preview what would be installed
+~/.local/bin/bootstrap.sh --dry-run
 ```
 
-6. **Install required packages:**
+The bootstrap script will:
+- ✅ Install all required packages (pacman & AUR)
+- ✅ Configure brightness control (ThinkPad)
+- ✅ Set up GTK themes and icons
+- ✅ Configure Fish as default shell
+- ✅ Enable audio services
+- ✅ Set correct file permissions
+
+### Manual Installation (Alternative)
+
+If you prefer to install packages manually:
+
 ```bash
-sudo pacman -S bspwm sxhkd polybar alacritty fish starship helix dmenu picom feh
+# Core packages (window manager, terminal, shell, utilities)
+sudo pacman -S bspwm sxhkd polybar alacritty fish starship helix dmenu picom \
+               git xclip htop neofetch base-devel \
+               thunar btop networkmanager gsimplecal pavucontrol \
+               pipewire pipewire-pulse pipewire-alsa wireplumber
+
+# Optional CLI tools
+sudo pacman -S ripgrep fd fzf bat eza tmux lazygit gh unzip p7zip
+
+# Install yay for AUR packages
+git clone https://aur.archlinux.org/yay.git
+cd yay && makepkg -si
+
+# AUR packages (fonts & themes)
+yay -S nerd-fonts-meslo ttf-font-awesome noto-fonts-emoji \
+       gruvbox-material-gtk-theme-git papirus-folders
+
+# System setup
+~/.local/bin/setup-system.sh
 ```
 
-7. **Install fonts:**
+## 📦 Package Management
+
+### Bootstrap System
+
+The dotfiles include an automated bootstrap system for **minimalist** dependency management:
+
 ```bash
-yay -S nerd-fonts-meslo
+# View all dependencies and their purposes
+cat ~/.config/bootstrap/DEPENDENCIES.md
+
+# Package lists (only what's actually used)
+~/.config/bootstrap/
+├── packages-core.txt    # Essential packages + polybar utilities
+├── packages-tools.txt   # CLI tools we actually use
+└── packages-aur.txt     # Fonts & themes only
 ```
 
-### Post-Installation Setup
+**Philosophy**: This is a minimalist setup - no development packages, no wishlist items, only what's configured and used in the dotfiles.
 
-#### Enable Brightness Control (ThinkPad users)
-```bash
-echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/tee /sys/class/backlight/intel_backlight/brightness" | sudo tee /etc/sudoers.d/brightness
-```
+### Bootstrap Options
 
-#### Set Gruvbox GTK Theme
 ```bash
-yay -S gruvbox-material-gtk-theme-git
-gsettings set org.gnome.desktop.interface gtk-theme "Gruvbox-Dark"
-```
-
-#### Configure Papirus Icons with Teal Folders
-```bash
-sudo pacman -S papirus-icon-theme papirus-folders
-papirus-folders -C teal
+bootstrap.sh [OPTIONS]
+  -h, --help      Show help message
+  -m, --minimal   Install core packages only
+  -d, --dry-run   Preview what would be installed
+  -s, --setup     Run system setup after installation
+  -v, --verbose   Show detailed output
+  -f, --force     Reinstall even if packages exist
 ```
 
 ## 📁 Structure
@@ -162,6 +205,7 @@ Create `~/.config/fish/local.fish` for machine-specific configurations that won'
 
 - [CLAUDE.md](CLAUDE.md) - Detailed system context and configuration notes
 - [CHANGELOG.md](CHANGELOG.md) - Version history and changes
+- [DEPENDENCIES.md](.config/bootstrap/DEPENDENCIES.md) - Complete package documentation
 
 ## 🐛 Troubleshooting
 

@@ -2,9 +2,71 @@
 
 When Claude Code is invoked in this directory (`/home/pentaxis93`), we are likely working on **system configuration and dotfiles management**.
 
-## 🔧 Required Setup After Cloning Dotfiles
+## 🔧 Automated Bootstrap System
 
-### Enable Brightness Control (Required for ThinkPad Function Keys)
+### Quick Setup for New Systems
+The dotfiles now include a comprehensive bootstrap system that automates all installation and configuration:
+
+```bash
+# After cloning dotfiles, run:
+~/.local/bin/bootstrap.sh --setup    # Full installation
+~/.local/bin/bootstrap.sh --minimal  # Core packages only
+~/.local/bin/bootstrap.sh --dry-run  # Preview what would be installed
+```
+
+### Bootstrap System Components
+
+1. **`~/.local/bin/bootstrap.sh`** - Main installer script
+   - Installs packages from official repos and AUR
+   - Creates default package lists if missing
+   - Handles batch installation with fallback to individual packages
+   - Provides dry-run mode for previewing changes
+
+2. **`~/.local/bin/setup-system.sh`** - Post-installation configuration
+   - Configures brightness control (ThinkPad)
+   - Sets up GTK themes and icons
+   - Configures Fish as default shell
+   - Enables systemd services
+   - Fixes file permissions
+
+3. **`~/.config/bootstrap/`** - Package list directory (minimalist)
+   - `packages-core.txt` - Essential packages (WM, terminal, shell, polybar utilities)
+   - `packages-tools.txt` - CLI enhancements (only tools we actually use)
+   - `packages-aur.txt` - AUR packages (fonts for terminal/polybar, themes)
+   - `DEPENDENCIES.md` - Comprehensive documentation of all packages
+
+**Note**: This is a minimalist setup. No development packages, no wishlist items, only what's actually used in the dotfiles.
+
+### Managing Dependencies
+
+#### Adding New Dependencies
+When you install a new tool that should be part of the dotfiles:
+
+```bash
+# Add to appropriate package list
+echo "package-name" >> ~/.config/bootstrap/packages-tools.txt
+
+# Document why it's needed
+vi ~/.config/bootstrap/DEPENDENCIES.md
+
+# Test that it installs correctly
+~/.local/bin/bootstrap.sh --dry-run
+```
+
+#### Checking Current Dependencies
+```bash
+# View all package lists
+ls ~/.config/bootstrap/packages-*.txt
+
+# Check which packages are installed
+for pkg in $(cat ~/.config/bootstrap/packages-core.txt | grep -v '^#'); do
+    pacman -Q $pkg 2>/dev/null && echo "✓ $pkg" || echo "✗ $pkg"
+done
+```
+
+### Manual Setup Steps (If Not Using Bootstrap)
+
+#### Enable Brightness Control (Required for ThinkPad Function Keys)
 Run this command to enable passwordless brightness control:
 ```bash
 echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/tee /sys/class/backlight/intel_backlight/brightness" | sudo tee /etc/sudoers.d/brightness

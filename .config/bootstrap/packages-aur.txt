@@ -1,0 +1,25 @@
+# ============================================================================
+# AUR PACKAGES - Community packages not in official repos
+# ============================================================================
+# These packages come from the Arch User Repository and provide fonts,
+# themes, and tools not available in the official repositories.
+#
+# Philosophy: Only what enhances our actual setup - no bloat
+# ============================================================================
+
+# ============================================================================
+# FONTS
+# ============================================================================
+# Essential fonts for proper display in terminal and UI
+
+nerd-fonts-meslo        # Terminal font with icons - required for starship prompt
+ttf-font-awesome        # Icon font - required for polybar icons
+noto-fonts-emoji        # Emoji support - proper emoji display in terminal
+
+# ============================================================================
+# THEMES & APPEARANCE
+# ============================================================================
+# Consistent Gruvbox theming across the system
+
+gruvbox-material-gtk-theme-git  # GTK theme - matches our Gruvbox color scheme
+papirus-folders                 # Folder color tool - set folders to teal/cyan
