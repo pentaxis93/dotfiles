@@ -10,7 +10,7 @@ When Claude Code is invoked in this directory (`/home/pentaxis93`), we are likel
 - **Hotkey Daemon**: SXHKD
 - **Audio Server**: PipeWire 1.4.8 (with PulseAudio compatibility)
 - **Hardware**: ThinkPad (Model: 20W4002HUS)
-- **Shell**: Zsh (default), Fish shell available
+- **Shell**: Fish (default)
 - **Terminal**: Alacritty
 - **Editor**: Vim
 
@@ -49,14 +49,6 @@ The following abbreviations are configured in Fish:
 - `dst` → `dots status`
 - `dd` → `dots diff`
 
-### Important: Using `dots` from Other Shells
-
-When not in Fish shell, use:
-```bash
-fish -c "dots <command>"
-# OR directly:
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME <command>
-```
 
 ## Key Configuration Files
 
@@ -67,7 +59,6 @@ git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME <command>
 ### Shell Configurations
 - `~/.config/fish/config.fish` - Fish shell configuration
 - `~/.config/fish/functions/` - Custom Fish functions (including `dots`)
-- `~/.zshrc` - Zsh configuration (default shell)
 
 ### Other Important Configs
 - `~/.config/alacritty/` - Terminal emulator configuration
@@ -93,9 +84,9 @@ The following function keys are configured in SXHKD:
 
 ### Adding New Configuration to Dotfiles
 ```bash
-fish -c "dots add ~/.config/newapp/config"
-fish -c "dots commit -m 'Add newapp configuration'"
-fish -c "dots push"
+dots add ~/.config/newapp/config
+dots commit -m 'Add newapp configuration'
+dots push
 ```
 
 ### Reloading Configurations
@@ -261,7 +252,7 @@ Explain why you're overriding defaults:
 ## Troubleshooting
 
 ### If `dots` command not found
-Ensure you're using Fish shell or use the full Git command:
+The `dots` command is a Fish function. If it's not available, check that Fish is running or use the full Git command:
 ```bash
 git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME status
 ```
