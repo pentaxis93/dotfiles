@@ -138,6 +138,100 @@ Examples of when to use context7:
 
 To use: Ask Claude Code to "use context7 to get documentation for [tool/library]"
 
+## System Theme: Gruvbox Dark Hard
+
+The entire system uses the **Gruvbox Dark Hard** color scheme with a custom cyan accent hierarchy for semantic consistency across all applications.
+
+### Color Palette Reference
+
+#### Core Colors
+- **Background**: `#1d2021` (hard dark) - Primary background
+- **Background Alt**: `#3c3836` (dark gray) - Secondary backgrounds, inactive elements
+- **Foreground**: `#ebdbb2` (light cream) - Primary text
+- **Disabled**: `#928374` (gray) - Disabled or muted elements
+
+#### Accent Colors (Our Cyan Hierarchy)
+- **Primary Accent**: `#8ec07c` (bright aqua) - Active/focused/selected elements
+- **Secondary Accent**: `#689d6a` (regular aqua) - Labels, informational text, inactive accents
+
+#### Semantic Colors
+- **Error/Alert**: `#fb4934` (bright red) - Errors, alerts, urgent items
+- **Warning**: `#fabd2f` (bright yellow) - Warnings, caution states
+- **Success**: `#b8bb26` (bright green) - Success states, confirmations
+- **Info**: `#83a598` (bright blue) - Informational messages
+
+### Why Aqua Looks "Greenish"
+The Gruvbox "aqua" colors (`#8ec07c` and `#689d6a`) intentionally lean toward green rather than pure cyan. This creates a warmer, more organic feel that fits Gruvbox's retro, earthy aesthetic. This is not a bug but a deliberate design choice that distinguishes Gruvbox from cooler, more synthetic color schemes.
+
+### Applied Configurations
+- **Terminal**: Alacritty, Tmux, Fish shell with Gruvbox colors
+- **Window Manager**: BSPWM with aqua borders (`#8ec07c`)
+- **Status Bar**: Polybar with cyan accent hierarchy
+- **Prompt**: Starship with clean aqua accents
+- **Editor**: Helix and Vim with gruvbox_dark_hard
+- **File Manager**: Thunar with custom GTK overrides
+- **Icons**: Papirus-Dark with teal folders (closest to our aqua)
+- **GTK Theme**: Gruvbox-Teal-Dark with custom CSS overrides in `~/.config/gtk-3.0/gtk.css`
+
+## Configuration Documentation Best Practices
+
+When modifying configuration files, follow these guidelines to ensure maintainability:
+
+### 1. Always Explain the "Why"
+Don't just document what a setting does - explain why you chose it.
+
+**Bad:**
+```bash
+bspc config focused_border_color "#8ec07c"  # Set border color
+```
+
+**Good:**
+```bash
+bspc config focused_border_color "#8ec07c"  # Bright aqua - matches our terminal accent color
+```
+
+### 2. Document Color Semantics
+Explain what each color represents in your UI hierarchy.
+
+```css
+/* Color hierarchy:
+ * - Bright aqua (#8ec07c): Active/focused elements (grabs attention)
+ * - Regular aqua (#689d6a): Informational text (provides context)
+ * - Gray (#928374): Disabled items (de-emphasized)
+ */
+```
+
+### 3. Include Both Hex Codes and Names
+Always provide both for clarity:
+```css
+color: #8ec07c;  /* bright aqua */
+```
+
+### 4. Cross-Reference Related Configs
+Note when settings should match across tools:
+```bash
+# This should match the border color in ~/.config/bspwm/bspwmrc
+set -g pane-active-border-style 'fg=#8ec07c'
+```
+
+### 5. Explain Non-Obvious Choices
+Document anything that might confuse future you:
+```css
+/* Using 30% opacity to keep text readable while showing selection.
+ * Higher opacity makes the underlying text too hard to read. */
+background-color: rgba(142, 192, 124, 0.3);
+```
+
+### 6. Document Overrides and Workarounds
+Explain why you're overriding defaults:
+```css
+/* Override Gruvbox-Teal theme selection color (#89b482)
+ * to match our consistent aqua accent (#8ec07c) */
+.thunar .sidebar row:selected {
+  background-color: rgba(142, 192, 124, 0.3);
+}
+```
+
 ## Development Patterns
 
 ### Configuration Philosophy

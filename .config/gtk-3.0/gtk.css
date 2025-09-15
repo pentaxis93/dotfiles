@@ -1,0 +1,169 @@
+/* Gruvbox Aqua Theme Overrides for GTK3
+ * =======================================
+ * Author: System Configuration
+ * Purpose: Override default GTK theme selections to match terminal Gruvbox theme
+ *
+ * The Gruvbox-Teal-Dark GTK theme uses #89b482 (a light green) for selections,
+ * but we want to use Gruvbox's official "bright aqua" (#8ec07c) to match
+ * our terminal theme. This color appears greenish but is actually a
+ * warm cyan/teal designed to fit Gruvbox's earthy, retro aesthetic.
+ *
+ * Color Hierarchy:
+ * ----------------
+ * - #8ec07c (bright aqua): Active/focused/selected elements
+ * - #689d6a (regular aqua): Informational text, labels, inactive elements
+ * - #1d2021 (hard dark): Primary background
+ * - #3c3836 (dark gray): Secondary background
+ * - #ebdbb2 (light cream): Primary foreground text
+ * - #fb4934 (bright red): Alerts and warnings
+ * - #928374 (gray): Disabled elements
+ *
+ * Why these colors look "greenish":
+ * The Gruvbox aqua colors are intentionally shifted toward green
+ * to create a warmer, more natural feel compared to pure cyan.
+ * This is consistent across the entire Gruvbox ecosystem.
+ */
+
+/* Thunar File Manager Customizations
+ * ----------------------------------- */
+
+/* Sidebar selection - use translucent bright aqua */
+.thunar .sidebar row:selected,
+.thunar .sidebar row:active,
+placessidebar row:selected,
+placessidebar.sidebar row:selected {
+  background-color: rgba(142, 192, 124, 0.3);  /* #8ec07c at 30% opacity */
+  color: #8ec07c;  /* Bright aqua text for selected items */
+}
+
+/* Sidebar hover effect - even more subtle */
+.thunar .sidebar row:hover,
+placessidebar row:hover {
+  background-color: rgba(142, 192, 124, 0.15);  /* Very light aqua tint */
+}
+
+/* Main file view selection */
+.thunar .standard-view.frame widget.view:selected,
+.thunar .standard-view.frame widget.view:active {
+  background-color: rgba(142, 192, 124, 0.2);  /* Lighter selection in main area */
+  color: #fbf1c7;  /* Gruvbox light foreground for contrast */
+}
+
+/* Generic selection override to prevent yellow highlights
+ * This catches any selection we might have missed */
+.thunar *:selected,
+.thunar selection {
+  background-color: rgba(142, 192, 124, 0.25);  /* 25% opacity aqua */
+}
+
+/* Thunar path bar buttons */
+.thunar .path-bar button:checked {
+  background-color: rgba(142, 192, 124, 0.2);
+  color: #8ec07c;
+}
+
+/* File emblems and badges */
+.thunar .emblem {
+  color: #689d6a;  /* Use regular aqua for emblems */
+}
+
+/* Global Selection Overrides
+ * -------------------------- */
+
+/* Text selection in entries and text views */
+entry selection,
+textview text selection,
+textview selection,
+text selection {
+  background-color: rgba(142, 192, 124, 0.4);  /* 40% opacity for text selection */
+  color: #fbf1c7;
+}
+
+/* Tree view selections (file dialogs, etc.) */
+treeview.view:selected {
+  background-color: rgba(142, 192, 124, 0.3);
+  color: #fbf1c7;
+}
+
+/* Menu selections */
+menuitem:hover,
+.menu menuitem:hover {
+  background-color: rgba(142, 192, 124, 0.2);
+  color: #8ec07c;
+}
+
+/* Button hover states - subtle aqua tint */
+button:hover {
+  background-color: rgba(142, 192, 124, 0.1);
+}
+
+/* Focus rings - use aqua instead of default blue */
+*:focus {
+  outline-color: #8ec07c;
+}
+
+/* Progress bars - use bright aqua for active progress */
+progressbar progress,
+progressbar trough progress {
+  background-color: #8ec07c;
+}
+
+/* Scale/slider selections */
+scale highlight,
+scale:hover highlight {
+  background-color: #8ec07c;
+}
+
+/* Switch widgets - active state */
+switch:checked {
+  background-color: #689d6a;  /* Use regular aqua for switches */
+}
+
+switch:checked slider {
+  background-color: #8ec07c;  /* Bright aqua for the slider knob */
+}
+
+/* Tooltip overrides - use Gruvbox dark background */
+tooltip {
+  background-color: #3c3836;
+  color: #ebdbb2;
+  border: 1px solid #689d6a;
+}
+
+/* Link colors - use regular aqua */
+*:link {
+  color: #689d6a;
+}
+
+*:link:hover {
+  color: #8ec07c;
+}
+
+/* Info bars - style appropriately */
+infobar.info {
+  background-color: rgba(104, 157, 106, 0.2);  /* Regular aqua tint */
+  color: #689d6a;
+}
+
+infobar.warning {
+  background-color: rgba(215, 153, 33, 0.2);  /* Yellow warning tint */
+  color: #d79921;
+}
+
+infobar.error {
+  background-color: rgba(251, 73, 52, 0.2);  /* Red error tint */
+  color: #fb4934;
+}
+
+/* Calendar widget - selected day */
+calendar:selected {
+  background-color: #8ec07c;
+  color: #1d2021;
+}
+
+/* Notebook (tab) widgets */
+notebook tab:checked {
+  background-color: rgba(142, 192, 124, 0.15);
+}
+
+/* End of GTK3 CSS Overrides */
