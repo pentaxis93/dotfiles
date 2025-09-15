@@ -1,0 +1,47 @@
+# Helix Languages Configuration
+# https://docs.helix-editor.com/languages.html
+
+# This file configures language servers and formatting tools
+# Helix will auto-detect and use installed language servers
+
+# Example configurations for common languages:
+
+[[language]]
+name = "rust"
+auto-format = true
+
+[[language]]
+name = "python"
+auto-format = true
+formatter = { command = "black", args = ["-", "--quiet"] }
+
+[[language]]
+name = "javascript"
+auto-format = true
+
+[[language]]
+name = "typescript"
+auto-format = true
+
+[[language]]
+name = "bash"
+auto-format = true
+indent = { tab-width = 4, unit = "    " }
+
+[[language]]
+name = "fish"
+auto-format = false  # Fish doesn't have a standard formatter
+indent = { tab-width = 4, unit = "    " }
+
+[[language]]
+name = "toml"
+auto-format = true
+
+[[language]]
+name = "yaml"
+auto-format = true
+indent = { tab-width = 2, unit = "  " }
+
+[[language]]
+name = "markdown"
+auto-format = false  # Markdown formatting can be opinionated

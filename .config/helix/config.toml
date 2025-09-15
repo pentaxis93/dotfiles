@@ -1,0 +1,51 @@
+# Helix Configuration
+# https://docs.helix-editor.com/configuration.html
+
+theme = "gruvbox_dark_hard"  # You can change this to your preferred theme
+
+[editor]
+line-number = "relative"  # Show relative line numbers
+mouse = true              # Enable mouse support
+middle-click-paste = true # Paste with middle click
+scrolloff = 8            # Keep 8 lines visible above/below cursor
+rulers = [80, 120]       # Visual guides at columns 80 and 120
+bufferline = "multiple"  # Show bufferline when multiple files open
+color-modes = true       # Color the mode indicator
+
+[editor.cursor-shape]
+insert = "bar"    # Vertical bar in insert mode
+normal = "block"  # Block cursor in normal mode
+select = "underline"  # Underline in select mode
+
+[editor.file-picker]
+hidden = false    # Don't show hidden files by default
+
+[editor.statusline]
+left = ["mode", "spinner", "file-name", "file-modification-indicator"]
+center = []
+right = ["diagnostics", "selections", "position", "position-percentage", "file-encoding", "file-line-ending", "file-type"]
+
+[editor.lsp]
+display-messages = true    # Show LSP progress messages
+display-inlay-hints = true # Show inlay hints when available
+
+[editor.indent-guides]
+render = true     # Show indent guides
+character = "│"   # Character to use for guides
+
+[editor.whitespace]
+render = "none"   # Set to "all" to see whitespace characters
+
+[keys.normal]
+# Quick save
+C-s = ":w"
+# Quick quit
+C-q = ":q"
+# Open file picker
+C-p = "file_picker"
+# Open buffer picker
+C-b = "buffer_picker"
+
+[keys.insert]
+# Quick save from insert mode
+C-s = ["normal_mode", ":w", "insert_mode"]

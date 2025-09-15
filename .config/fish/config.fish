@@ -11,9 +11,9 @@ if type -q starship
     starship init fish | source
 end
 
-# Set default editor (will change to nvim later)
-set -gx EDITOR vim
-set -gx VISUAL vim
+# Set default editor to Helix
+set -gx EDITOR helix
+set -gx VISUAL helix
 
 # Set SHELL to fish (fixes tmux and other programs)
 set -gx SHELL /bin/fish
@@ -58,15 +58,17 @@ abbr -a downloads 'cd ~/Downloads'
 abbr -a documents 'cd ~/Documents'
 abbr -a dotfiles 'cd ~/.dotfiles'
 
-# Editor shortcuts (will update when nvim is installed)
-abbr -a v vim
-abbr -a sv 'sudo vim'
+# Editor shortcuts
+abbr -a hx helix
+abbr -a v helix
+abbr -a sv 'sudo helix'
+abbr -a vim vim  # Keep vim available for compatibility
 
 # Quick config edits
-abbr -a fishconfig 'vim ~/.config/fish/config.fish'
-abbr -a bspconfig 'vim ~/.config/bspwm/bspwmrc'
-abbr -a sxhkdconfig 'vim ~/.config/sxhkd/sxhkdrc'
-abbr -a polybarconfig 'vim ~/.config/polybar/config.ini'
+abbr -a fishconfig 'helix ~/.config/fish/config.fish'
+abbr -a bspconfig 'helix ~/.config/bspwm/bspwmrc'
+abbr -a sxhkdconfig 'helix ~/.config/sxhkd/sxhkdrc'
+abbr -a polybarconfig 'helix ~/.config/polybar/config.ini'
 
 # Load any local machine-specific configurations
 if test -f ~/.config/fish/local.fish
