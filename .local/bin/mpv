@@ -1,0 +1,67 @@
+#!/bin/bash
+# Smart mpv wrapper: opens lf for file selection when called without arguments
+
+# If arguments provided, pass through to real mpv
+if [ $# -gt 0 ]; then
+    exec /usr/bin/mpv "$@"
+fi
+
+# No arguments - open lf for file selection
+# Determine starting directory
+if [ -d "$HOME/Videos" ] && [ "$(ls -A "$HOME/Videos" 2>/dev/null)" ]; then
+    START_DIR="$HOME/Videos"
+elif [ -d "$HOME/Downloads" ]; then
+    START_DIR="$HOME/Downloads"  
+else
+    START_DIR="$HOME"
+fi
+
+# Create temporary file for selection
+SELECTION_FILE=$(mktemp /tmp/lf-mpv-XXXXXX)
+
+# Create a wrapper script for lf that will handle the selection
+cat > /tmp/lf-select-video.sh << 'LFSCRIPT'
+#!/bin/bash
+SELECTION_FILE="$1"
+START_DIR="$2"
+
+# Create lf config that saves selection on Enter
+mkdir -p /tmp/lf-mpv-config
+cat > /tmp/lf-mpv-config/lfrc << 'CONFIG'
+# Override enter to select file and exit
+cmd select-and-exit &{{
+    if [ -f "$f" ]; then
+        echo "$f" > SELECTION_FILE_PLACEHOLDER
+        lf -remote "send $id quit"
+    fi
+}}
+map <enter> select-and-exit
+CONFIG
+
+# Replace placeholder with actual file path
+sed -i "s|SELECTION_FILE_PLACEHOLDER|$SELECTION_FILE|" /tmp/lf-mpv-config/lfrc
+
+# Run lf with custom config
+cd "$START_DIR"
+lf -config /tmp/lf-mpv-config/lfrc
+
+# Clean up
+rm -rf /tmp/lf-mpv-config
+LFSCRIPT
+
+chmod +x /tmp/lf-select-video.sh
+
+# Open lf in Alacritty for file selection
+alacritty -T "Select video for mpv" -e /tmp/lf-select-video.sh "$SELECTION_FILE" "$START_DIR"
+
+# Check if a file was selected
+if [ -f "$SELECTION_FILE" ] && [ -s "$SELECTION_FILE" ]; then
+    SELECTED_FILE=$(cat "$SELECTION_FILE")
+    if [ -f "$SELECTED_FILE" ]; then
+        # Launch mpv with the selected file
+        exec /usr/bin/mpv "$SELECTED_FILE"
+    fi
+fi
+
+# Clean up
+rm -f "$SELECTION_FILE" /tmp/lf-select-video.sh
