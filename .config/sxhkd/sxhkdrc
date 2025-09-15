@@ -117,7 +117,20 @@ super + ctrl + {m,x,y,z}
 #
 
 # focus the node in the given direction
+# Vim keys: h=left, j=down, k=up, l=right
 super + {_,shift + }{h,j,k,l}
+	bspc node -{f,s} {west,south,north,east}
+
+# Arrow keys: same as vim keys for consistency
+super + {_,shift + }{Left,Down,Up,Right}
+	bspc node -{f,s} {west,south,north,east}
+
+# Numpad keys: 4=left, 2=down, 8=up, 6=right (standard numpad navigation)
+super + {_,shift + }{KP_4,KP_2,KP_8,KP_6}
+	bspc node -{f,s} {west,south,north,east}
+
+# Alternative numpad with NumLock off
+super + {_,shift + }{KP_Left,KP_Down,KP_Up,KP_Right}
 	bspc node -{f,s} {west,south,north,east}
 
 # focus the node for the given path jump
@@ -151,7 +164,20 @@ super + {_,shift + }{1-9,0}
 #
 
 # preselect the direction
+# Vim keys
 super + ctrl + {h,j,k,l}
+	bspc node -p {west,south,north,east}
+
+# Arrow keys
+super + ctrl + {Left,Down,Up,Right}
+	bspc node -p {west,south,north,east}
+
+# Numpad keys
+super + ctrl + {KP_4,KP_2,KP_8,KP_6}
+	bspc node -p {west,south,north,east}
+
+# Alternative numpad with NumLock off
+super + ctrl + {KP_Left,KP_Down,KP_Up,KP_Right}
 	bspc node -p {west,south,north,east}
 
 # preselect the ratio
@@ -171,13 +197,50 @@ super + ctrl + shift + space
 #
 
 # expand a window by moving one of its side outward
+# Vim keys
 super + alt + {h,j,k,l}
 	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
 
+# Arrow keys
+super + alt + {Left,Down,Up,Right}
+	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+
+# Numpad keys
+super + alt + {KP_4,KP_2,KP_8,KP_6}
+	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+
+# Alternative numpad with NumLock off
+super + alt + {KP_Left,KP_Down,KP_Up,KP_Right}
+	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+
 # contract a window by moving one of its side inward
+# Vim keys
 super + alt + shift + {h,j,k,l}
 	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
 
-# move a floating window
-super + {Left,Down,Up,Right}
-	bspc node -v {-20 0,0 20,0 -20,20 0}
+# Arrow keys
+super + alt + shift + {Left,Down,Up,Right}
+	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
+
+# Numpad keys
+super + alt + shift + {KP_4,KP_2,KP_8,KP_6}
+	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
+
+# Alternative numpad with NumLock off
+super + alt + shift + {KP_Left,KP_Down,KP_Up,KP_Right}
+	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
+
+# ============================================================================
+# FLOATING WINDOW MOVEMENT (DISABLED)
+# ============================================================================
+# Commented out because:
+#   1. Floating windows are not used in this workflow (tiling-only setup)
+#   2. Arrow keys are repurposed for window focus/swap (consistency with vim keys)
+#   3. Keeping super key consistent across all navigation operations
+#
+# Original functionality: moved floating windows by 20px in each direction
+# If you ever need floating windows, uncomment below and remove arrow key
+# bindings from focus/swap section above
+# ============================================================================
+# super + {Left,Down,Up,Right}
+# 	bspc node -v {-20 0,0 20,0 -20,20 0}
