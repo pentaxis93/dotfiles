@@ -1,168 +1,176 @@
-# CachyOS Dotfiles
+# pentaxis93's Dotfiles
 
-Personal configuration files for my CachyOS setup with bspwm, managed using a git bare repository.
+Personal configuration files for CachyOS Linux with BSPWM, managed using a bare Git repository.
 
-## Contents
+## 🎨 Theme
 
-- **bspwm** - Tiling window manager configuration
-- **sxhkd** - Hotkey daemon for bspwm
-- **polybar** - Status bar with workspace indicators and system info
-- **fish** - Modern shell with vi mode and useful abbreviations
+Entire system uses **Gruvbox Dark Hard** with cyan accent hierarchy for consistency across all applications.
 
-## Installation on a New Machine
+## 🚀 Quick Install
 
-### 1. Clone the Repository
+### Prerequisites
 
+- Git
+- Fish shell
+- CachyOS Linux (or Arch-based distribution)
+
+### Installation
+
+1. **Clone the bare repository:**
 ```bash
-# Clone as a bare repository
-git clone --bare https://github.com/YOUR_USERNAME/dotfiles.git $HOME/.dotfiles
+git clone --bare https://github.com/pentaxis93/dotfiles.git $HOME/.dotfiles
+```
 
-# Define temporary alias
+2. **Define temporary alias:**
+```bash
 alias dots='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+```
 
-# Configure to not show untracked files
-dots config --local status.showUntrackedFiles no
-
-# Checkout the actual content
+3. **Checkout the actual content:**
+```bash
 dots checkout
 ```
 
-If you get errors about existing files, back them up:
+If you receive errors about existing files, back them up:
 ```bash
 mkdir -p .config-backup && \
 dots checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | \
 xargs -I{} mv {} .config-backup/{}
 ```
 
-Then run `dots checkout` again.
-
-### 2. Install Dependencies
-
+Then retry the checkout:
 ```bash
-# Core packages
-sudo pacman -S bspwm sxhkd polybar fish starship
-
-# Optional but recommended
-sudo pacman -S eza bat fzf fastfetch
+dots checkout
 ```
 
-### 3. Set Fish as Default Shell
-
+4. **Set git to not show untracked files:**
 ```bash
-chsh -s /bin/fish
+dots config --local status.showUntrackedFiles no
 ```
 
-### 4. Reload bspwm
+5. **Switch to Fish shell (if not already using):**
+```bash
+chsh -s /usr/bin/fish
+```
 
-Press `Super + Alt + R` or log out and back in.
+6. **Install required packages:**
+```bash
+sudo pacman -S bspwm sxhkd polybar alacritty fish starship helix dmenu picom feh
+```
 
-## Daily Usage
+7. **Install fonts:**
+```bash
+yay -S nerd-fonts-meslo
+```
 
-The `dots` command works just like git:
+### Post-Installation Setup
+
+#### Enable Brightness Control (ThinkPad users)
+```bash
+echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/tee /sys/class/backlight/intel_backlight/brightness" | sudo tee /etc/sudoers.d/brightness
+```
+
+#### Set Gruvbox GTK Theme
+```bash
+yay -S gruvbox-material-gtk-theme-git
+gsettings set org.gnome.desktop.interface gtk-theme "Gruvbox-Dark"
+```
+
+#### Configure Papirus Icons with Teal Folders
+```bash
+sudo pacman -S papirus-icon-theme papirus-folders
+papirus-folders -C teal
+```
+
+## 📁 Structure
+
+```
+~/
+├── .config/
+│   ├── alacritty/      # Terminal emulator
+│   ├── bspwm/          # Window manager
+│   ├── fish/           # Shell configuration
+│   ├── helix/          # Text editor
+│   ├── polybar/        # Status bar
+│   ├── starship.toml   # Shell prompt
+│   └── sxhkd/          # Hotkey daemon
+├── .local/
+│   └── bin/            # User scripts
+├── .gitconfig          # Git configuration
+├── .gitignore          # Ignore sensitive files
+└── CLAUDE.md           # AI assistant context
+```
+
+## ⌨️ Key Bindings
+
+### Window Management
+- `Super + Enter` - Open terminal
+- `Super + Space` - Application launcher
+- `Super + W` - Close window
+- `Super + M` - Toggle monocle layout
+- `Super + {1-9,0}` - Switch workspace
+- `Super + Shift + {1-9,0}` - Move window to workspace
+
+### System Controls
+- `Super + F1` - Mute/unmute audio
+- `Super + F2/F3` - Volume down/up
+- `Super + F4` - Mute microphone
+- `Super + F7/F8` - Brightness down/up
+- `Super + B` - Toggle polybar visibility
+- `Super + Escape` - Reload sxhkd config
+- `Super + Alt + R` - Restart BSPWM
+
+## 🛠️ Dotfiles Management
+
+The `dots` command is a Fish function that manages the bare repository:
 
 ```bash
-# Check status
-dots status
-
-# Add files
-dots add ~/.config/some-new-config
-
-# Commit changes
-dots commit -m "Add new config"
-
-# Push to remote
-dots push
-
-# Pull changes from remote
-dots pull
+dots status          # Check status
+dots add <file>      # Stage changes
+dots commit -m "msg" # Commit
+dots push           # Push to remote
+dots pull           # Pull changes
+dots diff           # View changes
 ```
 
 ### Fish Abbreviations
 
-Quick shortcuts available in fish:
+Quick shortcuts configured in Fish:
+- `da` → `dots add`
+- `dc` → `dots commit`
+- `dp` → `dots push`
+- `dst` → `dots status`
+- `dd` → `dots diff`
 
-**Dotfiles:**
-- `dst` - Check dotfiles status
-- `da <file>` - Add file to dotfiles
-- `dc` - Commit dotfiles changes
-- `dp` - Push dotfiles
+## 🔧 Customization
 
-**Git:**
-- `g` - git
-- `gst` - git status
-- `ga` - git add
-- `gc` - git commit
-- `gp` - git push
+### Adding New Configurations
 
-**System:**
-- `syu` - System update
-- `install` - Install package
-- `search` - Search packages
-
-**Config Editing:**
-- `fishconfig` - Edit fish config
-- `bspconfig` - Edit bspwm config
-- `sxhkdconfig` - Edit sxhkd config
-- `polybarconfig` - Edit polybar config
-
-## Key Bindings
-
-### Window Manager (bspwm)
-
-- `Super + Enter` - Open terminal
-- `Super + Space` - App launcher
-- `Super + {1-9,0}` - Switch to workspace
-- `Super + Shift + {1-9,0}` - Move window to workspace
-- `Super + Alt + R` - Reload bspwm config
-- `Super + Alt + Q` - Quit bspwm
-
-### Fish Shell
-
-Vi mode is enabled:
-- `Esc` - Enter normal mode
-- `i` - Enter insert mode
-- In normal mode: navigate with `hjkl`, use vim motions
-
-## Customization
-
-### Local Settings
-
-Create `~/.config/fish/local.fish` for machine-specific settings that won't be committed.
-
-### Changing Editor
-
-When nvim is installed, update fish config:
-```fish
-set -gx EDITOR nvim
-set -gx VISUAL nvim
+1. Create/modify your config file
+2. Add it to the repository:
+```bash
+dots add ~/.config/newapp/config
+dots commit -m "Add newapp configuration"
+dots push
 ```
 
-## Structure
+### Machine-Specific Settings
 
-```
-~
-├── .config/
-│   ├── bspwm/
-│   │   └── bspwmrc
-│   ├── sxhkd/
-│   │   └── sxhkdrc
-│   ├── polybar/
-│   │   ├── config.ini
-│   │   └── launch.sh
-│   └── fish/
-│       ├── config.fish
-│       └── functions/
-│           └── dots.fish
-└── .dotfiles/  (bare git repository)
-```
+Create `~/.config/fish/local.fish` for machine-specific configurations that won't be tracked.
 
-## Resources
+## 📚 Documentation
 
-- [bspwm documentation](https://github.com/baskerville/bspwm)
-- [Fish shell documentation](https://fishshell.com/docs/current/)
-- [Polybar wiki](https://github.com/polybar/polybar/wiki)
-- [Starship prompt](https://starship.rs/)
+- [CLAUDE.md](CLAUDE.md) - Detailed system context and configuration notes
+- [CHANGELOG.md](CHANGELOG.md) - Version history and changes
+
+## 🐛 Troubleshooting
+
+See the troubleshooting section in [CLAUDE.md](CLAUDE.md#troubleshooting).
+
+## 📝 License
+
+These dotfiles are provided as-is for personal use and reference.
 
 ---
 
-*Managed with a bare git repository for clean dotfile versioning*
+*Managed with care on CachyOS Linux* 🐧
