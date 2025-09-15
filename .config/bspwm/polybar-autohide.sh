@@ -8,7 +8,7 @@
 #   Acts as a lightweight daemon that monitors BSPWM events.
 #
 # Architecture:
-#   - Event-driven: Subscribes to bspwm's node_focus and desktop_layout events
+#   - Event-driven: Subscribes to bspwm's node_focus, desktop_layout, and desktop_focus events
 #   - Self-healing: Automatically restarts if bspc subscribe disconnects
 #   - Single instance: PID file ensures only one daemon runs
 #
@@ -134,7 +134,7 @@ main_loop() {
         log_msg "Subscribing to bspwm events..."
 
         # Subscribe to events and process them
-        bspc subscribe node_focus desktop_layout 2>/dev/null | while read -r event; do
+        bspc subscribe node_focus desktop_layout desktop_focus 2>/dev/null | while read -r event; do
             # Log the event
             log_msg "Event received: $event"
 
