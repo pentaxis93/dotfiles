@@ -1,0 +1,130 @@
+#!/bin/bash
+# Papirus Gruvbox Aqua Folder Customizer
+# ========================================
+# This script creates custom Papirus folder icons using Gruvbox aqua colors
+# instead of the standard teal. The aqua colors are greenish-cyan, matching
+# our terminal theme perfectly.
+#
+# Colors:
+# - Original teal main: #16a085
+# - Original teal dark: #12806a
+# - Gruvbox bright aqua: #8ec07c (our main folder color)
+# - Gruvbox regular aqua: #689d6a (darker shade for depth)
+
+set -e
+
+# Check if running as root (needed to modify system icons)
+if [[ $EUID -ne 0 ]]; then
+    echo "This script needs to run with sudo to modify system icons"
+    echo "Usage: sudo $0 [install|restore]"
+    exit 1
+fi
+
+ICONS_DIR="/usr/share/icons"
+BACKUP_DIR="/usr/share/icons/.papirus-backup"
+ACTION="${1:-install}"
+
+# Our Gruvbox aqua colors
+GRUVBOX_AQUA_BRIGHT="#8ec07c"
+GRUVBOX_AQUA_REGULAR="#689d6a"
+
+# Original teal colors to replace
+TEAL_MAIN="#16a085"
+TEAL_DARK="#12806a"
+
+install_gruvbox_folders() {
+    echo "Installing Gruvbox aqua folders..."
+
+    # Create backup directory if it doesn't exist
+    if [[ ! -d "$BACKUP_DIR" ]]; then
+        mkdir -p "$BACKUP_DIR"
+        echo "Created backup directory: $BACKUP_DIR"
+    fi
+
+    # Process each Papirus variant
+    for variant in Papirus Papirus-Dark Papirus-Light; do
+        if [[ ! -d "$ICONS_DIR/$variant" ]]; then
+            continue
+        fi
+
+        echo "Processing $variant..."
+
+        # Find all folder-teal.svg files in different sizes
+        find "$ICONS_DIR/$variant" -name "folder-teal.svg" -type f | while read -r file; do
+            # Create backup if not already backed up
+            backup_file="$BACKUP_DIR/$(echo "$file" | sed "s|$ICONS_DIR/||")"
+            if [[ ! -f "$backup_file" ]]; then
+                mkdir -p "$(dirname "$backup_file")"
+                cp "$file" "$backup_file"
+            fi
+
+            # Replace colors in the SVG file
+            # Using sed to replace the hex colors
+            sed -i \
+                -e "s/$TEAL_MAIN/$GRUVBOX_AQUA_BRIGHT/g" \
+                -e "s/$TEAL_DARK/$GRUVBOX_AQUA_REGULAR/g" \
+                "$file"
+        done
+
+        # Also process folder.svg if it's a symlink to folder-teal.svg
+        find "$ICONS_DIR/$variant" -name "folder.svg" -type l | while read -r link; do
+            target=$(readlink "$link")
+            if [[ "$target" == "folder-teal.svg" ]]; then
+                # The symlink is correct, colors are already updated
+                echo "  Symlink OK: $(dirname "$link" | sed "s|.*/$variant/||")/folder.svg"
+            fi
+        done
+    done
+
+    echo "Updating icon cache..."
+    gtk-update-icon-cache -f "$ICONS_DIR/Papirus" 2>/dev/null || true
+    gtk-update-icon-cache -f "$ICONS_DIR/Papirus-Dark" 2>/dev/null || true
+    gtk-update-icon-cache -f "$ICONS_DIR/Papirus-Light" 2>/dev/null || true
+
+    echo ""
+    echo "✓ Gruvbox aqua folders installed successfully!"
+    echo "  Main color: $GRUVBOX_AQUA_BRIGHT (bright aqua)"
+    echo "  Dark color: $GRUVBOX_AQUA_REGULAR (regular aqua)"
+    echo ""
+    echo "You may need to restart your file manager or log out/in to see changes."
+}
+
+restore_original() {
+    echo "Restoring original teal folders..."
+
+    if [[ ! -d "$BACKUP_DIR" ]]; then
+        echo "No backup found. Cannot restore."
+        exit 1
+    fi
+
+    # Restore from backup
+    find "$BACKUP_DIR" -name "folder-teal.svg" -type f | while read -r backup; do
+        original="$ICONS_DIR/$(echo "$backup" | sed "s|$BACKUP_DIR/||")"
+        if [[ -f "$original" ]]; then
+            cp "$backup" "$original"
+            echo "Restored: $original"
+        fi
+    done
+
+    echo "Updating icon cache..."
+    gtk-update-icon-cache -f "$ICONS_DIR/Papirus" 2>/dev/null || true
+    gtk-update-icon-cache -f "$ICONS_DIR/Papirus-Dark" 2>/dev/null || true
+    gtk-update-icon-cache -f "$ICONS_DIR/Papirus-Light" 2>/dev/null || true
+
+    echo "✓ Original folders restored successfully!"
+}
+
+case "$ACTION" in
+    install)
+        install_gruvbox_folders
+        ;;
+    restore)
+        restore_original
+        ;;
+    *)
+        echo "Usage: $0 [install|restore]"
+        echo "  install - Apply Gruvbox aqua colors to folders"
+        echo "  restore - Restore original teal colors"
+        exit 1
+        ;;
+esac

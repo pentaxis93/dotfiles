@@ -1,0 +1,33 @@
+[Default Applications]
+# Video files - use mpv as default player
+video/x-msvideo=mpv.desktop
+video/mp4=mpv.desktop
+video/mpeg=mpv.desktop
+video/quicktime=mpv.desktop
+video/x-matroska=mpv.desktop
+video/webm=mpv.desktop
+video/x-flv=mpv.desktop
+video/x-ms-wmv=mpv.desktop
+video/x-ogm+ogg=mpv.desktop
+video/ogg=mpv.desktop
+video/3gpp=mpv.desktop
+video/3gpp2=mpv.desktop
+video/mp2t=mpv.desktop
+application/x-matroska=mpv.desktop
+
+# Audio files - also use mpv
+audio/mpeg=mpv.desktop
+audio/x-wav=mpv.desktop
+audio/x-flac=mpv.desktop
+audio/ogg=mpv.desktop
+audio/x-vorbis+ogg=mpv.desktop
+audio/mp4=mpv.desktop
+audio/x-m4a=mpv.desktop
+audio/webm=mpv.desktop
+
+[Added Associations]
+# Additional associations for video files
+video/x-msvideo=mpv.desktop;
+video/mp4=mpv.desktop;
+video/x-matroska=mpv.desktop;
+video/webm=mpv.desktop;
