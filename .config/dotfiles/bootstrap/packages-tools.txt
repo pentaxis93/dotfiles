@@ -26,6 +26,7 @@ eza             # Modern ls with git integration - better directory listing
 
 tmux            # Terminal multiplexer - split panes, sessions
 lazygit         # Terminal UI for git - used by lazydots function
+zoxide          # Smart directory jumper - z command learns your habits
 
 # ============================================================================
 # DEVELOPMENT UTILITIES

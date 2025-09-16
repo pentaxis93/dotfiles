@@ -31,6 +31,11 @@ if type -q fzf
     set -gx FZF_DEFAULT_OPTS '--height 40% --layout=reverse --border --info=inline'
 end
 
+# Initialize zoxide (smart directory jumper)
+if type -q zoxide
+    zoxide init fish | source
+end
+
 # Git abbreviations
 abbr -a g git
 abbr -a ga 'git add'
@@ -62,6 +67,10 @@ abbr -a config 'cd ~/.config'
 abbr -a downloads 'cd ~/Downloads'
 abbr -a documents 'cd ~/Documents'
 
+# Zoxide (smart directory jumping) shortcuts
+abbr -a zi 'z -i'  # Interactive directory selection with fzf
+abbr -a zq 'z -'   # Jump to previous directory
+
 # Dotfiles workspace shortcuts
 abbr -a dcd 'cd ~/.config/dotfiles'
 abbr -a dcl 'dotclaude'
@@ -87,3 +96,7 @@ set -gx PATH /home/pentaxis93/.pub-cache/bin $PATH
 
 # Added by Zenvestor setup script - Flutter via FVM
 set -gx PATH /home/pentaxis93/fvm/default/bin $PATH
+
+# Firefox for Flutter web development (CHROME_EXECUTABLE accepts any browser)
+set -gx CHROME_EXECUTABLE /usr/sbin/firefox
+

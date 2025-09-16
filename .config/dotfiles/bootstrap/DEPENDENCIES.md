@@ -151,6 +151,7 @@ These are **optional** but recommended tools that enhance the command-line exper
 | **bat** | cat | Syntax highlighting | General use |
 | **eza** | ls | Better ls with git info | General use |
 | **fzf** | N/A | Fuzzy finder | Fish config checks for it |
+| **zoxide** | cd history | Smart directory jumper (z command) | Fish config initializes it |
 
 ### Git Enhancement
 
