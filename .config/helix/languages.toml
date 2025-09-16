@@ -45,3 +45,14 @@ indent = { tab-width = 2, unit = "  " }
 [[language]]
 name = "markdown"
 auto-format = false  # Markdown formatting can be opinionated
+
+# Dart configuration - Use FVM Flutter's dart
+[[language]]
+name = "dart"
+language-servers = ["dart-lsp"]
+auto-format = true
+indent = { tab-width = 2, unit = "  " }
+
+[language-server.dart-lsp]
+command = "/home/pentaxis93/fvm/default/bin/dart"
+args = ["language-server", "--protocol=lsp"]
