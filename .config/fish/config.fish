@@ -11,10 +11,8 @@ function fish_greeting
     echo "Type" (set_color green)"help"(set_color normal) "for instructions on how to use fish"
 end
 
-# Initialize starship prompt (if installed)
-if type -q starship
-    starship init fish | source
-end
+# Enable Pure prompt (already installed via fish-pure-prompt package)
+# Pure is loaded automatically from /usr/share/fish/vendor_functions.d/
 
 # Set default editor to Helix
 set -gx EDITOR helix

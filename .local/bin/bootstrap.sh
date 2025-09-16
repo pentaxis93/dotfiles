@@ -371,7 +371,6 @@ picom           # Compositor for transparency and effects
 # Terminal & Shell
 alacritty       # GPU-accelerated terminal emulator
 fish            # Friendly interactive shell
-starship        # Cross-shell prompt customization
 
 # Essential Utilities
 git             # Version control (required for dotfiles management)

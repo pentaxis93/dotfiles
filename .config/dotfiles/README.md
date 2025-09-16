@@ -74,7 +74,7 @@ If you prefer to install packages manually:
 
 ```bash
 # Core packages (window manager, terminal, shell, utilities)
-sudo pacman -S bspwm sxhkd polybar alacritty fish starship helix dmenu picom \
+sudo pacman -S bspwm sxhkd polybar alacritty fish helix dmenu picom \
                git xclip htop neofetch base-devel \
                thunar btop networkmanager gsimplecal pavucontrol \
                pipewire pipewire-pulse pipewire-alsa wireplumber
@@ -132,10 +132,9 @@ bootstrap.sh [OPTIONS]
 ├── .config/
 │   ├── alacritty/      # Terminal emulator
 │   ├── bspwm/          # Window manager
-│   ├── fish/           # Shell configuration
+│   ├── fish/           # Shell configuration (with Pure prompt)
 │   ├── helix/          # Text editor
 │   ├── polybar/        # Status bar
-│   ├── starship.toml   # Shell prompt
 │   └── sxhkd/          # Hotkey daemon
 ├── .local/
 │   └── bin/            # User scripts

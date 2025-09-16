@@ -290,7 +290,7 @@ The Gruvbox "aqua" colors (`#8ec07c` and `#689d6a`) intentionally lean toward gr
 - **Terminal**: Alacritty, Tmux, Fish shell with Gruvbox colors
 - **Window Manager**: BSPWM with aqua borders (`#8ec07c`)
 - **Status Bar**: Polybar with cyan accent hierarchy
-- **Prompt**: Starship with clean aqua accents
+- **Prompt**: Pure - minimal async prompt for fish
 - **Editor**: Helix with gruvbox_dark_hard
 - **File Manager**: Thunar with custom GTK overrides
 - **Icons**: Papirus-Dark with teal folders (closest to our aqua)

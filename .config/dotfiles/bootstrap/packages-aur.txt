@@ -12,7 +12,7 @@
 # ============================================================================
 # Essential fonts for proper display in terminal and UI
 
-nerd-fonts-meslo        # Terminal font with icons - required for starship prompt
+nerd-fonts-meslo        # Terminal font with icons - required for terminal and prompts
 ttf-font-awesome        # Icon font - required for polybar icons
 noto-fonts-emoji        # Emoji support - proper emoji display in terminal
 

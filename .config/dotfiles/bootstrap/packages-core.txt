@@ -24,7 +24,7 @@ picom           # Compositor - transparency, shadows (if configured)
 
 alacritty       # GPU-accelerated terminal - primary terminal (alacritty.toml)
 fish            # Interactive shell - our configured shell (config.fish)
-starship        # Shell prompt - clean, informative prompt (starship.toml)
+# Note: Using Pure prompt (fish-pure-prompt) for shell prompt
 
 # ============================================================================
 # TEXT EDITING

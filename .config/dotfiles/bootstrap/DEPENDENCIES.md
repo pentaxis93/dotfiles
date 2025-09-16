@@ -73,7 +73,7 @@ bspwm
 |---------|---------|--------------|----------|
 | **alacritty** | GPU-accelerated terminal | `~/.config/alacritty/` | ✅ Yes |
 | **fish** | Interactive shell | `~/.config/fish/` | ✅ Yes |
-| **starship** | Cross-shell prompt | `~/.config/starship.toml` | ✅ Yes |
+| **fish-pure-prompt** | Minimal async prompt for Fish | Auto-loaded from vendor_functions.d | ✅ Yes |
 | **tmux** | Terminal multiplexer | `~/.tmux.conf` | Optional |
 
 ## Text Editor
@@ -173,7 +173,7 @@ These are **optional** but recommended tools that enhance the command-line exper
 
 | Package | Purpose | Used By | Required |
 |---------|---------|---------|----------|
-| **nerd-fonts-meslo** | Terminal font with icons | Alacritty, Starship | ✅ Yes |
+| **nerd-fonts-meslo** | Terminal font with icons | Alacritty, Pure prompt | ✅ Yes |
 | **ttf-font-awesome** | Icon font | Polybar | ✅ Yes |
 | **noto-fonts-emoji** | Emoji support | System-wide | ✅ Yes |
 
