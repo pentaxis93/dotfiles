@@ -131,11 +131,8 @@ super + {_,shift + }{Left,Down,Up,Right}
 	bspc node -{f,s} {west,south,north,east}
 
 # Numpad keys: 4=left, 2=down, 8=up, 6=right (standard numpad navigation)
+# Note: Only works with NumLock ON. NumLock OFF is reserved for workspace switching
 super + {_,shift + }{KP_4,KP_2,KP_8,KP_6}
-	bspc node -{f,s} {west,south,north,east}
-
-# Alternative numpad with NumLock off
-super + {_,shift + }{KP_Left,KP_Down,KP_Up,KP_Right}
 	bspc node -{f,s} {west,south,north,east}
 
 # focus the node for the given path jump
@@ -164,6 +161,12 @@ super + {o,i}
 super + {_,shift + }{1-9,0}
 	bspc {desktop -f,node -d} '^{1-9,10}'
 
+# Numpad support for workspace switching (NumLock must be OFF)
+# Uses NumLock OFF symbols to avoid conflict with directional navigation
+# Numpad layout: 7=ws7, 8=ws8, 9=ws9, 4=ws4, 5=ws5, 6=ws6, 1=ws1, 2=ws2, 3=ws3, 0=ws10
+super + {_,shift + }{KP_End,KP_Down,KP_Next,KP_Left,KP_Begin,KP_Right,KP_Home,KP_Up,KP_Prior,KP_Insert}
+	bspc {desktop -f,node -d} '^{1,2,3,4,5,6,7,8,9,10}'
+
 #
 # preselect
 #
@@ -177,12 +180,8 @@ super + ctrl + {h,j,k,l}
 super + ctrl + {Left,Down,Up,Right}
 	bspc node -p {west,south,north,east}
 
-# Numpad keys
+# Numpad keys (NumLock ON only)
 super + ctrl + {KP_4,KP_2,KP_8,KP_6}
-	bspc node -p {west,south,north,east}
-
-# Alternative numpad with NumLock off
-super + ctrl + {KP_Left,KP_Down,KP_Up,KP_Right}
 	bspc node -p {west,south,north,east}
 
 # preselect the ratio
@@ -210,12 +209,8 @@ super + alt + {h,j,k,l}
 super + alt + {Left,Down,Up,Right}
 	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
 
-# Numpad keys
+# Numpad keys (NumLock ON only)
 super + alt + {KP_4,KP_2,KP_8,KP_6}
-	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
-
-# Alternative numpad with NumLock off
-super + alt + {KP_Left,KP_Down,KP_Up,KP_Right}
 	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
 
 # contract a window by moving one of its side inward
@@ -227,12 +222,8 @@ super + alt + shift + {h,j,k,l}
 super + alt + shift + {Left,Down,Up,Right}
 	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
 
-# Numpad keys
+# Numpad keys (NumLock ON only)
 super + alt + shift + {KP_4,KP_2,KP_8,KP_6}
-	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
-
-# Alternative numpad with NumLock off
-super + alt + shift + {KP_Left,KP_Down,KP_Up,KP_Right}
 	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
 
 # ============================================================================
