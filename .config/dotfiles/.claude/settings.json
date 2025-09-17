@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "# ============================================================================",
+      "# DOTFILES PROJECT-SPECIFIC PERMISSIONS",
+      "# Commands needed specifically for dotfiles management and configuration",
+      "# These supplement the global settings when working in the dotfiles project",
+      "# ============================================================================",
+
+      "# Dotfiles version control",
+      "Bash(dots:*)",
+      "Bash(git --git-dir=$HOME/.dotfiles/:*)",
+
+      "# Window manager and desktop environment",
+      "Bash(bspc:*)",
+      "Bash(polybar:*)",
+      "Bash(polybar-msg:*)",
+      "Bash(sxhkd:*)",
+      "Bash(xset:*)",
+      "Bash(papirus-folders:*)",
+
+      "# Configuration reloading",
+      "Bash(tmux source-file:*)",
+      "Bash(bspc wm -r)",
+      "Bash(pkill -USR1 -x sxhkd)",
+
+      "# System setup and bootstrap",
+      "Bash(~/.local/bin/bootstrap.sh:*)",
+      "Bash(~/.local/bin/setup-system.sh:*)",
+      "Bash(~/.local/bin/brightness:*)",
+      "Bash(~/.config/polybar/launch.sh:*)",
+
+      "# System diagnostics (for debugging dotfiles issues)",
+      "Bash(sudo dmesg:*)",
+      "Bash(coredumpctl:*)",
+
+      "# Additional reads specific to dotfiles work",
+      "Read(/etc/polybar/**)",
+      "Read(/usr/share/fish/vendor_functions.d/**)"
+    ]
+  }
+}
