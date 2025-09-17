@@ -110,7 +110,88 @@
       "WebSearch",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:docs.anthropic.com)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+
+      "# ============================================================================",
+      "# YELLOW ZONE: General user-level modifications",
+      "# Commands that work with user files/processes across any project",
+      "# ============================================================================",
+
+      "# Process control (user processes only)",
+      "Bash(pkill:*)",
+      "Bash(killall:*)",
+      "Bash(kill:*)",
+
+      "# File permissions (user files)",
+      "Bash(chmod:*)",
+
+      "# Common development tools",
+      "Bash(make:*)",
+      "Bash(npm:*)",
+      "Bash(cargo:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(pip:*)",
+      "Bash(node:*)",
+      "Bash(go:*)",
+      "Bash(rustc:*)",
+      "Bash(gcc:*)",
+      "Bash(g++:*)",
+      "Bash(clang:*)",
+
+      "# Testing and linting",
+      "Bash(pytest:*)",
+      "Bash(jest:*)",
+      "Bash(eslint:*)",
+      "Bash(prettier:*)",
+      "Bash(black:*)",
+      "Bash(ruff:*)",
+      "Bash(mypy:*)",
+      "Bash(clippy:*)",
+
+      "# Build tools",
+      "Bash(cmake:*)",
+      "Bash(meson:*)",
+      "Bash(ninja:*)",
+      "Bash(gradle:*)",
+      "Bash(mvn:*)",
+
+      "# Version control (standard git operations)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)",
+      "Bash(git pull)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)",
+      "Bash(git rebase:*)",
+      "Bash(git stash:*)",
+      "Bash(git reset:*)",
+      "Bash(git clean:*)",
+      "Bash(gh:*)",
+
+      "# Terminal multiplexers",
+      "Bash(tmux:*)",
+      "Bash(screen:*)",
+
+      "# Common text processing with modifications",
+      "Bash(sed:*)",
+      "Bash(jq:*)",
+      "Bash(yq:*)",
+
+      "# Archive operations",
+      "Bash(tar:*)",
+      "Bash(zip:*)",
+      "Bash(unzip:*)",
+      "Bash(7z:*)",
+
+      "# Download tools",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+
+      "# Claude Code self-management",
+      "Bash(claude config set:*)",
+      "Bash(claude login)",
+      "Bash(claude update)"
     ]
   }
 }
