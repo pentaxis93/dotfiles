@@ -75,6 +75,14 @@ config.d/
 .dropbox/
 .config/MEGA/
 
+# Claude Code - runtime data (settings.json is tracked)
+.claude/.credentials.json
+.claude/shell-snapshots/
+.claude/todos/
+.claude/statsig/
+.claude/projects/
+.claude/settings.local.json
+
 # ====================
 # Cache & Temporary Files
 # ====================

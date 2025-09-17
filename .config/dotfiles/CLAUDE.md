@@ -612,6 +612,67 @@ These footers don't add value in a personal repository where you're the primary 
 - **Graphics**: Intel integrated graphics (Tiger Lake-LP)
 - **Backlight Path**: `/sys/class/backlight/intel_backlight/`
 
+## Claude Code Integration
+
+Claude Code is now bootstrapped as an essential tool via NPM.
+
+### Installation
+- **Method**: Automatically installed via `bootstrap.sh` using NPM
+- **Binary Location**: `~/.local/bin/claude` (via NPM prefix configuration)
+- **User Settings**: `~/.claude/settings.json` (tracked directly in dotfiles)
+- **First-time Setup**: Run `claude login` to authenticate
+
+### Configuration Hierarchy
+
+Claude uses three distinct layers of settings:
+
+1. **User Settings** (`~/.claude/settings.json`)
+   - Your personal preferences across ALL projects
+   - Tracked in dotfiles (this is what we preserve)
+   - Example: preferred model, output style
+
+2. **Project Settings** (`.claude/settings.json`)
+   - Shared configuration for a specific project/repository
+   - Tracked with the project, NOT in personal dotfiles
+   - Example: project-specific permissions, hooks
+
+3. **Local Overrides** (`.claude/settings.local.json`)
+   - Machine-specific settings for a project
+   - Never tracked anywhere
+   - Example: local paths, personal API keys
+
+**Important**: Only user settings belong in personal dotfiles. Project settings stay with projects.
+
+### Common Pitfalls to Avoid
+
+**For Future Claude Code Instances - Learn from Our Mistakes:**
+
+❌ **Don't overthink it:**
+- Don't create template files that need copying - configs are tracked directly
+- Don't create per-app setup helper scripts - configs just work when in place
+- Don't track `.config/claude/` - that's the wrong location
+
+✅ **Keep it simple:**
+- Track `~/.claude/settings.json` directly - these are user preferences
+- Follow the existing pattern - look at how alacritty, fish, or bspwm work
+- Install via bootstrap, track config, done - no additional abstraction needed
+
+### The Dotfiles Philosophy
+
+This repository follows a "configs just work" principle:
+1. **Install** via bootstrap (pacman/yay/npm)
+2. **Track** config files directly where the app expects them
+3. **That's it** - no unnecessary abstraction layers
+
+When adding new tools, resist the urge to be clever. The beauty of this dotfiles setup is its simplicity. Configs are tracked in their natural locations, apps find them automatically, everything just works.
+
+**Example of the pattern:**
+- Alacritty config? → Track `.config/alacritty/alacritty.toml`
+- Fish config? → Track `.config/fish/config.fish`
+- Claude user settings? → Track `.claude/settings.json`
+
+No templates, no copying, no setup scripts. Direct tracking.
+
 ## Troubleshooting
 
 ### If `dots` command not found

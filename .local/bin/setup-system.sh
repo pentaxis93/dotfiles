@@ -101,6 +101,7 @@ BRIGHTNESS_CONFIGURED=false
 THEMES_CONFIGURED=false
 SHELL_CONFIGURED=false
 SERVICES_CONFIGURED=false
+CLAUDE_CONFIGURED=false
 
 # ============================================================================
 # HELP FUNCTION
@@ -481,6 +482,7 @@ print_summary() {
     [[ "$THEMES_CONFIGURED" == true ]] && echo "  ✓ GTK themes and icons"
     [[ "$SHELL_CONFIGURED" == true ]] && echo "  ✓ Default shell (Fish)"
     [[ "$SERVICES_CONFIGURED" == true ]] && echo "  ✓ System services"
+    [[ "$CLAUDE_CONFIGURED" == true ]] && echo "  ✓ Claude Code AI assistant"
 
     echo
     echo -e "${BOLD}Next steps:${RESET}"
@@ -491,6 +493,25 @@ print_summary() {
     if [[ ! -f "$HOME/.config/fish/local.fish" ]]; then
         echo
         info "Tip: Create ~/.config/fish/local.fish for machine-specific settings"
+    fi
+}
+
+# ============================================================================
+# SETUP CLAUDE CODE
+# ============================================================================
+# Verify Claude Code installation (configs are tracked directly in dotfiles)
+
+setup_claude_code() {
+    header "Checking Claude Code"
+
+    if command -v claude &> /dev/null; then
+        success "Claude Code is installed"
+        info "Run 'claude login' if you need to authenticate"
+        CLAUDE_CONFIGURED=true
+    else
+        warning "Claude Code not installed"
+        info "Install with: npm install -g @anthropic-ai/claude-code"
+        CLAUDE_CONFIGURED=false
     fi
 }
 
@@ -518,6 +539,7 @@ main() {
     update_font_cache
     setup_default_shell
     setup_services
+    setup_claude_code
     fix_permissions
 
     # Print summary

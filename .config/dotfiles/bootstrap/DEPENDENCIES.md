@@ -167,6 +167,27 @@ These are **optional** but recommended tools that enhance the command-line exper
 | **unzip** | ZIP extraction | Optional |
 | **p7zip** | 7-Zip support | Optional |
 
+## Development Runtime
+
+### Node.js & NPM
+
+| Package | Purpose | Config Files | Required |
+|---------|---------|--------------|----------|
+| **nodejs** | JavaScript runtime | N/A | Yes (for Claude Code) |
+| **npm** | Node package manager | `~/.npmrc` | Yes (for Claude Code) |
+
+These packages provide the runtime for JavaScript-based tools, particularly Claude Code. The NPM prefix is configured to `~/.local` to avoid requiring sudo for global package installation.
+
+## NPM Global Packages
+
+### AI Development Tools
+
+| Package | Purpose | Config | Installation |
+|---------|---------|--------|--------------|
+| **@anthropic-ai/claude-code** | AI coding assistant | `~/.claude/settings.json` | `npm install -g` |
+
+Claude Code is installed globally via NPM and becomes available at `~/.local/bin/claude`. User settings are tracked directly in dotfiles.
+
 ## Fonts & Themes
 
 ### Fonts (AUR)

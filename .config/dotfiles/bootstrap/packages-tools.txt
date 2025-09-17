@@ -33,6 +33,8 @@ zoxide          # Smart directory jumper - z command learns your habits
 # ============================================================================
 # Tools for development workflows
 
+nodejs          # JavaScript runtime - required for Claude Code
+npm             # Node package manager - installs Claude Code
 gh              # GitHub CLI - interact with GitHub from terminal
 
 # ============================================================================

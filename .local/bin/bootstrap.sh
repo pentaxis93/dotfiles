@@ -117,6 +117,7 @@ FORCE_INSTALL=false
 PACKAGES_CORE="${CONFIG_DIR}/packages-core.txt"      # Window manager, terminal, shell
 PACKAGES_TOOLS="${CONFIG_DIR}/packages-tools.txt"    # CLI utilities
 PACKAGES_AUR="${CONFIG_DIR}/packages-aur.txt"        # AUR packages (fonts, themes)
+PACKAGES_NPM="${CONFIG_DIR}/packages-npm.txt"        # NPM global packages (Claude Code)
 
 # Track installation results for summary
 INSTALLED_COUNT=0
@@ -344,6 +345,81 @@ install_packages() {
 }
 
 # ============================================================================
+# INSTALL NPM PACKAGES
+# ============================================================================
+# Install global NPM packages to ~/.local/bin (configured via NPM prefix)
+
+install_npm_packages() {
+    local npm_list="${CONFIG_DIR}/packages-npm.txt"
+
+    # Check if NPM package list exists
+    if [[ ! -f "$npm_list" ]]; then
+        [[ "$VERBOSE" == true ]] && info "No NPM packages to install (packages-npm.txt not found)"
+        return 0
+    fi
+
+    # Check if npm is available
+    if ! command -v npm &> /dev/null; then
+        warning "NPM not installed, skipping NPM packages"
+        warning "Install nodejs and npm packages first"
+        return 1
+    fi
+
+    header "Installing NPM global packages"
+
+    # Ensure NPM prefix is set correctly for user installation
+    local current_prefix=$(npm config get prefix)
+    if [[ "$current_prefix" != "$HOME/.local" ]]; then
+        info "Setting NPM prefix to ~/.local for user-specific installation"
+        npm config set prefix "$HOME/.local"
+    fi
+
+    local packages=()
+    local missing_packages=()
+
+    # Read NPM packages from file
+    while IFS= read -r package; do
+        [[ -z "$package" ]] && continue
+        packages+=("$package")
+
+        # Check if package is already installed
+        if npm list -g --depth=0 "$package" &>/dev/null; then
+            [[ "$VERBOSE" == true ]] && info "Already installed: $package"
+            ((SKIPPED_COUNT++))
+        else
+            missing_packages+=("$package")
+            [[ "$VERBOSE" == true ]] && info "Will install: $package"
+        fi
+    done < <(read_package_list "$npm_list")
+
+    # Install missing packages
+    if [[ ${#missing_packages[@]} -eq 0 ]]; then
+        success "All NPM packages are already installed"
+        return 0
+    fi
+
+    info "Installing ${#missing_packages[@]} NPM packages..."
+
+    if [[ "$DRY_RUN" == true ]]; then
+        info "[DRY RUN] Would install via npm:"
+        printf '%s\n' "${missing_packages[@]}" | sed 's/^/  - /'
+        ((INSTALLED_COUNT+=${#missing_packages[@]}))
+        return 0
+    fi
+
+    # Install NPM packages one by one to track success/failure
+    for package in "${missing_packages[@]}"; do
+        if npm install -g "$package"; then
+            success "Installed: $package"
+            ((INSTALLED_COUNT++))
+        else
+            error "Failed to install: $package"
+            FAILED_PACKAGES+=("$package")
+        fi
+    done
+}
+
+# ============================================================================
 # CREATE DEFAULT PACKAGE LISTS
 # ============================================================================
 # Create default package lists if they don't exist. This ensures the script
@@ -563,6 +639,9 @@ main() {
         if command -v yay &> /dev/null; then
             install_packages "$PACKAGES_AUR" "yay" "AUR packages"
         fi
+
+        # Install NPM packages after Node/NPM are installed
+        install_npm_packages
     fi
 
     # Run system setup if requested
