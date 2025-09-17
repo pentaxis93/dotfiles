@@ -506,6 +506,19 @@ setup_claude_code() {
 
     if command -v claude &> /dev/null; then
         success "Claude Code is installed"
+
+        # Configure Claude preferences
+        info "Configuring Claude Code preferences..."
+
+        # Set notification preference (only if different from current)
+        current_notif=$(claude config get -g preferredNotifChannel 2>/dev/null || echo "auto")
+        if [[ "$current_notif" != "terminal_bell" ]]; then
+            claude config set -g preferredNotifChannel terminal_bell
+            success "Set notification preference to terminal bell"
+        else
+            info "Notification preference already set to terminal bell"
+        fi
+
         info "Run 'claude login' if you need to authenticate"
         CLAUDE_CONFIGURED=true
     else
