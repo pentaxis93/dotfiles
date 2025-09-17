@@ -1,0 +1,36 @@
+! ============================================================================
+! X11 KEY REMAPPING CONFIGURATION
+! ============================================================================
+! Purpose:
+!   Remap the Print Screen key to act as an additional Super (Windows) key
+!   This gives you a Super key on the right side of the keyboard
+!
+! How it works:
+!   1. Clears the Print function from keycode 107 (PrtSc key)
+!   2. Assigns Super_L to keycode 107
+!   3. Adds keycode 107 to the mod4 (Super) modifier group
+!
+! Usage:
+!   This file is loaded automatically by bspwmrc on startup
+!   Manual reload: xmodmap ~/.Xmodmap
+!
+! Verification:
+!   After loading, PrtSc will work with all Super+ keybindings in SXHKD
+!   Test with: Super+Enter (should open terminal with PrtSc+Enter)
+!
+! Related Files:
+!   - ~/.config/bspwm/bspwmrc (loads this file on startup)
+!   - ~/.config/sxhkd/sxhkdrc (defines Super+ keybindings)
+! ============================================================================
+
+! Remove Print from keycode 107 (Print Screen key)
+keycode 107 = NoSymbol NoSymbol NoSymbol NoSymbol
+
+! Map keycode 107 to Super_L
+keycode 107 = Super_L
+
+! Ensure keycode 107 is in the Super modifier group (mod4)
+! First clear the modifier to avoid conflicts
+clear mod4
+! Add all Super keys to mod4 (including our remapped PrtSc)
+add mod4 = Super_L Super_R Hyper_L

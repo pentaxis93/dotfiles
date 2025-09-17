@@ -1,5 +1,12 @@
 #! /bin/sh
 
+# ============================================================================
+# KEYBOARD REMAPPING
+# ============================================================================
+# Load custom key remappings (PrtSc → Super key)
+# This must happen early in the startup sequence before other keybindings
+[ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
+
 pgrep -x sxhkd > /dev/null || sxhkd &
 
 # Launch polybar
