@@ -212,6 +212,100 @@ The following function keys are configured in SXHKD:
 - **Fn+F7** or **Super+F7** → Brightness down (10%)
 - **Fn+F8** or **Super+F8** → Brightness up (10%)
 
+## Polybar Window Title System
+
+### Overview
+The polybar displays intelligent, context-aware window titles that update in real-time when switching windows, tmux tabs, or browser tabs. This system solves the problem of titles being too long, redundant, or not updating when tabs change within applications.
+
+### How It Works
+
+#### Architecture
+1. **Independent Daemon**: `~/.config/polybar/scripts/window-title-daemon.sh` runs separately from polybar
+   - Started by `~/.config/polybar/launch.sh` when polybar launches
+   - Uses IPC hooks to communicate with polybar (doesn't block hide/show)
+
+2. **Dual Monitoring**:
+   - **Focus changes**: Via `bspc subscribe node_focus desktop_focus`
+   - **Title changes**: Via `xprop -spy WM_NAME` on the focused window
+   - This catches both window switches AND tab switches within apps
+
+3. **Smart Filtering**: Transforms verbose titles into concise labels
+   - Removes redundancy: "tmux - tmux" → just shows current tmux window name
+   - Simplifies web apps: "(1) WhatsApp — Mozilla Firefox" → "WhatsApp"
+   - Intelligent fallback: Shows actual page titles when app can't be identified
+
+### Title Transformation Examples
+
+```
+Raw Title                                    → Displayed As
+──────────────────────────────────────────────────────────
+"~/dev/project: tmux - tmux"                → "project"
+"(1) WhatsApp — Mozilla Firefox"            → "WhatsApp"
+"Issue #123 · owner/repo — GitHub"          → "GitHub"
+"pentaxis93"                                → "pentaxis93" (GitHub profile, no "GitHub" in title)
+"Some Blog Post — Medium"                   → "Some Blog Post"
+"Video Title - YouTube"                     → "Video Title"
+```
+
+### Configuration & Customization
+
+#### Adding a New Web App for Simplified Display
+Edit `~/.config/polybar/scripts/window-title-daemon.sh`, find the web apps section (~line 150):
+```bash
+# Add your app to the detection pattern
+elif echo "$title" | grep -qE "(WhatsApp|Gmail|...|YourApp)"; then
+    # Add a condition for your app
+    elif echo "$title" | grep -q "YourApp"; then
+        title="YourApp"
+```
+
+#### Adjusting Title Length
+Change `MAX_LENGTH` at the top of the daemon script (default: 30 chars)
+
+### Troubleshooting
+
+#### Problem: Tmux tabs not updating when switching
+```bash
+# Check if tmux titles are enabled
+tmux show-options -g | grep set-titles
+# Should show: set-titles on
+
+# If not, add to ~/.tmux.conf:
+set -g set-titles on
+set -g set-titles-string '#W'
+
+# Then reload tmux config:
+tmux source-file ~/.tmux.conf
+```
+
+#### Problem: Titles stuck or not updating at all
+```bash
+# Check for zombie daemons
+ps aux | grep window-title-daemon
+
+# Kill all and restart cleanly
+killall window-title-daemon.sh
+killall xprop
+rm /tmp/window-title-daemon.pid
+~/.config/polybar/launch.sh
+```
+
+#### Debug mode for troubleshooting
+```bash
+# Edit daemon script and set DEBUG=1
+vi ~/.config/polybar/scripts/window-title-daemon.sh
+
+# Then check logs:
+tail -f /tmp/window-title-daemon.log
+```
+
+### Related Files
+- `~/.config/polybar/scripts/window-title-daemon.sh` - The main daemon with filtering logic
+- `~/.config/polybar/config.ini` - Defines window-title module (custom/ipc type)
+- `~/.config/polybar/launch.sh` - Starts daemon with polybar
+- `~/.tmux.conf` - Must have `set-titles on` for tmux tab detection
+- `/tmp/window-title.txt` - Current title (what polybar reads via hook)
+
 ## Common Tasks
 
 ### Adding New Configuration to Dotfiles
