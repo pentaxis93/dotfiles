@@ -614,34 +614,61 @@ These footers don't add value in a personal repository where you're the primary 
 
 ## Claude Code Integration
 
-Claude Code is now bootstrapped as an essential tool via NPM.
+Claude Code is configured with a security-focused, layered approach.
 
 ### Installation
 - **Method**: Automatically installed via `bootstrap.sh` using NPM
 - **Binary Location**: `~/.local/bin/claude` (via NPM prefix configuration)
-- **User Settings**: `~/.claude/settings.json` (tracked directly in dotfiles)
 - **First-time Setup**: Run `claude login` to authenticate
+- **Notification Setup**: Handled by `setup-system.sh` (terminal bell)
 
-### Configuration Hierarchy
+### Configuration Architecture
 
-Claude uses three distinct layers of settings:
+#### **Settings Hierarchy**
+1. **Global Settings** (`~/.claude/settings.json`) - Tracked in dotfiles
+   - Model: `opus` (automatically uses latest)
+   - Output style: `Explanatory`
+   - Security-zoned permissions (Green + Yellow zones)
+   - Development environment variables
 
-1. **User Settings** (`~/.claude/settings.json`)
-   - Your personal preferences across ALL projects
-   - Tracked in dotfiles (this is what we preserve)
-   - Example: preferred model, output style
+2. **Dotfiles Project Settings** (`~/.config/dotfiles/.claude/settings.json`) - Tracked
+   - Dotfiles-specific permissions only (dots, bspwm, polybar)
+   - No duplication of global permissions
 
-2. **Project Settings** (`.claude/settings.json`)
-   - Shared configuration for a specific project/repository
-   - Tracked with the project, NOT in personal dotfiles
-   - Example: project-specific permissions, hooks
+3. **Local Overrides** (`*.local.json`) - Never tracked
+   - Machine-specific overrides (kept minimal)
 
-3. **Local Overrides** (`.claude/settings.local.json`)
-   - Machine-specific settings for a project
-   - Never tracked anywhere
-   - Example: local paths, personal API keys
+#### **Security Zone Model**
 
-**Important**: Only user settings belong in personal dotfiles. Project settings stay with projects.
+**Green Zone** (Safe, read-only):
+- Information commands (echo, ps, which, env)
+- File inspection (ls, grep, cat, head, tail)
+- Package queries (pacman -Q, npm list)
+- Git status operations
+- System queries (fc-list, locale, bspc query)
+
+**Yellow Zone** (User-level modifications):
+- Process control (pkill, kill)
+- Development tools (make, npm, python, cargo)
+- Testing/linting (pytest, eslint, ruff)
+- Version control (git add/commit/push)
+- Common utilities (curl, wget, tar)
+
+**Red Zone** (Implicit - always asks):
+- System modifications (sudo, pacman -S)
+- Force operations (git push -f, rm -rf)
+- Global changes (/etc modifications)
+
+#### **Environment Variables**
+```json
+{
+  "EDITOR": "helix",
+  "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "1",
+  "BASH_MAX_OUTPUT_LENGTH": "50000",
+  "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "8192",
+  "USE_BUILTIN_RIPGREP": "1"
+}
+```
 
 ### Common Pitfalls to Avoid
 
