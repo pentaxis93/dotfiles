@@ -192,8 +192,11 @@ Bitwarden desktop application provides secure password management with a graphic
 | Package | Purpose | Config | Installation |
 |---------|---------|--------|--------------|
 | **claude-code** | AI coding assistant | `~/.claude/settings.json` | AUR package |
+| **context7** | MCP documentation server | Auto-configured | Remote HTTP service |
 
 Claude Code is installed via the AUR and automatically manages its Node.js dependency. It integrates with system package management for automatic updates.
+
+**Context7 MCP Server**: Provides real-time, version-specific documentation to Claude Code, preventing outdated or hallucinated code examples. Automatically configured during bootstrap via `08-claude-code.sh`. No API key required for personal use.
 
 ## Fonts & Themes
 

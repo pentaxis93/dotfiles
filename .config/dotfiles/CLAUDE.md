@@ -344,16 +344,51 @@ echo 10000 | sudo tee /sys/class/backlight/intel_backlight/brightness
 
 ## Documentation Lookup
 
-### Using Context7 for Documentation
-When you need documentation for tools, libraries, or terminal emulators, use the context7 MCP server instead of web searches. This provides more accurate and up-to-date documentation.
+### Context7 MCP Server for Accurate Documentation
 
-Examples of when to use context7:
-- Terminal emulator documentation (kitty, alacritty, wezterm)
-- Tool configurations (tmux, helix, fish)
-- Programming libraries and frameworks
-- System tools and utilities
+Context7 is an MCP (Model Context Protocol) server that provides **real-time, version-specific documentation** directly to Claude Code. Instead of relying on potentially outdated training data or web searches, context7 fetches current documentation straight from the source.
 
-To use: Ask Claude Code to "use context7 to get documentation for [tool/library]"
+#### Why Use Context7?
+
+- **Eliminates outdated code examples** - No more deprecated APIs or old syntax
+- **Prevents hallucinated functions** - Only real, documented features
+- **Version-specific accuracy** - Gets the exact documentation for current versions
+- **Faster than web searches** - Direct documentation access without search result parsing
+
+#### When to Use Context7
+
+Use context7 instead of web searches when you need documentation for:
+- **Terminal emulators**: alacritty, kitty, wezterm configurations
+- **Development tools**: tmux, helix, fish, vim, neovim
+- **Programming languages**: Python, JavaScript, Rust, Go
+- **Web frameworks**: React, Vue, Next.js, Express
+- **System utilities**: systemd, git, docker
+- **Package managers**: npm, cargo, pip
+
+#### How to Use
+
+Simply add "use context7" to your prompts:
+- "use context7 to show me tmux pane navigation options"
+- "use context7 for the latest React hooks documentation"
+- "use context7 to explain systemd timer units"
+
+#### Setup
+
+Context7 is automatically configured during bootstrap via `~/.config/dotfiles/bootstrap/setup/common/08-claude-code.sh`. It runs as a remote HTTP server, requiring no API key for personal use.
+
+To verify it's working:
+```bash
+claude mcp list  # Should show: context7: https://mcp.context7.com/mcp (HTTP) - ✓ Connected
+```
+
+#### Troubleshooting
+
+If context7 isn't responding:
+1. Check connection: `claude mcp list`
+2. Reconfigure if needed: `claude mcp add --transport http context7 https://mcp.context7.com/mcp`
+3. Restart Claude Code and try again
+
+Note: Context7 works on the free tier with reasonable rate limits for personal use. No API key needed.
 
 ## System Theme: Gruvbox Dark Hard
 

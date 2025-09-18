@@ -45,7 +45,7 @@ bootstrap.sh --skip-setup
 │   │   ├── 05-shell.sh         # Set Fish as default
 │   │   ├── 06-services.sh      # Enable systemd services
 │   │   ├── 07-permissions.sh   # Fix file permissions
-│   │   └── 08-claude.sh        # Configure Claude Code
+│   │   └── 08-claude-code.sh   # Configure Claude Code
 │   ├── laptop/        # Laptop-specific scripts
 │   │   └── 02-brightness.sh    # ThinkPad brightness control
 │   └── desktop/       # Desktop-specific scripts
@@ -302,9 +302,9 @@ Fonts and themes:
 - GTK themes for consistency
 - Icon themes
 
-### NPM Packages (Development)
-Global Node.js tools:
-- Claude Code AI assistant
+### AI Development Tools
+- Claude Code AI assistant (from AUR)
+- Context7 MCP server for real-time documentation (auto-configured)
 
 ## Setup Script Details
 
@@ -317,7 +317,7 @@ Global Node.js tools:
 | 05-shell.sh | Set Fish default | ✓ | No |
 | 06-services.sh | Enable PipeWire | ✓ | For audio |
 | 07-permissions.sh | Fix script perms | ✓ | Yes |
-| 08-claude.sh | Configure Claude | ✓ | If installed |
+| 08-claude-code.sh | Configure Claude Code + context7 MCP | ✓ | If installed |
 
 ### Laptop Scripts
 | Script | Purpose | Idempotent | Required |
