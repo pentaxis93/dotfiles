@@ -526,6 +526,60 @@ Explain why you're overriding defaults:
 }
 ```
 
+## Documentation System
+
+### Structure
+Our documentation follows a minimal, high-value approach:
+
+- **docs/adr/** - Architecture Decision Records for important choices
+- **docs/issues/** - Investigations of complex problems
+- **docs/roadmap/** - Planning for significant features
+- **docs/README.md** - Navigation index for all documentation
+- **CHANGELOG.md** - Track all changes with date-based versioning
+- **CLAUDE.md** - This file, the primary system documentation
+
+### Documentation Triggers
+
+#### Must Document:
+- **Architectural decisions** → Create ADR using template
+- **Complex problem solutions** → Create issue doc
+- **New tool integrations** → Update CLAUDE.md
+- **Breaking changes** → Update CHANGELOG.md prominently
+
+#### Consider Documenting:
+- Non-obvious workarounds → Inline comments or CLAUDE.md
+- Performance optimizations → Brief ADR or commit message
+- Configuration rationale → Inline comments
+
+#### Don't Document:
+- Obvious changes (formatting, typos)
+- Standard tool configurations
+- Temporary experiments
+
+### Maintaining Documentation
+
+When making changes:
+1. Ask: "Will I wonder why later?" → Create ADR
+2. Ask: "Is this non-obvious?" → Add inline comment
+3. Ask: "Does this change workflows?" → Update CLAUDE.md
+4. Always: Write clear commit messages
+
+Remember: This is personal dotfiles, not enterprise software. Document the
+"why" when it matters, skip the bureaucracy when it doesn't.
+
+### Finding Documentation
+
+```bash
+# Search all documentation
+grep -r "search term" ~/.config/dotfiles/docs/
+
+# Find specific ADRs
+ls ~/.config/dotfiles/docs/adr/
+
+# Check recent changes
+head -50 ~/.config/dotfiles/docs/CHANGELOG.md
+```
+
 ## Development Patterns
 
 ### Test-and-Commit Checkpoint Pattern
