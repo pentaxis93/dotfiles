@@ -1,0 +1,12 @@
+ripgrep
+fd
+fzf
+bat
+eza
+tmux
+lazygit
+zoxide
+nodejs
+npm
+github-cli
+unzip

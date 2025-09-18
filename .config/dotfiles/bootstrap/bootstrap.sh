@@ -29,7 +29,7 @@ error() { echo -e "${RED}[✗]${RESET} $*" >&2; }
 header() { echo -e "\n${BOLD}${CYAN}==> $*${RESET}"; }
 
 # Configuration
-BOOTSTRAP_DIR="$HOME/.config/dotfiles/bootstrap"
+BOOTSTRAP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PACKAGES_DIR="$BOOTSTRAP_DIR/packages"
 SETUP_DIR="$BOOTSTRAP_DIR/setup"
 
@@ -162,11 +162,9 @@ install_package_list() {
 
     # Install packages
     if [[ "$installer" == "pacman" ]]; then
-        # Filter out empty lines before passing to pacman
-        grep -v '^[[:space:]]*$' "$list_file" | xargs sudo pacman -S --needed --noconfirm || true
+        cat "$list_file" | xargs sudo pacman -S --needed --noconfirm || true
     else
-        # Use yay with better non-interactive flags
-        grep -v '^[[:space:]]*$' "$list_file" | xargs yay -S --needed --noconfirm --answerdiff None --answerclean None || true
+        cat "$list_file" | xargs yay -S --needed --noconfirm || true
     fi
 
     success "$description installed"
@@ -202,27 +200,9 @@ install_npm_packages() {
         return 0
     fi
 
-    # Install packages (use --force to handle existing installations)
-    grep -v '^[[:space:]]*$' "$npm_list" | while read -r package; do
-        if npm list -g --depth=0 "$package" &>/dev/null; then
-            info "$package already installed"
-        else
-            npm install -g "$package" || warning "Failed to install $package"
-        fi
-    done
-    success "NPM packages processed"
-}
-
-# ============================================================================
-# DETECT MACHINE TYPE
-# ============================================================================
-detect_machine_type() {
-    # Check if we have a battery/backlight (laptop indicators)
-    if [[ -d /sys/class/backlight ]] || [[ -d /sys/class/power_supply/BAT* ]]; then
-        echo "laptop"
-    else
-        echo "desktop"
-    fi
+    # Install packages
+    cat "$npm_list" | xargs npm install -g || true
+    success "NPM packages installed"
 }
 
 # ============================================================================
@@ -241,26 +221,11 @@ run_setup_scripts() {
 
     header "Running setup scripts"
 
-    # Detect machine type
-    local machine_type=$(detect_machine_type)
-    info "Detected machine type: $machine_type"
-
-    # Collect scripts from common and machine-specific directories
+    # Get all setup scripts, sorted by name
     local scripts=()
-
-    # Add common scripts
-    if [[ -d "$SETUP_DIR/common" ]]; then
-        while IFS= read -r script; do
-            scripts+=("$script")
-        done < <(find "$SETUP_DIR/common" -name "*.sh" -type f | sort)
-    fi
-
-    # Add machine-specific scripts
-    if [[ -d "$SETUP_DIR/$machine_type" ]]; then
-        while IFS= read -r script; do
-            scripts+=("$script")
-        done < <(find "$SETUP_DIR/$machine_type" -name "*.sh" -type f | sort)
-    fi
+    while IFS= read -r script; do
+        scripts+=("$script")
+    done < <(find "$SETUP_DIR" -name "*.sh" -type f | sort)
 
     if [[ ${#scripts[@]} -eq 0 ]]; then
         info "No setup scripts found"
@@ -270,10 +235,7 @@ run_setup_scripts() {
     if [[ "$DRY_RUN" == true ]]; then
         info "[DRY RUN] Would run these setup scripts:"
         for script in "${scripts[@]}"; do
-            local type="common"
-            [[ "$script" == *"/laptop/"* ]] && type="laptop"
-            [[ "$script" == *"/desktop/"* ]] && type="desktop"
-            echo "  - [${type}] $(basename "$script")"
+            echo "  - $(basename "$script")"
         done
         return 0
     fi
@@ -281,11 +243,7 @@ run_setup_scripts() {
     # Run each script
     for script in "${scripts[@]}"; do
         local name=$(basename "$script")
-        local type="common"
-        [[ "$script" == *"/laptop/"* ]] && type="laptop"
-        [[ "$script" == *"/desktop/"* ]] && type="desktop"
-
-        info "Running [$type] $name..."
+        info "Running $name..."
         if bash "$script"; then
             success "$name completed"
         else
