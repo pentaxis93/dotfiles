@@ -35,7 +35,6 @@ SETUP_DIR="$BOOTSTRAP_DIR/setup"
 
 # Flags
 DRY_RUN=false
-MINIMAL=false
 SKIP_SETUP=false
 VERBOSE=false
 
@@ -49,14 +48,13 @@ Usage: bootstrap.sh [OPTIONS]
 Options:
     -h, --help      Show this help message
     -d, --dry-run   Show what would be done without doing it
-    -m, --minimal   Install only core packages
     -s, --skip-setup Skip running setup scripts
     -v, --verbose   Show detailed output
 
 Examples:
     bootstrap.sh              # Full installation with setup
-    bootstrap.sh --minimal    # Core packages only
     bootstrap.sh --dry-run    # Preview what would happen
+    bootstrap.sh --skip-setup # Install packages only
 
 EOF
     exit 0
@@ -69,7 +67,6 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         -h|--help) show_help ;;
         -d|--dry-run) DRY_RUN=true; shift ;;
-        -m|--minimal) MINIMAL=true; shift ;;
         -s|--skip-setup) SKIP_SETUP=true; shift ;;
         -v|--verbose) VERBOSE=true; shift ;;
         *) error "Unknown option: $1"; show_help ;;
@@ -173,47 +170,6 @@ install_package_list() {
 }
 
 # ============================================================================
-# INSTALL NPM PACKAGES
-# ============================================================================
-install_npm_packages() {
-    local npm_list="$PACKAGES_DIR/npm.txt"
-
-    if [[ ! -f "$npm_list" ]] || [[ ! -s "$npm_list" ]]; then
-        return 0
-    fi
-
-    if ! command -v npm &>/dev/null; then
-        warning "npm not installed, skipping npm packages"
-        return 0
-    fi
-
-    header "Installing NPM packages"
-
-    # Set npm prefix if needed
-    local current_prefix=$(npm config get prefix)
-    if [[ "$current_prefix" != "$HOME/.local" ]]; then
-        info "Setting npm prefix to ~/.local"
-        npm config set prefix "$HOME/.local"
-    fi
-
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would install via npm:"
-        cat "$npm_list" | sed 's/^/  - /'
-        return 0
-    fi
-
-    # Install packages (use --force to handle existing installations)
-    grep -v '^[[:space:]]*$' "$npm_list" | while read -r package; do
-        if npm list -g --depth=0 "$package" &>/dev/null; then
-            info "$package already installed"
-        else
-            npm install -g "$package" || warning "Failed to install $package"
-        fi
-    done
-    success "NPM packages processed"
-}
-
-# ============================================================================
 # DETECT MACHINE TYPE
 # ============================================================================
 detect_machine_type() {
@@ -310,21 +266,13 @@ main() {
     # Phase 1: Package Installation
     info "Phase 1: Package Installation"
 
-    # Core packages (always install)
-    install_package_list "$PACKAGES_DIR/core.txt" "pacman" "core packages"
+    # Official repository packages
+    install_package_list "$PACKAGES_DIR/pacman.txt" "pacman" "official packages"
 
-    if [[ "$MINIMAL" != true ]]; then
-        # Additional packages
-        install_package_list "$PACKAGES_DIR/tools.txt" "pacman" "CLI tools"
-
-        # AUR packages (requires yay)
-        if [[ -f "$PACKAGES_DIR/aur.txt" ]] && [[ -s "$PACKAGES_DIR/aur.txt" ]]; then
-            install_yay
-            install_package_list "$PACKAGES_DIR/aur.txt" "yay" "AUR packages"
-        fi
-
-        # NPM packages
-        install_npm_packages
+    # AUR packages (requires yay)
+    if [[ -f "$PACKAGES_DIR/aur.txt" ]] && [[ -s "$PACKAGES_DIR/aur.txt" ]]; then
+        install_yay
+        install_package_list "$PACKAGES_DIR/aur.txt" "yay" "AUR packages"
     fi
 
     # Phase 2: System Setup

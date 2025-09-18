@@ -21,9 +21,6 @@ bootstrap.sh --dry-run
 # Full installation with all packages and setup
 bootstrap.sh
 
-# Minimal installation (core packages only)
-bootstrap.sh --minimal
-
 # Skip setup scripts (packages only)
 bootstrap.sh --skip-setup
 ```
@@ -32,10 +29,9 @@ bootstrap.sh --skip-setup
 
 ```
 ~/.config/dotfiles/bootstrap/
-├── packages/           # Simple package lists (just names)
-│   ├── core.txt       # Essential packages (bspwm, terminal, shell)
-│   ├── tools.txt      # CLI enhancements (ripgrep, fzf, etc.)
-│   └── aur.txt        # AUR packages (fonts, themes)
+├── packages/           # Package lists organized by source
+│   ├── pacman.txt     # All packages from official repos
+│   └── aur.txt        # AUR packages (fonts, themes, claude-code)
 ├── setup/             # Modular setup scripts
 │   ├── common/        # Scripts run on all machines
 │   │   ├── 01-directories.sh   # Create directory structure
@@ -81,6 +77,14 @@ Instead of one monolithic setup script:
 - Can run scripts independently
 - Clear execution order from filenames
 
+### Why Source-Based Organization?
+
+Packages are organized by installation source (pacman vs AUR) rather than importance:
+- **Technically meaningful**: Different installers require different handling
+- **Actually MECE**: A package is either from official repos OR from AUR, never both
+- **Simpler code**: No conditional logic for "minimal" installs
+- **Honest design**: Reflects that we install everything anyway
+
 ### Why Not Cross-Distribution?
 
 Supporting multiple distributions adds complexity without benefit:
@@ -93,18 +97,15 @@ Supporting multiple distributions adds complexity without benefit:
 
 ### Phase 1: Package Installation
 
-1. **Core packages** (always installed)
-   - Reads `packages/core.txt`
-   - Installs via: `cat core.txt | xargs sudo pacman -S --needed`
+1. **Official repository packages**
+   - Reads `packages/pacman.txt`
+   - Installs via: `cat pacman.txt | xargs sudo pacman -S --needed`
 
-2. **Tool packages** (unless --minimal)
-   - Reads `packages/tools.txt`
-   - Same installation method
-
-3. **AUR packages** (unless --minimal)
+2. **AUR packages**
    - Checks if yay is installed
    - Installs yay if needed
-   - Installs packages via yay
+   - Reads `packages/aur.txt`
+   - Installs via yay
 
 ### Phase 2: System Setup
 
@@ -122,11 +123,9 @@ Supporting multiple distributions adds complexity without benefit:
 
 ## Adding New Packages
 
-### System Packages (pacman)
-Add package name to appropriate file:
+### Official Repository Packages
 ```bash
-echo "package-name" >> packages/core.txt    # If essential
-echo "package-name" >> packages/tools.txt   # If optional tool
+echo "package-name" >> packages/pacman.txt
 ```
 
 ### AUR Packages
@@ -220,17 +219,6 @@ setup/laptop/
 └── 03-touchpad.sh          # Touchpad settings
 ```
 
-## Comparison with Old System
-
-| Aspect | Old Bootstrap | New Bootstrap |
-|--------|--------------|---------------|
-| Lines of code | 675 | 307 |
-| Package detection | Slow bash loops | Native pacman --needed |
-| Package lists | Complex parsing | Simple names |
-| Setup logic | Monolithic | Modular scripts |
-| Debugging | Difficult | Straightforward |
-| Maintenance | Error-prone | Simple |
-
 ## Troubleshooting
 
 ### Package installation fails
@@ -270,27 +258,24 @@ setup/laptop/
 - Bash is sufficient for our simple needs
 - No additional dependencies
 
-## Package Categories
+## Package Organization
 
-### Core Packages (Required)
-Essential for the dotfiles to function:
-- Window manager (bspwm, sxhkd)
-- Terminal (alacritty)
-- Shell (fish)
-- Bar (polybar)
-- Basic utilities
+### Official Repository Packages (`pacman.txt`)
+All packages from Arch/CachyOS official repositories:
+- Window manager & desktop environment (bspwm, sxhkd, polybar, picom)
+- Terminal & shell (alacritty, fish, tmux)
+- Text editors (helix)
+- CLI tools (ripgrep, fd, fzf, bat, eza, zoxide)
+- GUI applications (thunar, qutebrowser, bitwarden)
+- Development tools (git, lazygit, github-cli)
+- System utilities (curl, wget, htop, btop)
+- Audio system (pipewire, pavucontrol)
 
-### Tools (Recommended)
-Enhanced command-line experience:
-- Modern replacements (ripgrep, fd, eza)
-- Productivity tools (fzf, tmux)
-- Development tools (git, helix)
-
-### AUR Packages (Appearance)
-Fonts and themes:
-- Nerd fonts for terminal icons
-- GTK themes for consistency
-- Icon themes
+### AUR Packages (`aur.txt`)
+Packages from the Arch User Repository:
+- Fonts (Nerd fonts, Font Awesome, emoji support)
+- Themes (GTK themes, icon packs)
+- Claude Code (AI development assistant)
 
 ### AI Development Tools
 - Claude Code AI assistant (from AUR)
@@ -319,22 +304,6 @@ Fonts and themes:
 |--------|---------|------------|----------|
 | (future) | GPU drivers, multi-monitor | - | - |
 
-## Migration from Old System
-
-The old bootstrap system had these issues:
-1. **Inline comments broke package detection** - Script tried to install `bspwm # comment` as a package
-2. **Slow detection loops** - Checking each package individually in bash
-3. **Complex parsing** - Regular expressions to extract package names
-4. **Monolithic setup** - 567-line setup-system.sh file
-5. **Hard to maintain** - Adding features increased complexity exponentially
-
-The new system solves these by:
-1. **Simple package lists** - Just names, no comments
-2. **Native detection** - Let pacman handle --needed
-3. **No parsing** - Direct file reading
-4. **Modular scripts** - 8 focused scripts instead of 1
-5. **Easy maintenance** - Add a line to add a package
-
 ## Testing
 
 ### Test Package Installation
@@ -342,8 +311,8 @@ The new system solves these by:
 # See what would be installed
 bootstrap.sh --dry-run
 
-# Test minimal installation
-bootstrap.sh --minimal --dry-run
+# Test package installation only (no setup)
+bootstrap.sh --skip-setup --dry-run
 
 # Test package lists are valid
 cat packages/*.txt | xargs pacman -Sp >/dev/null
