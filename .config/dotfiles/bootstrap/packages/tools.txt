@@ -11,3 +11,6 @@ unzip
 rofi
 qutebrowser
 bitwarden
+bitwarden-cli
+python-tldextract
+python-pyperclip

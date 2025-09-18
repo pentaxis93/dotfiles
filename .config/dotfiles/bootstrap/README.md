@@ -35,8 +35,7 @@ bootstrap.sh --skip-setup
 ├── packages/           # Simple package lists (just names)
 │   ├── core.txt       # Essential packages (bspwm, terminal, shell)
 │   ├── tools.txt      # CLI enhancements (ripgrep, fzf, etc.)
-│   ├── aur.txt        # AUR packages (fonts, themes)
-│   └── npm.txt        # NPM global packages
+│   └── aur.txt        # AUR packages (fonts, themes)
 ├── setup/             # Modular setup scripts
 │   ├── common/        # Scripts run on all machines
 │   │   ├── 01-directories.sh   # Create directory structure
@@ -107,10 +106,6 @@ Supporting multiple distributions adds complexity without benefit:
    - Installs yay if needed
    - Installs packages via yay
 
-4. **NPM packages** (unless --minimal)
-   - Sets npm prefix to ~/.local
-   - Installs global packages
-
 ### Phase 2: System Setup
 
 1. **Machine Detection**
@@ -137,11 +132,6 @@ echo "package-name" >> packages/tools.txt   # If optional tool
 ### AUR Packages
 ```bash
 echo "aur-package-name" >> packages/aur.txt
-```
-
-### NPM Packages
-```bash
-echo "@scope/package" >> packages/npm.txt
 ```
 
 ### Future Package Managers
