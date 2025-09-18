@@ -6,9 +6,17 @@
 super + Return
 	alacritty
 
-# program launcher
+# Application launcher (desktop applications with icons)
 super + @space
-	dmenu_run
+	rofi -show drun
+
+# Window switcher (switch between open windows)
+super + shift + @space
+	rofi -show window
+
+# Command runner (execute shell commands)
+super + r
+	rofi -show run
 
 # make sxhkd reload its configuration files:
 super + Escape

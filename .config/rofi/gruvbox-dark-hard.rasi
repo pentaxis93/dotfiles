@@ -1,0 +1,159 @@
+/* ============================================================================
+ * GRUVBOX DARK HARD THEME FOR ROFI 2.0
+ * ============================================================================
+ * Purpose:
+ *   Custom Gruvbox Dark Hard theme matching our system-wide color scheme.
+ *   Provides a centered popup launcher with consistent aqua accent colors.
+ *
+ * Color Palette:
+ *   Background: #1d2021 (hard dark) - Primary background
+ *   Background Alt: #3c3836 (dark gray) - Secondary backgrounds
+ *   Foreground: #ebdbb2 (light cream) - Primary text
+ *   Primary Accent: #689d6a (regular aqua) - Informational elements
+ *   Secondary Accent: #8ec07c (bright aqua) - Active/selected elements
+ * ============================================================================ */
+
+* {
+    /* Gruvbox Dark Hard Colors */
+    bg0-hard:     #1d2021;
+    bg1:          #3c3836;
+    bg2:          #504945;
+    fg1:          #ebdbb2;
+    gray:         #928374;
+    aqua-dark:    #689d6a;
+    aqua-bright:  #8ec07c;
+    red-bright:   #fb4934;
+
+    /* Base color mappings */
+    background:                  @bg0-hard;
+    background-color:            @bg0-hard;
+    foreground:                  @fg1;
+    border-color:                @aqua-dark;
+    separatorcolor:              @gray;
+
+    /* Element colors */
+    normal-background:           @bg0-hard;
+    normal-foreground:           @fg1;
+    alternate-normal-background: @bg1;
+    alternate-normal-foreground: @fg1;
+    selected-normal-background:  @aqua-bright;
+    selected-normal-foreground:  @bg0-hard;
+
+    active-background:           @bg1;
+    active-foreground:           @aqua-dark;
+    selected-active-background:  @aqua-bright;
+    selected-active-foreground:  @bg0-hard;
+
+    urgent-background:           @bg0-hard;
+    urgent-foreground:           @red-bright;
+    selected-urgent-background:  @red-bright;
+    selected-urgent-foreground:  @bg0-hard;
+
+    /* Default spacing and padding */
+    spacing: 2;
+    padding: 0;
+}
+
+window {
+    /* Window positioning - centered popup */
+    location:     center;
+    anchor:       center;
+    width:        50%;
+
+    /* Window styling */
+    background-color: @background;
+    border:       2;
+    border-color: @border-color;
+    padding:      0;
+}
+
+mainbox {
+    background-color: @background;
+    children: [ inputbar, message, listview ];
+    spacing: 0;
+}
+
+inputbar {
+    background-color: @bg1;
+    text-color:       @foreground;
+    padding:          12;
+    spacing:          8;
+    children:         [ prompt, textbox-prompt-colon, entry ];
+}
+
+prompt {
+    background-color: inherit;
+    text-color:       @aqua-dark;
+}
+
+textbox-prompt-colon {
+    expand:           false;
+    str:              ":";
+    background-color: inherit;
+    text-color:       @gray;
+}
+
+entry {
+    background-color: inherit;
+    text-color:       @foreground;
+    placeholder:      "Type to search...";
+    placeholder-color: @gray;
+}
+
+message {
+    background-color: @bg1;
+    padding:          8 12;
+}
+
+textbox {
+    background-color: inherit;
+    text-color:       @foreground;
+}
+
+listview {
+    background-color: @background;
+    padding:          8;
+    columns:          1;
+    lines:            10;
+    spacing:          4;
+    cycle:            true;
+    dynamic:          true;
+    scrollbar:        false;
+}
+
+element {
+    background-color: @normal-background;
+    text-color:       @normal-foreground;
+    padding:          8 12;
+}
+
+element-icon {
+    background-color: inherit;
+    size:             24;
+}
+
+element-text {
+    background-color: inherit;
+    text-color:       inherit;
+}
+
+element selected {
+    background-color: @selected-normal-background;
+    text-color:       @selected-normal-foreground;
+}
+
+element alternate {
+    background-color: @alternate-normal-background;
+    text-color:       @alternate-normal-foreground;
+}
+
+button {
+    background-color: @bg2;
+    text-color:       @foreground;
+    padding:          8 16;
+}
+
+button selected {
+    background-color: @aqua-dark;
+    text-color:       @bg0-hard;
+}

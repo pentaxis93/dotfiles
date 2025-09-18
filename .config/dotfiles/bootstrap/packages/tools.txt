@@ -10,3 +10,4 @@ nodejs
 npm
 github-cli
 unzip
+rofi

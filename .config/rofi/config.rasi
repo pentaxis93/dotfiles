@@ -1,0 +1,61 @@
+/* ============================================================================
+ * ROFI MAIN CONFIGURATION
+ * ============================================================================
+ * Purpose:
+ *   Main configuration file for rofi launcher. Sets up modes, display options,
+ *   icons, and imports our custom Gruvbox Dark Hard theme.
+ *
+ * Features:
+ *   - Multiple modes: drun (desktop apps), run (commands), window, ssh
+ *   - Icon support with Papirus-Dark theme
+ *   - Custom mode display names with nerd font icons
+ *   - Sidebar mode for easy mode switching
+ *   - History preservation for frequently used items
+ *
+ * Theme:
+ *   Imports our custom gruvbox-dark-hard theme that matches the system colors
+ *
+ * Related Files:
+ *   ~/.config/rofi/gruvbox-dark-hard.rasi - Custom theme file
+ *   ~/.config/sxhkd/sxhkdrc - Keybinding configuration
+ * ============================================================================ */
+
+configuration {
+    /* Available modes */
+    modi: "drun,run,window,ssh";
+
+    /* Display settings */
+    show-icons: true;
+    icon-theme: "Papirus-Dark";
+    font: "MesloLGS Nerd Font 11";
+
+    /* Mode display names with icons */
+    display-drun: " Apps";
+    display-run: " Run";
+    display-window: " Windows";
+    display-ssh: " SSH";
+
+    /* Format for desktop entries */
+    drun-display-format: "{icon} {name}";
+
+    /* Search and display behavior */
+    disable-history: false;
+    hide-scrollbar: true;
+    sidebar-mode: true;
+
+    /* Matching options */
+    case-sensitive: false;
+    cycle: true;
+
+    /* Window behavior */
+    click-to-exit: true;
+
+    /* Terminal for SSH connections */
+    terminal: "alacritty";
+
+    /* SSH command */
+    ssh-command: "{terminal} -e {ssh-client} {host} [-p {port}]";
+}
+
+/* Import our custom Gruvbox Dark Hard theme */
+@theme "gruvbox-dark-hard"
