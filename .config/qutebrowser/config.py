@@ -1,14 +1,17 @@
 # ============================================================================
-# QUTEBROWSER CONFIGURATION - TRI-MODAL NAVIGATION & GRUVBOX DARK HARD
+# QUTEBROWSER CONFIGURATION - DUAL-MODAL NAVIGATION & GRUVBOX DARK HARD
 # ============================================================================
 # Purpose:
-#   Configure qutebrowser with consistent tri-modal navigation (vim/arrows/numpad)
+#   Configure qutebrowser with consistent dual-modal navigation (vim/arrows)
 #   matching the system-wide navigation philosophy while maintaining
 #   qutebrowser's powerful vim-style workflow
 #
+# NOTE: Numpad support is limited - Qt/qutebrowser cannot distinguish
+#       numpad keys from regular number keys when NumLock is on
+#
 # Navigation Philosophy:
 #   - Maintain muscle memory across all applications
-#   - Support vim keys, arrow keys, and numpad consistently
+#   - Support vim keys and arrow keys consistently
 #   - Use appropriate modifiers to avoid conflicts
 #   - Keep defaults where they make sense
 #
@@ -99,66 +102,37 @@ c.content.webgl = True
 c.content.notifications.enabled = False            # Block notification requests
 
 # ============================================================================
-# TRI-MODAL KEYBINDINGS
+# DUAL-MODAL KEYBINDINGS (VIM + ARROWS)
 # ============================================================================
 # Strategy:
 #   - Keep qutebrowser defaults where they make sense
-#   - Add arrow and numpad alternatives for consistency
+#   - Add arrow key alternatives for consistency
 #   - Use Ctrl for tab operations (avoiding Alt+Shift/tmux conflicts)
 #   - Maintain vim-style single-key operations in normal mode
+#   - Numpad keys work as regular numbers (1-9) for tab selection
 
 # ----------------------------------------------------------------------------
-# TAB NAVIGATION - Enhanced with tri-modal support
+# TAB NAVIGATION - Enhanced with dual-modal support
 # ----------------------------------------------------------------------------
 # Default J/K for tab navigation (standard qutebrowser)
-# Adding Ctrl+arrows and Ctrl+numpad for consistency
+# Adding Ctrl+arrows for consistency
+# NOTE: Numpad support is limited in qutebrowser - Qt cannot distinguish
+#       numpad keys from regular number keys when NumLock is on
 
 # Tab switching with arrows (Ctrl to avoid conflicts with scrolling)
 config.bind('<Ctrl-Left>', 'tab-prev', mode='normal')
 config.bind('<Ctrl-Right>', 'tab-next', mode='normal')
 
-# Tab switching with numpad (Ctrl for consistency)
-config.bind('<Ctrl-KP_Left>', 'tab-prev', mode='normal')
-config.bind('<Ctrl-KP_Right>', 'tab-next', mode='normal')
-# Alternative numpad mapping (4/6 for left/right)
-config.bind('<Ctrl-KP_4>', 'tab-prev', mode='normal')
-config.bind('<Ctrl-KP_6>', 'tab-next', mode='normal')
-
 # Tab movement (reordering)
 config.bind('<Ctrl-Shift-Left>', 'tab-move -', mode='normal')
 config.bind('<Ctrl-Shift-Right>', 'tab-move +', mode='normal')
 
-# Direct tab access with numpad (like Alt+1-9 in tmux)
-config.bind('<KP_End>', 'tab-focus 1', mode='normal')      # Numpad 1
-config.bind('<KP_Down>', 'tab-focus 2', mode='normal')     # Numpad 2
-config.bind('<KP_Page_Down>', 'tab-focus 3', mode='normal') # Numpad 3
-config.bind('<KP_Left>', 'tab-focus 4', mode='normal')     # Numpad 4
-config.bind('<KP_Begin>', 'tab-focus 5', mode='normal')    # Numpad 5
-config.bind('<KP_Right>', 'tab-focus 6', mode='normal')    # Numpad 6
-config.bind('<KP_Home>', 'tab-focus 7', mode='normal')     # Numpad 7
-config.bind('<KP_Up>', 'tab-focus 8', mode='normal')       # Numpad 8
-config.bind('<KP_Page_Up>', 'tab-focus 9', mode='normal')  # Numpad 9
-
 # ----------------------------------------------------------------------------
-# PAGE NAVIGATION - Add numpad support to existing vim/arrow keys
+# PAGE NAVIGATION - Vim and arrow keys
 # ----------------------------------------------------------------------------
 # Defaults work: h/j/k/l and arrows for scrolling
-# Adding numpad for tri-modal consistency
-
-config.bind('<KP_Left>', 'scroll left', mode='normal')     # Numpad 4
-config.bind('<KP_4>', 'scroll left', mode='normal')
-config.bind('<KP_Right>', 'scroll right', mode='normal')   # Numpad 6
-config.bind('<KP_6>', 'scroll right', mode='normal')
-config.bind('<KP_Down>', 'scroll down', mode='normal')     # Numpad 2
-config.bind('<KP_2>', 'scroll down', mode='normal')
-config.bind('<KP_Up>', 'scroll up', mode='normal')         # Numpad 8
-config.bind('<KP_8>', 'scroll up', mode='normal')
-
-# Page-level scrolling with Shift modifier (like mpv)
-config.bind('<Shift-KP_Down>', 'scroll-page 0 0.5', mode='normal')
-config.bind('<Shift-KP_2>', 'scroll-page 0 0.5', mode='normal')
-config.bind('<Shift-KP_Up>', 'scroll-page 0 -0.5', mode='normal')
-config.bind('<Shift-KP_8>', 'scroll-page 0 -0.5', mode='normal')
+# NOTE: Numpad keys (with NumLock on) will work as regular number keys
+#       for direct tab access (1-9) but cannot be bound separately for scrolling
 
 # ----------------------------------------------------------------------------
 # HISTORY NAVIGATION - Browser-style alternatives
@@ -167,10 +141,6 @@ config.bind('<Shift-KP_8>', 'scroll-page 0 -0.5', mode='normal')
 
 config.bind('<Alt-Left>', 'back', mode='normal')
 config.bind('<Alt-Right>', 'forward', mode='normal')
-config.bind('<Alt-KP_Left>', 'back', mode='normal')
-config.bind('<Alt-KP_4>', 'back', mode='normal')
-config.bind('<Alt-KP_Right>', 'forward', mode='normal')
-config.bind('<Alt-KP_6>', 'forward', mode='normal')
 
 # ----------------------------------------------------------------------------
 # TAB MANAGEMENT - Additional bindings
@@ -216,6 +186,12 @@ config.bind('gd', 'download', mode='normal')                # Go to downloads
 config.bind('<Ctrl-Shift-j>', 'download', mode='normal')    # Browser standard
 
 # ----------------------------------------------------------------------------
+# PASSWORD MANAGER - Bitwarden integration
+# ----------------------------------------------------------------------------
+config.bind('<Alt-p>', 'spawn --userscript qute-bitwarden', mode='normal')
+config.bind('<Alt-Shift-p>', 'spawn --userscript qute-bitwarden --totp', mode='normal')
+
+# ----------------------------------------------------------------------------
 # DEVELOPER TOOLS
 # ----------------------------------------------------------------------------
 config.bind('<F12>', 'devtools', mode='normal')             # Standard devtools key
@@ -224,10 +200,9 @@ config.bind('<F12>', 'devtools', mode='normal')             # Standard devtools 
 # ZOOM CONTROLS - Multiple options
 # ----------------------------------------------------------------------------
 config.bind('<Ctrl-0>', 'zoom-reset', mode='normal')        # Reset zoom
-config.bind('<Ctrl-equal>', 'zoom-in', mode='normal')       # Zoom in
-config.bind('<Ctrl-minus>', 'zoom-out', mode='normal')      # Zoom out
-config.bind('<Ctrl-KP_Add>', 'zoom-in', mode='normal')      # Numpad +
-config.bind('<Ctrl-KP_Subtract>', 'zoom-out', mode='normal') # Numpad -
+config.bind('<Ctrl-=>', 'zoom-in', mode='normal')       # Zoom in
+config.bind('<Ctrl-->', 'zoom-out', mode='normal')      # Zoom out
+# NOTE: Numpad +/- work automatically as Ctrl-plus/Ctrl-minus when NumLock is on
 
 # ============================================================================
 # VISUAL FEEDBACK
