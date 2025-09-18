@@ -11,3 +11,4 @@ npm
 github-cli
 unzip
 rofi
+qutebrowser
