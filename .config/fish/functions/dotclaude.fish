@@ -1,8 +1,15 @@
 function dotclaude --description "Launch Claude Code for dotfiles management"
-    # Change to dotfiles workspace where CLAUDE.md lives
-    cd ~/.config/dotfiles
+    # Ensure we're in the right place for project discovery
+    cd ~/.config/dotfiles || begin
+        echo "Error: Dotfiles directory not found" >&2
+        return 1
+    end
 
-    # Launch Claude Code with any passed arguments
-    # CLAUDE.md will be discovered here, not in home directory
+    # Visual confirmation
+    echo "🔧 Launching Claude Code in dotfiles mode..."
+    echo "📁 Working directory: $(pwd)"
+
+    # Launch with all arguments passed through
+    # Environment variables now come from global settings
     claude code $argv
 end

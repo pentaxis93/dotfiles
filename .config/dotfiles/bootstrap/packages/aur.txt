@@ -1,5 +1,6 @@
 ttf-meslo-nerd-font-powerlevel10k
 ttf-font-awesome
 noto-fonts-emoji
+claude-code
 gruvbox-material-gtk-theme-git
 papirus-folders-git

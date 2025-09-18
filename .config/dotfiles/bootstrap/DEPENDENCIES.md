@@ -12,6 +12,7 @@ This document provides comprehensive information about all packages required for
 - [Polybar Click Utilities](#polybar-click-utilities)
 - [Audio System](#audio-system)
 - [CLI Tools](#cli-tools)
+- [GUI Applications](#gui-applications)
 - [Fonts & Themes](#fonts--themes)
 - [Package Management](#package-management)
 - [Troubleshooting](#troubleshooting)
@@ -146,7 +147,7 @@ These are **optional** but recommended tools that enhance the command-line exper
 
 | Package | Replaces | Purpose | Used By |
 |---------|----------|---------|---------|
-| **ripgrep** | grep | Fast text search | Claude Code |
+| **ripgrep** | grep | Fast text search | General use |
 | **fd** | find | Fast file finder | General use |
 | **bat** | cat | Syntax highlighting | General use |
 | **eza** | ls | Better ls with git info | General use |
@@ -167,28 +168,42 @@ These are **optional** but recommended tools that enhance the command-line exper
 | **unzip** | ZIP extraction | Optional |
 | **p7zip** | 7-Zip support | Optional |
 
-## Development Runtime
+## GUI Applications
 
-### Node.js & NPM
+### Web Browser
 
 | Package | Purpose | Config Files | Required |
 |---------|---------|--------------|----------|
-| **nodejs** | JavaScript runtime | N/A | Yes (for Claude Code) |
-| **npm** | Node package manager | `~/.npmrc` | Yes (for Claude Code) |
+| **qutebrowser** | Keyboard-driven browser | `~/.config/qutebrowser/` | Optional |
+| **rofi** | Application launcher & selector | Used by qute-bitwarden | Optional |
 
-These packages provide the runtime for JavaScript-based tools, particularly Claude Code. The NPM prefix is configured to `~/.local` to avoid requiring sudo for global package installation.
+Qutebrowser provides a vim-style browsing experience with full keyboard control. Configuration includes custom keybindings for dual-modal navigation (vim + arrows) and Gruvbox theme.
 
-## NPM Global Packages
+### Password Management
 
-### AI Development Tools
+| Package | Purpose | Config Files | Required |
+|---------|---------|--------------|----------|
+| **bitwarden** | Password manager GUI | N/A | Optional |
+
+Bitwarden desktop application provides secure password management with a graphical interface.
+
+## AI Development Tools
 
 | Package | Purpose | Config | Installation |
 |---------|---------|--------|--------------|
-| **@anthropic-ai/claude-code** | AI coding assistant | `~/.claude/settings.json` | `npm install -g` |
+| **claude-code** | AI coding assistant | `~/.claude/settings.json` | AUR package |
 
-Claude Code is installed globally via NPM and becomes available at `~/.local/bin/claude`. User settings are tracked directly in dotfiles.
+Claude Code is installed via the AUR and automatically manages its Node.js dependency. It integrates with system package management for automatic updates.
 
 ## Fonts & Themes
+
+### AI Tools (AUR)
+
+| Package | Purpose | Used By | Required |
+|---------|---------|---------|----------|
+| **claude-code** | AI coding assistant | Development | Optional |
+
+Claude Code provides AI-powered coding assistance directly in your terminal. Installed from AUR, it automatically pulls in Node.js as a dependency.
 
 ### Fonts (AUR)
 
@@ -222,7 +237,7 @@ The bootstrap system uses these files to organize packages:
 
 - **packages-core.txt**: Essential packages (always installed)
 - **packages-tools.txt**: CLI enhancements (recommended)
-- **packages-aur.txt**: AUR packages (fonts, themes)
+- **packages-aur.txt**: AUR packages (AI tools, fonts, themes)
 
 Note: `packages-dev.txt` has been removed - this is a minimalist setup focused on dotfiles management, not development environments.
 

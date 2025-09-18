@@ -6,9 +6,8 @@ eza
 tmux
 lazygit
 zoxide
-nodejs
-npm
 github-cli
 unzip
 rofi
 qutebrowser
+bitwarden

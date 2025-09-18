@@ -170,40 +170,7 @@ install_package_list() {
     success "$description installed"
 }
 
-# ============================================================================
-# INSTALL NPM PACKAGES
-# ============================================================================
-install_npm_packages() {
-    local npm_list="$PACKAGES_DIR/npm.txt"
-
-    if [[ ! -f "$npm_list" ]] || [[ ! -s "$npm_list" ]]; then
-        return 0
-    fi
-
-    if ! command -v npm &>/dev/null; then
-        warning "npm not installed, skipping npm packages"
-        return 0
-    fi
-
-    header "Installing NPM packages"
-
-    # Set npm prefix if needed
-    local current_prefix=$(npm config get prefix)
-    if [[ "$current_prefix" != "$HOME/.local" ]]; then
-        info "Setting npm prefix to ~/.local"
-        npm config set prefix "$HOME/.local"
-    fi
-
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would install via npm:"
-        cat "$npm_list" | sed 's/^/  - /'
-        return 0
-    fi
-
-    # Install packages
-    cat "$npm_list" | xargs npm install -g || true
-    success "NPM packages installed"
-}
+# NPM package management removed - using AUR packages instead
 
 # ============================================================================
 # RUN SETUP SCRIPTS
@@ -280,9 +247,6 @@ main() {
             install_yay
             install_package_list "$PACKAGES_DIR/aur.txt" "yay" "AUR packages"
         fi
-
-        # NPM packages
-        install_npm_packages
     fi
 
     # Phase 2: System Setup
