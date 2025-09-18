@@ -63,7 +63,10 @@ MAX_LENGTH=30
 PIDFILE="/tmp/window-title-daemon.pid"
 LOG_FILE="/tmp/window-title-daemon.log"
 DEBUG=  # Debug logging disabled (set to 1 to enable)
-XPROP_SPY_PID=""  # Track the xprop spy process
+
+# State tracking - what window we're currently monitoring
+CURRENT_WINDOW_ID=""
+CURRENT_XPROP_PID=""
 
 # Function to log messages (optional, for debugging)
 log_msg() {
@@ -75,10 +78,8 @@ log_msg() {
 # Clean up on exit
 cleanup() {
     log_msg "Window title daemon exiting..."
-    # Kill any running xprop spy
-    if [ -n "$XPROP_SPY_PID" ] && kill -0 "$XPROP_SPY_PID" 2>/dev/null; then
-        kill "$XPROP_SPY_PID" 2>/dev/null
-    fi
+    # Stop any active monitoring
+    stop_monitoring
     rm -f "$PIDFILE"
     exit 0
 }
@@ -271,52 +272,72 @@ update_polybar_title() {
     log_msg "Updated title: $title"
 }
 
-# Function to start monitoring a window for title changes
-monitor_window() {
-    local window_id="$1"
-
-    # Kill existing xprop spy if running
-    if [ -n "$XPROP_SPY_PID" ] && kill -0 "$XPROP_SPY_PID" 2>/dev/null; then
-        kill "$XPROP_SPY_PID" 2>/dev/null
-        wait "$XPROP_SPY_PID" 2>/dev/null
+# Function to stop monitoring the current window
+stop_monitoring() {
+    if [ -n "$CURRENT_WINDOW_ID" ]; then
+        log_msg "Stopping monitor for window $CURRENT_WINDOW_ID"
+        # Use SIGKILL (-9) because xprop ignores SIGTERM
+        # This is surgical - only kills xprop for the specific window we were monitoring
+        pkill -9 -f "xprop -id $CURRENT_WINDOW_ID -spy WM_NAME" 2>/dev/null
+        CURRENT_WINDOW_ID=""
+        CURRENT_XPROP_PID=""
     fi
+}
+
+# Function to start monitoring a window for title changes
+start_monitoring() {
+    local window_id="$1"
 
     if [ -z "$window_id" ]; then
         return
     fi
 
-    log_msg "Starting property monitor for window $window_id"
+    log_msg "Starting monitor for window $window_id"
 
-    # Start xprop spy in background to monitor WM_NAME changes
-    (
-        xprop -id "$window_id" -spy WM_NAME 2>/dev/null | while read -r line; do
-            if echo "$line" | grep -q "^WM_NAME"; then
-                title=$(get_filtered_title "$line" "$window_id")
-                update_polybar_title "$title"
-            fi
-        done
-    ) &
-    XPROP_SPY_PID=$!
+    # Start xprop spy in background
+    # Note: We can't easily get the real PID due to the pipeline,
+    # so we rely on pkill with window ID for cleanup
+    xprop -id "$window_id" -spy WM_NAME 2>/dev/null | while read -r line; do
+        if echo "$line" | grep -q "^WM_NAME"; then
+            title=$(get_filtered_title "$line" "$window_id")
+            update_polybar_title "$title"
+        fi
+    done &
+
+    # Store state
+    CURRENT_XPROP_PID=$!
+    CURRENT_WINDOW_ID="$window_id"
 }
 
 # Function to handle focus change
 handle_focus_change() {
     local focused_id=$(bspc query -N -n focused 2>/dev/null)
 
+    # No window focused
     if [ -z "$focused_id" ]; then
+        stop_monitoring
         update_polybar_title ""
         return
     fi
 
-    log_msg "Focus changed to window $focused_id"
+    # Already monitoring this window - don't restart
+    if [ "$focused_id" = "$CURRENT_WINDOW_ID" ]; then
+        log_msg "Still focused on same window $focused_id"
+        return
+    fi
+
+    log_msg "Focus changed from $CURRENT_WINDOW_ID to $focused_id"
+
+    # Clean transition: stop old, start new
+    stop_monitoring
 
     # Get initial title
-    initial_title=$(xprop -id "$focused_id" WM_NAME 2>/dev/null)
-    title=$(get_filtered_title "$initial_title" "$focused_id")
+    local initial_title=$(xprop -id "$focused_id" WM_NAME 2>/dev/null)
+    local title=$(get_filtered_title "$initial_title" "$focused_id")
     update_polybar_title "$title"
 
-    # Start monitoring this window for title changes
-    monitor_window "$focused_id"
+    # Start monitoring the new window
+    start_monitoring "$focused_id"
 }
 
 # Check if another instance is running
@@ -334,6 +355,14 @@ fi
 echo $$ > "$PIDFILE"
 
 log_msg "Window title daemon started (PID: $$)"
+
+# Clean up any orphaned xprop from previous crash (at most 1)
+# This handles abnormal termination of previous daemon
+xprop_count=$(pgrep -f "xprop.*-spy WM_NAME" | wc -l)
+if [ "$xprop_count" -gt 0 ]; then
+    log_msg "Found $xprop_count orphaned xprop process(es) from previous session, cleaning up"
+    pkill -9 -f "xprop.*-spy WM_NAME"
+fi
 
 # Initial update
 handle_focus_change
