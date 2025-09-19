@@ -7,6 +7,9 @@
 # This must happen early in the startup sequence before other keybindings
 [ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
 
+# Enable NumLock at startup
+numlockx on &
+
 pgrep -x sxhkd > /dev/null || sxhkd &
 
 # Launch polybar

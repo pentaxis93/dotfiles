@@ -7,6 +7,7 @@ fish
 helix
 git
 dmenu
+numlockx
 xclip
 curl
 wget
