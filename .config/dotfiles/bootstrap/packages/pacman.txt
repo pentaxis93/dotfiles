@@ -39,3 +39,4 @@ bitwarden
 bitwarden-cli
 python-tldextract
 python-pyperclip
+uv
