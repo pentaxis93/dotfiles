@@ -99,6 +99,71 @@ This creates a secure sudoers rule that allows brightness control without passwo
 - **Terminal**: Alacritty
 - **Editor**: Helix
 
+## Btrfs Snapshot System
+
+### Overview
+The system uses **snapper** for automatic Btrfs snapshots, providing instant system recovery and configuration rollback capabilities. Snapshots are space-efficient due to Btrfs copy-on-write (COW) and compression.
+
+### Automatic Snapshots
+Snapshots are taken automatically via systemd timers with smart retention:
+- **Hourly**: Keep last 6 hours
+- **Daily**: Keep last 7 days
+- **Weekly**: Keep last 4 weeks
+- **Monthly**: Keep last 3 months
+- **Yearly**: Keep last 2 years
+
+### Manual Snapshot Commands
+Helper scripts in `~/.local/bin/` (automatically created by bootstrap):
+
+```bash
+snapshot-create [description]  # Create manual snapshot of root and home
+snapshot-list                  # View all snapshots
+snapshot-diff [config] [n1] [n2]  # Show changes between snapshots
+snapshot-rollback [config] [n]    # Rollback to snapshot (USE WITH CAUTION!)
+```
+
+### Examples
+```bash
+# Before system update
+snapshot-create "Before system upgrade"
+
+# View recent snapshots
+snapshot-list | tail -20
+
+# Check what changed since snapshot 5
+snapshot-diff root 5 0
+
+# Emergency rollback (requires confirmation)
+snapshot-rollback root 10
+```
+
+### Configuration Details
+- **Configs**: Separate configs for `/` (root) and `/home` (home)
+- **Storage**: Snapshots stored in `/.snapshots/` and `/home/.snapshots/`
+- **Space Impact**: Typically <5% of changed data due to COW
+- **Setup**: Automatically configured by `bootstrap/setup/common/10-snapshots.sh`
+
+### Snapshot Management
+```bash
+# Check timer status
+systemctl status snapper-timeline.timer
+systemctl status snapper-cleanup.timer
+
+# View snapshot configs
+sudo snapper list-configs
+
+# Manual cleanup of old snapshots
+sudo snapper -c root cleanup number
+```
+
+### Recovery Scenarios
+1. **Accidental file deletion**: Use `snapshot-diff` to find the file, then copy from snapshot
+2. **Bad configuration change**: Rollback to previous snapshot
+3. **Failed update**: Boot from snapshot via GRUB menu (if configured)
+4. **Pre-experiment checkpoint**: Create manual snapshot before testing
+
+**Note**: Snapshots are NOT backups! They protect against accidental changes but not disk failure. For true backups, use external storage.
+
 ## Tri-Modal Navigation Philosophy
 
 ### Standardized Directional Controls
@@ -659,6 +724,43 @@ dots commit -m "Fix: Improve keybinding for X feature"
 - **Version Control**: All configuration changes should be committed to the dotfiles repo
 - **Documentation**: Update this file when adding new tools or changing workflows
 - **Test Checkpoints**: Always test-and-commit after each discrete change
+
+### Bootstrap Over Manual Configuration Pattern
+**System configuration should be reproducible through bootstrap scripts, not manual setup.**
+
+When adding new system tools or services:
+- ❌ **Don't**: Manually run configuration commands and document them
+- ✅ **Do**: Create bootstrap scripts that automate the entire setup
+
+**Why this matters:**
+- **Reproducibility**: Any new system can be configured identically
+- **Version Control**: Configuration logic is tracked as code
+- **Documentation**: The script IS the documentation - no drift between docs and reality
+- **Disaster Recovery**: Quick restoration after system failure
+- **Testing**: Can verify setup in VMs or containers
+
+**Example - The Wrong Way:**
+```bash
+# Manually configuring a service
+sudo systemctl enable some-service
+sudo edit /etc/some-service/config
+# Update documentation to tell future self what you did
+```
+
+**Example - The Right Way:**
+```bash
+# Create bootstrap/setup/common/10-some-service.sh
+#!/usr/bin/env bash
+# Script that configures the service
+# Configuration templates in bootstrap/configs/
+# Automatically run by bootstrap.sh
+```
+
+This principle is especially critical for:
+- System services (systemd units)
+- Package configurations (like snapper)
+- Security settings (sudoers, polkit)
+- Anything requiring root/sudo access
 
 ### Commit Message Philosophy
 - **Clean Messages**: Focus on what changed and why, not who made the change

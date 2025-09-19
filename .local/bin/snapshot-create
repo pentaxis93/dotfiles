@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Create manual snapshots of root and home
+
+set -euo pipefail
+
+DESCRIPTION="${1:-Manual snapshot}"
+
+echo "Creating snapshots with description: ${DESCRIPTION}"
+
+# Create root snapshot
+if sudo snapper -c root create --description "${DESCRIPTION}" --type single; then
+    echo "✓ Created root snapshot"
+else
+    echo "✗ Failed to create root snapshot"
+fi
+
+# Create home snapshot
+if sudo snapper -c home create --description "${DESCRIPTION}" --type single; then
+    echo "✓ Created home snapshot"
+else
+    echo "✗ Failed to create home snapshot"
+fi
+
+echo ""
+echo "Recent snapshots:"
+sudo snapper -c root list | tail -5

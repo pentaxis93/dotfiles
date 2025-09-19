@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Rollback to a specific snapshot (USE WITH CAUTION!)
+
+set -euo pipefail
+
+CONFIG="${1:-}"
+SNAPSHOT="${2:-}"
+
+if [ -z "$CONFIG" ] || [ -z "$SNAPSHOT" ]; then
+    echo "Usage: snapshot-rollback <config> <snapshot-number>"
+    echo "  config: root or home"
+    echo "  snapshot: snapshot number to rollback to"
+    echo ""
+    echo "WARNING: This will revert all changes since the snapshot!"
+    echo "Example: snapshot-rollback root 5"
+    exit 1
+fi
+
+echo "WARNING: This will rollback ${CONFIG} to snapshot ${SNAPSHOT}"
+echo "All changes since that snapshot will be lost!"
+echo ""
+read -p "Are you sure? Type 'yes' to continue: " confirm
+
+if [ "$confirm" != "yes" ]; then
+    echo "Rollback cancelled"
+    exit 1
+fi
+
+echo "Creating pre-rollback snapshot for safety..."
+sudo snapper -c "${CONFIG}" create --description "Pre-rollback backup" --type single
+
+echo "Rolling back to snapshot ${SNAPSHOT}..."
+sudo snapper -c "${CONFIG}" rollback "${SNAPSHOT}"
+
+echo ""
+echo "Rollback complete. You may need to reboot for all changes to take effect."

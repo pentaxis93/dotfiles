@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Show differences between snapshots
+
+set -euo pipefail
+
+CONFIG="${1:-root}"
+SNAPSHOT1="${2:-0}"
+SNAPSHOT2="${3:-}"
+
+if [ -z "$SNAPSHOT2" ]; then
+    echo "Usage: snapshot-diff [config] [snapshot1] [snapshot2]"
+    echo "  config: root or home (default: root)"
+    echo "  snapshot1: first snapshot number (default: 0 for current)"
+    echo "  snapshot2: second snapshot number"
+    echo ""
+    echo "Example: snapshot-diff root 0 5"
+    exit 1
+fi
+
+sudo snapper -c "${CONFIG}" status "${SNAPSHOT1}..${SNAPSHOT2}"

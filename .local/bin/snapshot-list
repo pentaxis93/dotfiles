@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# List all snapshots
+
+set -euo pipefail
+
+echo "=== Root Snapshots ==="
+sudo snapper -c root list
+
+echo ""
+echo "=== Home Snapshots ==="
+sudo snapper -c home list
