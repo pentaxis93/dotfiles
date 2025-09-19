@@ -235,13 +235,10 @@ main() {
     # Phase 1: Package Installation
     info "Phase 1: Package Installation"
 
-    # Core packages (always install)
-    install_package_list "$PACKAGES_DIR/core.txt" "pacman" "core packages"
+    # Pacman packages
+    install_package_list "$PACKAGES_DIR/pacman.txt" "pacman" "pacman packages"
 
     if [[ "$MINIMAL" != true ]]; then
-        # Additional packages
-        install_package_list "$PACKAGES_DIR/tools.txt" "pacman" "CLI tools"
-
         # AUR packages (requires yay)
         if [[ -f "$PACKAGES_DIR/aur.txt" ]] && [[ -s "$PACKAGES_DIR/aur.txt" ]]; then
             install_yay
