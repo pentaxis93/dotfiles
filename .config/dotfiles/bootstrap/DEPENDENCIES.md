@@ -183,12 +183,12 @@ Qutebrowser provides a vim-style browsing experience with full keyboard control.
 
 | Package | Purpose | Config Files | Required |
 |---------|---------|--------------|----------|
-| **bitwarden** | Password manager GUI | N/A | Optional |
-| **bitwarden-cli** | Password manager CLI | Used by qutebrowser, code secrets | Optional |
+| **pass** | Unix password store for API keys | `~/.password-store/` | Required |
+| **bitwarden-cli** | Web password manager CLI | Used by qutebrowser only | Optional |
 | **python-tldextract** | Domain parsing for qute-bitwarden | N/A | Optional |
 | **python-pyperclip** | Clipboard support for TOTP codes | N/A | Optional |
 
-Bitwarden provides secure password management through both GUI (desktop app) and CLI (`bw` command) interfaces. The CLI enables qutebrowser integration (Alt+P for passwords, Alt+Shift+P for TOTP) and programmatic secrets access.
+Architecture: Pass handles all API keys and automation secrets with GPG encryption and 8-24 hour agent caching. Bitwarden CLI handles only web passwords for browser integration (Alt+P in qutebrowser). This separation ensures API keys are never exposed to cloud services. See ADR-006 for details.
 
 ## AI Development Tools
 

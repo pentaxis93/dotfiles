@@ -43,12 +43,19 @@ configure_context7() {
         return 0
     fi
 
-    # Add context7 MCP server (no API key needed for free tier)
-    if claude mcp add --transport http context7 https://mcp.context7.com/mcp; then
-        success "context7 MCP server configured successfully"
+    # Add context7 MCP server to global config (no API key needed for free tier)
+    local add_output
+    if add_output=$(claude mcp add --scope user --transport http context7 https://mcp.context7.com/mcp 2>&1); then
+        success "context7 MCP server configured successfully (global)"
         info "Use 'use context7' in prompts to get up-to-date documentation"
+    elif echo "$add_output" | grep -q "already exists"; then
+        success "context7 MCP server already configured"
+        return 0
     else
         warning "Failed to configure context7 MCP server"
+        if [[ -n "$add_output" ]]; then
+            info "Error details: $add_output"
+        fi
         return 1
     fi
 }

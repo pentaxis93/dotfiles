@@ -9,20 +9,20 @@
 #   - Installs uv (Python package manager) if needed
 #   - Configures zen-mcp-server to run via uvx
 #   - Integrates with Claude Code via MCP protocol
-#   - Retrieves OpenRouter API key from Bitwarden
+#   - Retrieves OpenRouter API key from pass (unix password store)
 #   - Updates Claude Code settings with secure configuration
 #
 # Dependencies:
 #   - uv (from official repos)
-#   - bitwarden-cli (configured)
+#   - pass (unix password store)
 #   - claude-code (from AUR)
 #   - Python 3.10+
 #
 # API Keys Required:
-#   - OpenRouter API key (stored in Bitwarden as 'API Key - OpenRouter')
+#   - OpenRouter API key (stored in pass as 'api/openrouter')
 #
 # Related Files:
-#   - ~/.config/dotfiles/bootstrap/lib/secrets.sh (secret management)
+#   - ~/.local/bin/zen-mcp-wrapper (API key injection wrapper)
 #   - ~/.claude/settings.json (Claude Code configuration)
 #   - ~/.config/dotfiles/CLAUDE.md (usage documentation)
 # ============================================================================
@@ -38,16 +38,6 @@ else
     success() { echo "[✓] $*"; }
     warning() { echo "[!] $*"; }
     error() { echo "[✗] $*" >&2; }
-fi
-
-# Import secrets library
-SECRETS_LIB="${BASH_SOURCE%/*}/../../lib/secrets.sh"
-if [[ -f "$SECRETS_LIB" ]]; then
-    source "$SECRETS_LIB"
-else
-    error "Secrets library not found at $SECRETS_LIB"
-    warning "Please run the Bitwarden setup first: 09-bitwarden.sh"
-    exit 1
 fi
 
 # ============================================================================
@@ -88,22 +78,36 @@ configure_zen_mcp() {
         return 1
     fi
 
-    # Check if API key exists in Bitwarden
-    info "Checking for OpenRouter API key in Bitwarden..."
-    if ! bw_get_api_key "OpenRouter" >/dev/null 2>&1; then
-        error "OpenRouter API key not found in Bitwarden"
+    # Check if pass is installed and initialized
+    if ! command -v pass &>/dev/null; then
+        error "Pass not installed"
+        info "Run: sudo pacman -S pass"
+        return 1
+    fi
+
+    if ! pass ls >/dev/null 2>&1; then
+        error "Pass not initialized"
         info ""
-        info "Please add your OpenRouter API key to Bitwarden:"
-        info "1. Get your API key from: https://openrouter.ai/keys"
-        info "2. Run: bw login (if not logged in)"
-        info "3. Create item: bw create item"
-        info "   Name: 'API Key - OpenRouter'"
-        info "   Password: <your-api-key>"
-        info "4. Sync: bw sync"
+        info "Please initialize pass with your GPG key:"
+        info "1. Check GPG keys: gpg --list-secret-keys --keyid-format=long"
+        info "2. Initialize pass: pass init <your-gpg-id>"
         info ""
         return 1
     fi
-    success "OpenRouter API key found in Bitwarden"
+
+    # Check if API key exists in pass (without retrieving it)
+    info "Checking for OpenRouter API key in pass..."
+    if ! pass ls api/openrouter >/dev/null 2>&1; then
+        error "OpenRouter API key not found in pass"
+        info ""
+        info "Please add your OpenRouter API key to pass:"
+        info "1. Get your API key from: https://openrouter.ai/keys"
+        info "2. Add to pass: pass insert api/openrouter"
+        info "   (Enter the API key when prompted)"
+        info ""
+        return 1
+    fi
+    success "OpenRouter API key found in pass"
 
     # Create wrapper script for zen-mcp-server
     info "Creating zen-mcp-server wrapper script..."
@@ -111,20 +115,22 @@ configure_zen_mcp() {
 
     cat > "$wrapper_script" << 'WRAPPER_EOF'
 #!/usr/bin/env bash
-# Wrapper script for zen-mcp-server that retrieves API key from Bitwarden
+# Wrapper script for zen-mcp-server that retrieves API key from pass
+#
+# Security Note:
+#   This script runs with user privileges and retrieves the API key
+#   from pass (GPG-encrypted storage). The key is only exposed to
+#   the zen-mcp-server process, never to Claude Code directly.
 
-# Source secrets library
-source ~/.config/dotfiles/bootstrap/lib/secrets.sh 2>/dev/null || {
-    echo "Error: Could not load secrets library" >&2
-    exit 1
-}
-
-# Get API key from Bitwarden
-OPENROUTER_API_KEY=$(bw_get_api_key "OpenRouter" 2>/dev/null)
+# Get API key from pass
+OPENROUTER_API_KEY=$(pass show api/openrouter 2>/dev/null | head -n1)
 
 if [[ -z "$OPENROUTER_API_KEY" ]]; then
-    echo "Error: Could not retrieve OpenRouter API key from Bitwarden" >&2
-    echo "Please ensure you're logged in: bw login" >&2
+    echo "Error: Could not retrieve OpenRouter API key from pass" >&2
+    echo "Please ensure:" >&2
+    echo "  1. Pass is initialized: pass init <gpg-id>" >&2
+    echo "  2. API key is stored: pass insert api/openrouter" >&2
+    echo "  3. GPG agent is running: gpg-connect-agent /bye" >&2
     exit 1
 fi
 
@@ -154,13 +160,20 @@ WRAPPER_EOF
     success "Created wrapper script: $wrapper_script"
 
     # Configure Claude Code to use zen-mcp-server
-    info "Adding zen-mcp-server to Claude Code configuration..."
+    info "Adding zen-mcp-server to Claude Code configuration (global)..."
 
-    # Use claude mcp add command instead of manual JSON editing
-    if claude mcp add --transport stdio zen "$wrapper_script" 2>/dev/null; then
-        success "zen-mcp-server added to Claude Code"
+    # Use claude mcp add command with user scope for global configuration
+    # Capture error output for debugging
+    local add_output
+    if add_output=$(claude mcp add --scope user --transport stdio zen "$wrapper_script" 2>&1); then
+        success "zen-mcp-server added to Claude Code global configuration"
+    elif echo "$add_output" | grep -q "already exists"; then
+        success "zen-mcp-server already configured in Claude Code"
     else
         warning "Could not add zen-mcp-server automatically"
+        if [[ -n "$add_output" ]]; then
+            info "Error details: $add_output"
+        fi
         info "You may need to add it manually to ~/.claude/settings.json"
         show_manual_config
     fi
@@ -202,11 +215,13 @@ test_zen_mcp() {
     # Test wrapper script
     if [[ -x "$HOME/.local/bin/zen-mcp-wrapper" ]]; then
         info "Testing wrapper script..."
-        if timeout 5 "$HOME/.local/bin/zen-mcp-wrapper" --version 2>/dev/null; then
-            success "zen-mcp-server wrapper is working"
+        # Don't actually run the MCP server - just verify the API key exists in pass
+        # We use 'pass ls' to check existence without retrieving (no passphrase needed)
+        if pass ls api/openrouter >/dev/null 2>&1; then
+            success "OpenRouter API key exists in pass"
         else
-            warning "zen-mcp-server wrapper test failed (this may be normal)"
-            info "The server may only respond to MCP protocol commands"
+            warning "Cannot access OpenRouter API key - wrapper may fail"
+            info "Ensure pass is initialized and API key is stored"
         fi
     fi
 
@@ -245,8 +260,10 @@ show_usage() {
     info "  claude mcp list"
     info ""
     info "To update your OpenRouter API key:"
-    info "  bw edit item 'API Key - OpenRouter'"
-    info "  bw sync"
+    info "  pass edit api/openrouter"
+    info ""
+    info "Note: GPG agent caches your passphrase for 8 hours (max 24)"
+    info "      so you only need to unlock once per session"
     info ""
 }
 
@@ -280,7 +297,7 @@ main() {
     # Final notes
     info ""
     info "IMPORTANT: Restart Claude Code for changes to take effect"
-    info "The zen-mcp-server will retrieve your API key from Bitwarden automatically"
+    info "The zen-mcp-server will retrieve your API key from pass automatically"
 }
 
 # Run main

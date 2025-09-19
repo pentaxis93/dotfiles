@@ -98,3 +98,6 @@ set -gx PATH /home/pentaxis93/fvm/default/bin $PATH
 # Firefox for Flutter web development (CHROME_EXECUTABLE accepts any browser)
 set -gx CHROME_EXECUTABLE /usr/sbin/firefox
 
+
+# Added by Zenvestor setup script - User-installed executables
+set -gx PATH /home/pentaxis93/.local/bin $PATH

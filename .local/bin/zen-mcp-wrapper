@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Wrapper script for zen-mcp-server that retrieves API key from pass
+#
+# Security Note:
+#   This script runs with user privileges and retrieves the API key
+#   from pass (GPG-encrypted storage). The key is only exposed to
+#   the zen-mcp-server process, never to Claude Code directly.
+
+# Get API key from pass
+OPENROUTER_API_KEY=$(pass show api/openrouter 2>/dev/null | head -n1)
+
+if [[ -z "$OPENROUTER_API_KEY" ]]; then
+    echo "Error: Could not retrieve OpenRouter API key from pass" >&2
+    echo "Please ensure:" >&2
+    echo "  1. Pass is initialized: pass init <gpg-id>" >&2
+    echo "  2. API key is stored: pass insert api/openrouter" >&2
+    echo "  3. GPG agent is running: gpg-connect-agent /bye" >&2
+    exit 1
+fi
+
+# Export for zen-mcp-server
+export OPENROUTER_API_KEY
+
+# Find and execute uvx
+for p in $(which uvx 2>/dev/null) \
+         $(which uv 2>/dev/null | xargs -I {} echo {} tool) \
+         $HOME/.local/bin/uvx \
+         /usr/local/bin/uvx \
+         /usr/bin/uvx; do
+    if [[ -x "$p" ]] || [[ "$p" == *"uv tool" ]]; then
+        if [[ "$p" == *"uv tool" ]]; then
+            exec uv tool run --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server "$@"
+        else
+            exec "$p" --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server "$@"
+        fi
+    fi
+done
+
+echo "Error: uvx not found" >&2
+exit 1

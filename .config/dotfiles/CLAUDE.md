@@ -164,6 +164,183 @@ sudo snapper -c root cleanup number
 
 **Note**: Snapshots are NOT backups! They protect against accidental changes but not disk failure. For true backups, use external storage.
 
+## Secret Management System
+
+### Architecture Overview
+The system uses a **dual-backend approach** for credential management, with clean separation of concerns:
+
+- **Pass (Unix Password Store)**: Handles ALL automation secrets
+  - API keys (OpenRouter, GitHub, etc.)
+  - Service tokens
+  - CLI tool credentials
+  - SSH passphrases
+  - GPG-encrypted with 8-24 hour agent caching
+
+- **Bitwarden CLI**: Handles ONLY web passwords
+  - Website logins
+  - Browser integration (qutebrowser)
+  - No API keys or automation secrets
+
+### Why This Architecture?
+
+1. **Security Boundary**: API keys never visible to Claude Code or transmitted to Anthropic servers
+2. **Session Duration**: GPG agent caches for 8-24 hours vs Bitwarden's 30-minute timeout
+3. **Automation-Friendly**: Pass works seamlessly in scripts without session management
+4. **Clean Separation**: No confusion about where different secret types belong
+5. **Minimal Dependencies**: Pass requires only GPG (no Electron apps, no GNOME dependencies)
+
+### Pass Setup and Usage
+
+#### Initial Setup (One-time)
+```bash
+# 1. Install pass (handled by bootstrap)
+sudo pacman -S pass
+
+# 2. Check for GPG key
+gpg --list-secret-keys --keyid-format=long
+
+# 3. Generate GPG key if needed
+gpg --gen-key
+# Choose: RSA and RSA, 4096 bits, 2 year expiry
+
+# 4. Initialize pass with your GPG ID
+pass init <your-gpg-id>
+
+# 5. Add your first API key
+pass insert api/openrouter
+# Enter the key when prompted
+```
+
+#### Daily Usage
+```bash
+# View an API key (will prompt for GPG passphrase if cache expired)
+pass show api/openrouter
+
+# Edit an existing key
+pass edit api/openrouter
+
+# List all stored secrets
+pass ls
+
+# Copy to clipboard (clears after 45 seconds)
+pass -c api/openrouter
+```
+
+#### Recommended Organization
+```
+~/.password-store/
+├── api/                 # API keys for external services
+│   ├── openrouter       # OpenRouter API key
+│   ├── github           # GitHub personal access token
+│   └── anthropic        # Anthropic API key
+├── tokens/              # Authentication tokens
+│   └── npm              # NPM auth token
+├── ssh/                 # SSH key passphrases
+└── services/            # Service-specific credentials
+    └── database         # Local database passwords
+```
+
+### GPG Agent Configuration
+
+The GPG agent is configured by bootstrap with extended cache durations:
+- **Default cache**: 8 hours (28800 seconds)
+- **Maximum cache**: 24 hours (86400 seconds)
+- **Pinentry**: Auto-detecting (GUI when available, terminal fallback)
+
+Configuration location: `~/.gnupg/gpg-agent.conf`
+
+To manually reload the agent after config changes:
+```bash
+gpg-connect-agent reloadagent /bye
+```
+
+### MCP Server Integration
+
+MCP servers (like zen-mcp-server) retrieve API keys through wrapper scripts:
+
+```bash
+# Example: zen-mcp-wrapper
+#!/usr/bin/env bash
+OPENROUTER_API_KEY=$(pass show api/openrouter 2>/dev/null | head -n1)
+export OPENROUTER_API_KEY
+exec uvx --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server "$@"
+```
+
+This ensures:
+1. API keys are never hardcoded in configuration files
+2. Claude Code never sees the actual API key values
+3. Keys are only exposed to the specific process that needs them
+
+### Security Best Practices
+
+1. **Never store API keys in**:
+   - Plain text files
+   - Environment variables in shell configs
+   - Git repositories (even private ones)
+   - Claude Code settings files
+
+2. **Always use pass for**:
+   - Any key that grants programmatic access
+   - Tokens used in automation scripts
+   - Credentials for CLI tools
+
+3. **GPG Key Management**:
+   - Use a strong passphrase
+   - Set reasonable expiry (2 years recommended)
+   - Keep a secure backup of your GPG private key
+   - Consider using a hardware key (YubiKey) for extra security
+
+### Troubleshooting
+
+#### GPG Agent Not Caching
+```bash
+# Check agent is running
+gpg-connect-agent /bye
+
+# Verify cache settings
+grep cache ~/.gnupg/gpg-agent.conf
+
+# Restart agent
+gpgconf --kill gpg-agent
+gpg-connect-agent /bye
+```
+
+#### Pass Commands Failing
+```bash
+# Verify pass is initialized
+ls ~/.password-store
+
+# Check GPG key is valid
+gpg --list-secret-keys
+
+# Test GPG directly
+echo "test" | gpg --encrypt -r <your-email> | gpg --decrypt
+```
+
+#### MCP Server Can't Access Keys
+```bash
+# Test wrapper script directly
+~/.local/bin/zen-mcp-wrapper --version
+
+# Check key exists
+pass show api/openrouter
+
+# Verify GPG agent is unlocked
+pass ls  # Should not prompt if cached
+```
+
+### Migration from Other Password Managers
+
+If migrating from Bitwarden or another password manager:
+1. Export API keys from old manager (securely!)
+2. Add to pass one by one: `pass insert api/<service>`
+3. Update wrapper scripts to use pass
+4. Test each integration
+5. Remove API keys from old manager
+6. Securely delete any export files
+
+**Important**: Keep web passwords in Bitwarden for browser integration. Only migrate API keys and automation secrets to pass.
+
 ## Tri-Modal Navigation Philosophy
 
 ### Standardized Directional Controls
