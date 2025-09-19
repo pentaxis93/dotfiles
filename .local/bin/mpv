@@ -3,13 +3,13 @@
 # MPV WRAPPER WITH LF FILE BROWSER INTEGRATION
 # ============================================================================
 # Purpose:
-#   This wrapper enhances mpv to work seamlessly with dmenu by providing
-#   a file browser (lf) when launched without arguments. This solves the
-#   problem of dmenu only passing the command name without file arguments.
+#   This wrapper enhances mpv to work seamlessly with launchers (rofi, dmenu)
+#   by providing a file browser (lf) when launched without arguments. This solves
+#   the problem of launchers only passing the command name without file arguments.
 #
 # Behavior:
 #   - WITH arguments (e.g., 'mpv video.mp4'): Passes through to real mpv
-#   - WITHOUT arguments (from dmenu): Opens lf file browser for selection
+#   - WITHOUT arguments (from launcher): Opens lf file browser for selection
 #
 # Dependencies:
 #   - mpv: The actual video player (/usr/bin/mpv)
@@ -17,7 +17,7 @@
 #   - alacritty: Terminal emulator to display lf
 #
 # Usage Examples:
-#   From dmenu:     Select 'mpv' → Opens lf → Navigate to video → Enter
+#   From launcher:  Select 'mpv' → Opens lf → Navigate to video → Enter
 #   From terminal:  mpv ~/Videos/movie.mp4  (works normally)
 #   With options:   mpv --volume=50 file.mp4  (all options pass through)
 #

@@ -6,7 +6,6 @@ alacritty
 fish
 helix
 git
-dmenu
 numlockx
 xclip
 curl
