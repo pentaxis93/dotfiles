@@ -1,1274 +1,189 @@
-# Dotfiles Management Context
+# Dotfiles Developer Reference
 
-**Working Directory**: `~/.config/dotfiles/`
-**Launch Command**: Use `dotclaude` to start a dotfiles management session
-**Repository Type**: Bare git repo at `~/.dotfiles/` with work-tree in `$HOME`
+## Essential Context
+- **Working Directory**: `~/.config/dotfiles/`
+- **Repository**: Bare git repo at `~/.dotfiles/` with work-tree in `$HOME`
+- **Critical**: `dots` is a Fish function. Claude Code MUST use full git commands:
 
-## Critical Git Commands for Claude Code
-Since `dots` is a Fish shell function, Claude Code must use the full git command:
+| Context | Command |
+|---------|----------|
+| Fish shell | `dots status` |
+| Claude Code | `git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME status` |
+
+**Remember**: Always use absolute paths (`~/path/to/file`), never relative.
+
+## System Stack
+- **OS**: CachyOS Linux (Arch-based)
+- **Window Manager**: BSPWM + SXHKD
+- **Shell**: Fish (with vi mode)
+- **Terminal**: Alacritty
+- **Editor**: Helix
+- **Bar**: Polybar
+
+## Bootstrap System
+
+### Adding Dependencies
 ```bash
-# Fish shell (interactive use):
-dots status
-
-# Claude Code/Bash (what you MUST use):
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME status
-```
-
-## Important Notes
-- Always use absolute paths when adding files: `~/path/to/file` not relative paths
-- The `dots` command only works in Fish shell, not in Claude Code's Bash context
-- This CLAUDE.md only loads when working from the dotfiles workspace
-- Use `dotclaude` instead of `claude code` for dotfiles work
-
----
-
-# System Configuration Context
-
-When Claude Code is invoked in this directory (`~/.config/dotfiles`), we are working on **system configuration and dotfiles management**.
-
-## 🔧 Automated Bootstrap System
-
-### Quick Setup for New Systems
-The dotfiles now include a comprehensive bootstrap system that automates all installation and configuration:
-
-```bash
-# After cloning dotfiles, run:
-~/.local/bin/bootstrap.sh --setup    # Full installation
-~/.local/bin/bootstrap.sh --minimal  # Core packages only
-~/.local/bin/bootstrap.sh --dry-run  # Preview what would be installed
-```
-
-### Bootstrap System Components
-
-1. **`~/.local/bin/bootstrap.sh`** - Main installer script
-   - Installs packages from official repos and AUR
-   - Creates default package lists if missing
-   - Handles batch installation with fallback to individual packages
-   - Provides dry-run mode for previewing changes
-
-2. **`~/.local/bin/setup-system.sh`** - Post-installation configuration
-   - Configures brightness control (ThinkPad)
-   - Sets up GTK themes and icons
-   - Configures Fish as default shell
-   - Enables systemd services
-   - Fixes file permissions
-
-3. **`~/.config/dotfiles/bootstrap/`** - Package list directory (minimalist)
-   - `packages-core.txt` - Essential packages (WM, terminal, shell, polybar utilities)
-   - `packages-tools.txt` - CLI enhancements (only tools we actually use)
-   - `packages-aur.txt` - AUR packages (fonts for terminal/polybar, themes)
-   - `DEPENDENCIES.md` - Comprehensive documentation of all packages
-
-**Note**: This is a minimalist setup. No development packages, no wishlist items, only what's actually used in the dotfiles.
-
-### Managing Dependencies
-
-#### Adding New Dependencies
-When you install a new tool that should be part of the dotfiles:
-
-```bash
-# Add to appropriate package list
+# Add package to list
 echo "package-name" >> ~/.config/dotfiles/bootstrap/packages-tools.txt
-
-# Document why it's needed
-vi ~/.config/dotfiles/bootstrap/DEPENDENCIES.md
-
-# Test that it installs correctly
+# Test installation
 ~/.local/bin/bootstrap.sh --dry-run
 ```
 
-#### Checking Current Dependencies
+### Key Scripts
+| Script | Purpose |
+|--------|----------|
+| `~/.local/bin/bootstrap.sh` | Package installer |
+| `~/.local/bin/setup-system.sh` | System configuration |
+| `~/.config/dotfiles/bootstrap/packages-*.txt` | Package lists |
+
+
+
+## API Key Management (Pass)
+
+**Critical**: MCP servers need API keys. Pass handles this via GPG encryption.
+
+### Setup
 ```bash
-# View all package lists
-ls ~/.config/dotfiles/bootstrap/packages-*.txt
-
-# Check which packages are installed
-for pkg in $(cat ~/.config/dotfiles/bootstrap/packages-core.txt | grep -v '^#'); do
-    pacman -Q $pkg 2>/dev/null && echo "✓ $pkg" || echo "✗ $pkg"
-done
-```
-
-### Manual Setup Steps (If Not Using Bootstrap)
-
-#### Enable Brightness Control (Required for ThinkPad Function Keys)
-Run this command to enable passwordless brightness control:
-```bash
-echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/tee /sys/class/backlight/intel_backlight/brightness" | sudo tee /etc/sudoers.d/brightness
-```
-
-This creates a secure sudoers rule that allows brightness control without password prompts. Without this, the brightness keys (Fn+F7/F8) will not work or will prompt for passwords.
-
-## System Overview
-
-- **OS**: CachyOS Linux (Arch-based distribution)
-- **Kernel**: Linux 6.16.7-2-cachyos
-- **Window Manager**: BSPWM (Binary Space Partitioning Window Manager)
-- **Hotkey Daemon**: SXHKD
-- **Audio Server**: PipeWire 1.4.8 (with PulseAudio compatibility)
-- **Hardware**: ThinkPad (Model: 20W4002HUS)
-- **Shell**: Fish (default)
-- **Terminal**: Alacritty
-- **Editor**: Helix
-
-## Btrfs Snapshot System
-
-### Overview
-The system uses **snapper** for automatic Btrfs snapshots, providing instant system recovery and configuration rollback capabilities. Snapshots are space-efficient due to Btrfs copy-on-write (COW) and compression.
-
-### Automatic Snapshots
-Snapshots are taken automatically via systemd timers with smart retention:
-- **Hourly**: Keep last 6 hours
-- **Daily**: Keep last 7 days
-- **Weekly**: Keep last 4 weeks
-- **Monthly**: Keep last 3 months
-- **Yearly**: Keep last 2 years
-
-### Manual Snapshot Commands
-Helper scripts in `~/.local/bin/` (automatically created by bootstrap):
-
-```bash
-snapshot-create [description]  # Create manual snapshot of root and home
-snapshot-list                  # View all snapshots
-snapshot-diff [config] [n1] [n2]  # Show changes between snapshots
-snapshot-rollback [config] [n]    # Rollback to snapshot (USE WITH CAUTION!)
-```
-
-### Examples
-```bash
-# Before system update
-snapshot-create "Before system upgrade"
-
-# View recent snapshots
-snapshot-list | tail -20
-
-# Check what changed since snapshot 5
-snapshot-diff root 5 0
-
-# Emergency rollback (requires confirmation)
-snapshot-rollback root 10
-```
-
-### Configuration Details
-- **Configs**: Separate configs for `/` (root) and `/home` (home)
-- **Storage**: Snapshots stored in `/.snapshots/` and `/home/.snapshots/`
-- **Space Impact**: Typically <5% of changed data due to COW
-- **Setup**: Automatically configured by `bootstrap/setup/common/10-snapshots.sh`
-
-### Snapshot Management
-```bash
-# Check timer status
-systemctl status snapper-timeline.timer
-systemctl status snapper-cleanup.timer
-
-# View snapshot configs
-sudo snapper list-configs
-
-# Manual cleanup of old snapshots
-sudo snapper -c root cleanup number
-```
-
-### Recovery Scenarios
-1. **Accidental file deletion**: Use `snapshot-diff` to find the file, then copy from snapshot
-2. **Bad configuration change**: Rollback to previous snapshot
-3. **Failed update**: Boot from snapshot via GRUB menu (if configured)
-4. **Pre-experiment checkpoint**: Create manual snapshot before testing
-
-**Note**: Snapshots are NOT backups! They protect against accidental changes but not disk failure. For true backups, use external storage.
-
-## Secret Management System
-
-### Architecture Overview
-The system uses a **dual-backend approach** for credential management, with clean separation of concerns:
-
-- **Pass (Unix Password Store)**: Handles ALL automation secrets
-  - API keys (OpenRouter, GitHub, etc.)
-  - Service tokens
-  - CLI tool credentials
-  - SSH passphrases
-  - GPG-encrypted with 8-24 hour agent caching
-
-- **Bitwarden CLI**: Handles ONLY web passwords
-  - Website logins
-  - Browser integration (qutebrowser)
-  - No API keys or automation secrets
-
-### Why This Architecture?
-
-1. **Security Boundary**: API keys never visible to Claude Code or transmitted to Anthropic servers
-2. **Session Duration**: GPG agent caches for 8-24 hours vs Bitwarden's 30-minute timeout
-3. **Automation-Friendly**: Pass works seamlessly in scripts without session management
-4. **Clean Separation**: No confusion about where different secret types belong
-5. **Minimal Dependencies**: Pass requires only GPG (no Electron apps, no GNOME dependencies)
-
-### Pass Setup and Usage
-
-#### Initial Setup (One-time)
-```bash
-# 1. Install pass (handled by bootstrap)
-sudo pacman -S pass
-
-# 2. Check for GPG key
-gpg --list-secret-keys --keyid-format=long
-
-# 3. Generate GPG key if needed
-gpg --gen-key
-# Choose: RSA and RSA, 4096 bits, 2 year expiry
-
-# 4. Initialize pass with your GPG ID
-pass init <your-gpg-id>
-
-# 5. Add your first API key
+# Initialize pass with GPG key
+pass init <gpg-id>
+# Add API key
 pass insert api/openrouter
-# Enter the key when prompted
 ```
 
-#### Daily Usage
+### MCP Wrapper Pattern
 ```bash
-# View an API key (will prompt for GPG passphrase if cache expired)
-pass show api/openrouter
-
-# Edit an existing key
-pass edit api/openrouter
-
-# List all stored secrets
-pass ls
-
-# Copy to clipboard (clears after 45 seconds)
-pass -c api/openrouter
-```
-
-#### Recommended Organization
-```
-~/.password-store/
-├── api/                 # API keys for external services
-│   ├── openrouter       # OpenRouter API key
-│   ├── github           # GitHub personal access token
-│   └── anthropic        # Anthropic API key
-├── tokens/              # Authentication tokens
-│   └── npm              # NPM auth token
-├── ssh/                 # SSH key passphrases
-└── services/            # Service-specific credentials
-    └── database         # Local database passwords
-```
-
-### GPG Agent Configuration
-
-The GPG agent is configured by bootstrap with extended cache durations:
-- **Default cache**: 8 hours (28800 seconds)
-- **Maximum cache**: 24 hours (86400 seconds)
-- **Pinentry**: Auto-detecting (GUI when available, terminal fallback)
-
-Configuration location: `~/.gnupg/gpg-agent.conf`
-
-To manually reload the agent after config changes:
-```bash
-gpg-connect-agent reloadagent /bye
-```
-
-### MCP Server Integration
-
-MCP servers (like zen-mcp-server) retrieve API keys through wrapper scripts:
-
-```bash
-# Example: zen-mcp-wrapper
 #!/usr/bin/env bash
 OPENROUTER_API_KEY=$(pass show api/openrouter 2>/dev/null | head -n1)
 export OPENROUTER_API_KEY
-exec uvx --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server "$@"
+exec uvx --from git+...zen-mcp-server.git zen-mcp-server "$@"
 ```
 
-This ensures:
-1. API keys are never hardcoded in configuration files
-2. Claude Code never sees the actual API key values
-3. Keys are only exposed to the specific process that needs them
-
-### Security Best Practices
-
-1. **Never store API keys in**:
-   - Plain text files
-   - Environment variables in shell configs
-   - Git repositories (even private ones)
-   - Claude Code settings files
-
-2. **Always use pass for**:
-   - Any key that grants programmatic access
-   - Tokens used in automation scripts
-   - Credentials for CLI tools
-
-3. **GPG Key Management**:
-   - Use a strong passphrase
-   - Set reasonable expiry (2 years recommended)
-   - Keep a secure backup of your GPG private key
-   - Consider using a hardware key (YubiKey) for extra security
-
-### Troubleshooting
-
-#### GPG Agent Not Caching
-```bash
-# Check agent is running
-gpg-connect-agent /bye
-
-# Verify cache settings
-grep cache ~/.gnupg/gpg-agent.conf
-
-# Restart agent
-gpgconf --kill gpg-agent
-gpg-connect-agent /bye
+### Organization
+```
+~/.password-store/
+├── api/          # API keys (openrouter, github, anthropic)
+├── tokens/       # Auth tokens
+└── services/     # Service credentials
 ```
 
-#### Pass Commands Failing
-```bash
-# Verify pass is initialized
-ls ~/.password-store
+**GPG Cache**: 8-24 hours (configured in `~/.gnupg/gpg-agent.conf`)
 
-# Check GPG key is valid
-gpg --list-secret-keys
 
-# Test GPG directly
-echo "test" | gpg --encrypt -r <your-email> | gpg --decrypt
-```
+## Git Commands Reference
 
-#### MCP Server Can't Access Keys
-```bash
-# Test wrapper script directly
-~/.local/bin/zen-mcp-wrapper --version
+**Critical**: Bare repo at `~/.dotfiles/`, work tree at `$HOME`, `showUntrackedFiles = no`
 
-# Check key exists
-pass show api/openrouter
+| Operation | Claude Code Command |
+|-----------|--------------------|
+| Status | `git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME status` |
+| Add | `git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add ~/path/file` |
+| Commit | `git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME commit -m "msg"` |
+| Push | `git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME push` |
+| Diff | `git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME diff` |
 
-# Verify GPG agent is unlocked
-pass ls  # Should not prompt if cached
-```
+**Gotchas**:
+- Always use absolute paths (`~/...` not `./...`)
+- `dots` command doesn't work in Claude Code (Fish function)
+- Untracked files hidden by default (use `-u` to see them)
 
-### Migration from Other Password Managers
 
-If migrating from Bitwarden or another password manager:
-1. Export API keys from old manager (securely!)
-2. Add to pass one by one: `pass insert api/<service>`
-3. Update wrapper scripts to use pass
-4. Test each integration
-5. Remove API keys from old manager
-6. Securely delete any export files
+## Key Files
 
-**Important**: Keep web passwords in Bitwarden for browser integration. Only migrate API keys and automation secrets to pass.
+| Category | Path |
+|----------|------|
+| WM Config | `~/.config/bspwm/bspwmrc` |
+| Hotkeys | `~/.config/sxhkd/sxhkdrc` |
+| Shell | `~/.config/fish/config.fish` |
+| Terminal | `~/.config/alacritty/alacritty.toml` |
+| Bar | `~/.config/polybar/config.ini` |
+| Editor | `~/.config/helix/config.toml` |
+| Claude | `~/.claude/settings.json` |
 
-## Tri-Modal Navigation Philosophy
 
-### Standardized Directional Controls
-All applications in this system support **three forms of directional input** wherever possible:
-1. **Vim keys** (h/j/k/l) - For keyboard enthusiasts
-2. **Arrow keys** - Universal standard
-3. **Numpad keys** (2/4/6/8) - For numpad users
+## Polybar Window Titles
 
-This consistency reduces cognitive load when switching between applications.
+**Key**: `window-title-daemon.sh` monitors via `bspc subscribe` + `xprop -spy`
+- Filters redundant app names ("tmux - tmux" → "project")
+- Requires tmux: `set -g set-titles on`
 
-### Implementation Status
 
-#### ✅ Full Tri-Modal Support
-- **BSPWM/SXHKD**: Window navigation with Super modifier
-  - `Super + {h,j,k,l}` / `Super + arrows` / `Super + numpad`
-- **Tmux**: Tab navigation with Alt+Shift modifier (tab-only mode, no panes)
-  - `Alt+Shift + {h,l}` / `Alt+Shift + arrows` / `Alt+Shift + numpad`
-  - Alternative vim keys: `Alt+Shift + {j,k}` for previous/next
-- **MPV**: Video seeking (5 sec, 60 sec, 5 min intervals)
-  - Basic: `{h,l,j,k}` / `arrows` / `numpad`
-  - Modified: `Shift/Ctrl + keys` for larger jumps
-- **Btop**: Process navigation with vim_keys enabled
 
-#### ⚡ Native Support (Partial)
-- **Helix**: Native vim + arrow support (external app, no numpad possible)
-- **Fish Shell**: Vi mode with hjkl + native arrow support
+## Gruvbox Colors
 
-### Key Design Decisions
+| Role | Color | Hex |
+|------|-------|-----|
+| Background | dark | `#1d2021` |
+| Foreground | cream | `#ebdbb2` |
+| Primary Accent | bright aqua | `#8ec07c` |
+| Secondary | regular aqua | `#689d6a` |
+| Error | red | `#fb4934` |
+| Warning | yellow | `#fabd2f` |
+| Success | green | `#b8bb26` |
 
-1. **Modifier Choice**: Each app uses appropriate modifiers to avoid conflicts:
-   - BSPWM: Super (system-wide window management)
-   - Tmux: Alt+Shift (avoids Fish shell Alt+l conflict)
-   - MPV: No modifier for basic navigation
 
-2. **Tab-Only Tmux**: We disabled tmux panes entirely to avoid the "nested panes problem"
-   where tmux panes inside BSPWM tiles create navigation confusion. BSPWM handles tiling,
-   tmux handles only terminal tabs.
 
-3. **Terminal Encoding**: Alt+Shift+letter sends Alt+UPPERCASE in terminals,
-   so tmux uses `M-H` instead of `M-S-h` in its configuration.
+## Development Workflow
 
-### Testing Navigation
-To verify tri-modal navigation works in any app:
-1. Test vim keys: h (left), l (right), j (down), k (up)
-2. Test arrow keys: ←, →, ↓, ↑
-3. Test numpad: 4 (left), 6 (right), 2 (down), 8 (up) with NumLock ON
+### Test-and-Commit Pattern
+1. Make atomic change
+2. Test immediately
+3. Commit if working
+4. Document in-file (not external docs)
 
-## Dotfiles Management
+### Bootstrap Over Manual
+- New system tools → Add to bootstrap scripts
+- Don't document manual steps → Automate them
+- Critical for: systemd, sudoers, polkit
 
-This system uses a **bare Git repository** for dotfiles management - a clever technique that tracks config files without making your entire home directory a git repository.
+### Commit Messages
+- Focus on what/why, not who
+- Skip attribution footers (git tracks authorship)
+- Clean, descriptive messages
 
-### Understanding the Bare Repository Setup
+## System Notes
 
-#### What is a Bare Repository?
-A bare repository contains only git's version control data (normally in `.git/`), without a working directory. Our setup:
-- **Bare repo location**: `~/.dotfiles/` (contains git objects, refs, config, etc.)
-- **Work tree**: `$HOME` (your actual home directory with the config files)
-- **Key configuration**: `showUntrackedFiles = no` (only shows explicitly tracked files)
+| Component | Value |
+|-----------|---------|
+| Package Manager | `pacman` + `yay` (AUR) |
+| Init | systemd |
+| Graphics | Intel Tiger Lake-LP |
+| Backlight | `/sys/class/backlight/intel_backlight/` |
 
-#### Why Use a Bare Repository for Dotfiles?
-1. **No `.gitignore` pollution**: You don't need a massive `.gitignore` in your home directory
-2. **Selective tracking**: Only track the specific config files you want
-3. **Clean `git status`**: Untracked files are hidden by default
-4. **No nested repo issues**: Works seamlessly with other git projects in your home
+## Claude Code Configuration
 
-### Critical Commands - Two Forms
+### Setup
+- Installed via bootstrap (NPM)
+- Binary: `~/.local/bin/claude`
+- Config: `~/.claude/settings.json` (tracked)
 
-**IMPORTANT FOR CLAUDE CODE**: The `dots` command is a Fish shell function. In Claude Code's Bash context, you MUST use the full git command:
+### Security Zones
+| Zone | Permissions |
+|------|-------------|
+| Green | Read-only (ls, cat, git status) |
+| Yellow | User modifications (git commit, npm, pkill) |
+| Red | System changes (always prompts) |
 
-```bash
-# Fish Shell Form (for interactive terminal use):
-dots status
-dots add ~/.config/newapp/config
-dots commit -m "Add newapp configuration"
-dots push
-
-# Claude Code/Bash Form (REQUIRED in Claude Code):
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME status
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add ~/.config/newapp/config
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME commit -m "Add newapp configuration"
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME push
-```
-
-### Common Operations
-
-#### Checking Repository Status
-```bash
-# Claude Code must use:
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME status
-
-# Shows only tracked files (untracked files are hidden due to showUntrackedFiles = no)
-# To see untracked files temporarily:
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME status -u
-```
-
-#### Adding a New Configuration File
-```bash
-# ALWAYS use absolute paths starting with ~ or /home/username
-# Claude Code:
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add ~/.config/alacritty/alacritty.toml
-
-# Fish shell:
-dots add ~/.config/alacritty/alacritty.toml
-```
-
-#### Viewing Changes
-```bash
-# See unstaged changes in tracked files
-# Claude Code:
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME diff
-
-# See staged changes:
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME diff --cached
-```
-
-#### Committing Changes
-```bash
-# Claude Code:
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME commit -m "Update alacritty theme"
-
-# Fish shell:
-dots commit -m "Update alacritty theme"
-```
-
-#### Viewing History
-```bash
-# Claude Code:
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME log --oneline -n 10
-
-# See what changed in a specific file:
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME log -p ~/.config/fish/config.fish
-```
-
-### Fish Shell Abbreviations
-
-For interactive use in Fish shell, these abbreviations are configured:
-- `da` → `dots add`
-- `dc` → `dots commit`
-- `dp` → `dots push`
-- `dst` → `dots status`
-- `dd` → `dots diff`
-
-**Note**: These abbreviations do NOT work in Claude Code's Bash context.
-
-### Common Pitfalls & Solutions
-
-#### Pitfall: "dots: command not found" in Claude Code
-**Solution**: Use the full git command:
-```bash
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME <command>
-```
-
-#### Pitfall: File not showing in status after adding
-**Cause**: Using relative paths
-**Solution**: Always use absolute paths:
-```bash
-# Wrong:
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add .config/app/config
-
-# Right:
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add ~/.config/app/config
-```
-
-#### Pitfall: Tons of untracked files showing
-**Cause**: Missing the `showUntrackedFiles = no` configuration
-**Solution**: This should already be configured, but if not:
-```bash
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME config status.showUntrackedFiles no
-```
-
-#### Pitfall: Can't push/pull
-**Cause**: Remote not configured properly
-**Check**:
-```bash
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME remote -v
-```
-
-### Understanding the Output
-
-When you run status, you'll only see:
-- Files that have been modified (if they were previously tracked)
-- Files that have been staged for commit
-- Files that have been deleted (if they were previously tracked)
-
-You will NOT see:
-- Untracked files (unless you use `-u` flag)
-- Files outside your home directory
-- System files you haven't explicitly added
-
-
-## Key Configuration Files
-
-### Window Manager & Hotkeys
-- `~/.config/bspwm/bspwmrc` - BSPWM configuration
-- `~/.config/sxhkd/sxhkdrc` - Keyboard shortcuts (including ThinkPad function keys)
-
-### Shell Configurations
-- `~/.config/fish/config.fish` - Fish shell configuration
-- `~/.config/fish/functions/` - Custom Fish functions (including `dots`)
-
-### Other Important Configs
-- `~/.config/alacritty/` - Terminal emulator configuration
-- `~/.config/polybar/` - Status bar configuration
-
-## ThinkPad Function Keys
-
-The following function keys are configured in SXHKD:
-
-### Volume Controls
-- **Fn+F1** or **Super+F1** → Mute/unmute audio
-- **Fn+F2** or **Super+F2** → Volume down (10%)
-- **Fn+F3** or **Super+F3** → Volume up (10%)
-
-### Microphone
-- **Fn+F4** or **Super+F4** → Mute/unmute microphone
-
-### Display & Brightness
-- **Fn+F7** or **Super+F7** → Brightness down (10%)
-- **Fn+F8** or **Super+F8** → Brightness up (10%)
-
-## Polybar Window Title System
-
-### Overview
-The polybar displays intelligent, context-aware window titles that update in real-time when switching windows, tmux tabs, or browser tabs. This system solves the problem of titles being too long, redundant, or not updating when tabs change within applications.
-
-### How It Works
-
-#### Architecture
-1. **Independent Daemon**: `~/.config/polybar/scripts/window-title-daemon.sh` runs separately from polybar
-   - Started by `~/.config/polybar/launch.sh` when polybar launches
-   - Uses IPC hooks to communicate with polybar (doesn't block hide/show)
-
-2. **Dual Monitoring**:
-   - **Focus changes**: Via `bspc subscribe node_focus desktop_focus`
-   - **Title changes**: Via `xprop -spy WM_NAME` on the focused window
-   - This catches both window switches AND tab switches within apps
-
-3. **Smart Filtering**: Transforms verbose titles into concise labels
-   - Removes redundancy: "tmux - tmux" → just shows current tmux window name
-   - Simplifies web apps: "(1) WhatsApp — Mozilla Firefox" → "WhatsApp"
-   - Intelligent fallback: Shows actual page titles when app can't be identified
-
-### Title Transformation Examples
-
-```
-Raw Title                                    → Displayed As
-──────────────────────────────────────────────────────────
-"~/dev/project: tmux - tmux"                → "project"
-"(1) WhatsApp — Mozilla Firefox"            → "WhatsApp"
-"Issue #123 · owner/repo — GitHub"          → "GitHub"
-"pentaxis93"                                → "pentaxis93" (GitHub profile, no "GitHub" in title)
-"Some Blog Post — Medium"                   → "Some Blog Post"
-"Video Title - YouTube"                     → "Video Title"
-```
-
-### Configuration & Customization
-
-#### Adding a New Web App for Simplified Display
-Edit `~/.config/polybar/scripts/window-title-daemon.sh`, find the web apps section (~line 150):
-```bash
-# Add your app to the detection pattern
-elif echo "$title" | grep -qE "(WhatsApp|Gmail|...|YourApp)"; then
-    # Add a condition for your app
-    elif echo "$title" | grep -q "YourApp"; then
-        title="YourApp"
-```
-
-#### Adjusting Title Length
-Change `MAX_LENGTH` at the top of the daemon script (default: 30 chars)
-
-### Troubleshooting
-
-#### Problem: Tmux tabs not updating when switching
-```bash
-# Check if tmux titles are enabled
-tmux show-options -g | grep set-titles
-# Should show: set-titles on
-
-# If not, add to ~/.tmux.conf:
-set -g set-titles on
-set -g set-titles-string '#W'
-
-# Then reload tmux config:
-tmux source-file ~/.tmux.conf
-```
-
-#### Problem: Titles stuck or not updating at all
-```bash
-# Check for zombie daemons
-ps aux | grep window-title-daemon
-
-# Kill all and restart cleanly
-killall window-title-daemon.sh
-killall xprop
-rm /tmp/window-title-daemon.pid
-~/.config/polybar/launch.sh
-```
-
-#### Debug mode for troubleshooting
-```bash
-# Edit daemon script and set DEBUG=1
-vi ~/.config/polybar/scripts/window-title-daemon.sh
-
-# Then check logs:
-tail -f /tmp/window-title-daemon.log
-```
-
-### Related Files
-- `~/.config/polybar/scripts/window-title-daemon.sh` - The main daemon with filtering logic
-- `~/.config/polybar/config.ini` - Defines window-title module (custom/ipc type)
-- `~/.config/polybar/launch.sh` - Starts daemon with polybar
-- `~/.tmux.conf` - Must have `set-titles on` for tmux tab detection
-- `/tmp/window-title.txt` - Current title (what polybar reads via hook)
-
-## Common Tasks
-
-### Adding New Configuration to Dotfiles
-```bash
-# Fish shell:
-dots add ~/.config/newapp/config
-dots commit -m 'Add newapp configuration'
-dots push
-
-# Claude Code/Bash (use this in Claude Code):
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add ~/.config/newapp/config
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME commit -m 'Add newapp configuration'
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME push
-```
-
-### Reloading Configurations
-```bash
-# Reload SXHKD (or use Super+Escape)
-pkill -USR1 -x sxhkd
-
-# Restart BSPWM (or use Super+Alt+R)
-bspc wm -r
-```
-
-### Audio Management
-```bash
-# Using wpctl (PipeWire)
-wpctl get-volume @DEFAULT_AUDIO_SINK@
-wpctl set-volume @DEFAULT_AUDIO_SINK@ 50%
-wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
-```
-
-### Brightness Control
-Brightness is controlled via sysfs. Note: Requires sudo privileges.
-```bash
-# Current brightness
-cat /sys/class/backlight/intel_backlight/brightness
-
-# Set brightness (max is 19393)
-echo 10000 | sudo tee /sys/class/backlight/intel_backlight/brightness
-```
-
-## Documentation Lookup
-
-### Context7 MCP Server for Accurate Documentation
-
-Context7 is an MCP (Model Context Protocol) server that provides **real-time, version-specific documentation** directly to Claude Code. Instead of relying on potentially outdated training data or web searches, context7 fetches current documentation straight from the source.
-
-#### Why Use Context7?
-
-- **Eliminates outdated code examples** - No more deprecated APIs or old syntax
-- **Prevents hallucinated functions** - Only real, documented features
-- **Version-specific accuracy** - Gets the exact documentation for current versions
-- **Faster than web searches** - Direct documentation access without search result parsing
-
-#### When to Use Context7
-
-Use context7 instead of web searches when you need documentation for:
-- **Terminal emulators**: alacritty, kitty, wezterm configurations
-- **Development tools**: tmux, helix, fish, vim, neovim
-- **Programming languages**: Python, JavaScript, Rust, Go
-- **Web frameworks**: React, Vue, Next.js, Express
-- **System utilities**: systemd, git, docker
-- **Package managers**: npm, cargo, pip
-
-#### How to Use
-
-Simply add "use context7" to your prompts:
-- "use context7 to show me tmux pane navigation options"
-- "use context7 for the latest React hooks documentation"
-- "use context7 to explain systemd timer units"
-
-#### Setup
-
-Context7 is automatically configured during bootstrap via `~/.config/dotfiles/bootstrap/setup/common/08-claude-code.sh`. It runs as a remote HTTP server, requiring no API key for personal use.
-
-To verify it's working:
-```bash
-claude mcp list  # Should show: context7: https://mcp.context7.com/mcp (HTTP) - ✓ Connected
-```
-
-#### Troubleshooting
-
-If context7 isn't responding:
-1. Check connection: `claude mcp list`
-2. Reconfigure if needed: `claude mcp add --transport http context7 https://mcp.context7.com/mcp`
-3. Restart Claude Code and try again
-
-Note: Context7 works on the free tier with reasonable rate limits for personal use. No API key needed.
-
-## System Theme: Gruvbox Dark Hard
-
-The entire system uses the **Gruvbox Dark Hard** color scheme with a custom cyan accent hierarchy for semantic consistency across all applications.
-
-### Color Palette Reference
-
-#### Core Colors
-- **Background**: `#1d2021` (hard dark) - Primary background
-- **Background Alt**: `#3c3836` (dark gray) - Secondary backgrounds, inactive elements
-- **Foreground**: `#ebdbb2` (light cream) - Primary text
-- **Disabled**: `#928374` (gray) - Disabled or muted elements
-
-#### Accent Colors (Our Cyan Hierarchy)
-- **Primary Accent**: `#8ec07c` (bright aqua) - Active/focused/selected elements
-- **Secondary Accent**: `#689d6a` (regular aqua) - Labels, informational text, inactive accents
-
-#### Semantic Colors
-- **Error/Alert**: `#fb4934` (bright red) - Errors, alerts, urgent items
-- **Warning**: `#fabd2f` (bright yellow) - Warnings, caution states
-- **Success**: `#b8bb26` (bright green) - Success states, confirmations
-- **Info**: `#83a598` (bright blue) - Informational messages
-
-### Why Aqua Looks "Greenish"
-The Gruvbox "aqua" colors (`#8ec07c` and `#689d6a`) intentionally lean toward green rather than pure cyan. This creates a warmer, more organic feel that fits Gruvbox's retro, earthy aesthetic. This is not a bug but a deliberate design choice that distinguishes Gruvbox from cooler, more synthetic color schemes.
-
-### Applied Configurations
-- **Terminal**: Alacritty, Tmux, Fish shell with Gruvbox colors
-- **Window Manager**: BSPWM with aqua borders (`#8ec07c`)
-- **Status Bar**: Polybar with cyan accent hierarchy
-- **Prompt**: Pure - minimal async prompt for fish
-- **Editor**: Helix with gruvbox_dark_hard
-- **File Manager**: Thunar with custom GTK overrides
-- **Icons**: Papirus-Dark with teal folders (closest to our aqua)
-- **GTK Theme**: Gruvbox-Teal-Dark with custom CSS overrides in `~/.config/gtk-3.0/gtk.css`
-
-## Configuration Documentation Best Practices
-
-### In-File Documentation Philosophy
-**Documentation should live as close to the code as possible.** Future developers (including yourself) will look at the file itself, not external documentation. Well-documented configurations are self-contained and self-explanatory.
-
-### The Documentation Hierarchy
-
-1. **File Header Block**: Purpose, behavior, dependencies
-2. **Section Headers**: Group related settings with clear titles
-3. **Inline Comments**: Explain the WHY, not just the what
-4. **Examples**: Show usage patterns where helpful
-
-### Best Practices for Discoverable Documentation
-
-#### 1. Start with a Comprehensive Header
-Every script or complex config should have:
-```bash
-# ============================================================================
-# TITLE IN CAPS
-# ============================================================================
-# Purpose:
-#   What problem does this solve?
-#
-# How it works:
-#   High-level overview of the mechanism
-#
-# Dependencies:
-#   What needs to be installed/configured
-#
-# Usage:
-#   Examples of how to use it
-#
-# Troubleshooting:
-#   Common issues and solutions
-#
-# Related Files:
-#   Other configs that interact with this
-# ============================================================================
-```
-
-#### 2. Always Explain the "Why"
-Don't just document what a setting does - explain why you chose it.
-
-**Bad:**
-```bash
-bspc config focused_border_color "#8ec07c"  # Set border color
-```
-
-**Good:**
-```bash
-bspc config focused_border_color "#8ec07c"  # Bright aqua - matches terminal accent, draws attention to focused window
-```
-
-**Better:**
-```bash
-volume=70                        # Default volume level (0-100)
-                                # WHY: Safe starting volume that won't blast your ears
-```
-
-#### 3. Group Related Settings with Section Headers
-```bash
-# ============================================================================
-# WATCH LATER / RESUME FEATURES
-# ============================================================================
-# These settings ensure you never lose your place in a video...
-
-save-position-on-quit=yes       # Auto-save position when quitting
-resume-playback=yes              # Auto-resume from saved position
-```
-
-#### 4. Document Non-Obvious Interactions
-```bash
-# Kill any existing instances to prevent duplicates
-pkill -f polybar-autohide.sh 2>/dev/null
-sleep 0.5  # Brief pause to ensure clean termination
-
-# Start with nohup so it survives parent shell exit
-nohup "$HOME/.config/bspwm/polybar-autohide.sh" >/dev/null 2>&1 &
-```
-
-#### 5. Include Debugging Information
-```bash
-# Debugging:
-#   - Check if running: pgrep -f polybar-autohide.sh
-#   - View logs: tail -f /tmp/polybar-autohide.log
-#   - Manual restart: pkill -f polybar-autohide.sh && nohup ~/.config/bspwm/polybar-autohide.sh &
-```
-
-#### 6. Document Configuration Points
-```bash
-# To add more video players, add them to this regex pattern (e.g., |kodi|plex)
-if [[ "$win_class" =~ ^(mpv|vlc|mplayer|smplayer|celluloid|haruna)$ ]]; then
-```
-
-#### 7. Document Color Semantics
-Explain what each color represents in your UI hierarchy.
-
-```css
-/* Color hierarchy:
- * - Bright aqua (#8ec07c): Active/focused elements (grabs attention)
- * - Regular aqua (#689d6a): Informational text (provides context)
- * - Gray (#928374): Disabled items (de-emphasized)
- */
-```
-
-#### 8. Include Both Hex Codes and Names
-Always provide both for clarity:
-```css
-color: #8ec07c;  /* bright aqua */
-```
-
-#### 9. Cross-Reference Related Configs
-Note when settings should match across tools:
-```bash
-# This should match the border color in ~/.config/bspwm/bspwmrc
-set -g pane-active-border-style 'fg=#8ec07c'
-```
-
-#### 10. Explain Non-Obvious Choices
-Document anything that might confuse future you:
-```css
-/* Using 30% opacity to keep text readable while showing selection.
- * Higher opacity makes the underlying text too hard to read. */
-background-color: rgba(142, 192, 124, 0.3);
-```
-
-#### 11. Document Overrides and Workarounds
-Explain why you're overriding defaults:
-```css
-/* Override Gruvbox-Teal theme selection color (#89b482)
- * to match our consistent aqua accent (#8ec07c) */
-.thunar .sidebar row:selected {
-  background-color: rgba(142, 192, 124, 0.3);
-}
-```
-
-## Documentation System
-
-### Structure
-Our documentation follows a minimal, high-value approach:
-
-- **docs/adr/** - Architecture Decision Records for important choices
-- **docs/issues/** - Investigations of complex problems
-- **docs/roadmap/** - Planning for significant features
-- **docs/README.md** - Navigation index for all documentation
-- **CHANGELOG.md** - Track all changes with date-based versioning
-- **CLAUDE.md** - This file, the primary system documentation
-
-### Documentation Triggers
-
-#### Must Document:
-- **Architectural decisions** → Create ADR using template
-- **Complex problem solutions** → Create issue doc
-- **New tool integrations** → Update CLAUDE.md
-- **Breaking changes** → Update CHANGELOG.md prominently
-
-#### Consider Documenting:
-- Non-obvious workarounds → Inline comments or CLAUDE.md
-- Performance optimizations → Brief ADR or commit message
-- Configuration rationale → Inline comments
-
-#### Don't Document:
-- Obvious changes (formatting, typos)
-- Standard tool configurations
-- Temporary experiments
-
-### Maintaining Documentation
-
-When making changes:
-1. Ask: "Will I wonder why later?" → Create ADR
-2. Ask: "Is this non-obvious?" → Add inline comment
-3. Ask: "Does this change workflows?" → Update CLAUDE.md
-4. Always: Write clear commit messages
-
-Remember: This is personal dotfiles, not enterprise software. Document the
-"why" when it matters, skip the bureaucracy when it doesn't.
-
-### Finding Documentation
-
-```bash
-# Search all documentation
-grep -r "search term" ~/.config/dotfiles/docs/
-
-# Find specific ADRs
-ls ~/.config/dotfiles/docs/adr/
-
-# Check recent changes
-head -50 ~/.config/dotfiles/docs/CHANGELOG.md
-```
-
-## Development Patterns
-
-### Test-and-Commit Checkpoint Pattern
-When making configuration changes, follow this critical pattern:
-
-1. **Make a single, atomic change** - One feature/fix at a time
-2. **Test the change thoroughly** - Verify it works as expected
-3. **Commit immediately if successful** - Create a checkpoint
-4. **Document any setup requirements** - In the file where users will look
-
-**Why this matters:**
-- **Atomic commits** make it easy to identify which change broke something
-- **Immediate testing** catches problems before they compound
-- **Frequent commits** create restore points you can revert to
-- **In-file documentation** ensures setup requirements are discoverable
-
-**Example workflow:**
-```bash
-# 1. Make change
-vi ~/.config/sxhkd/sxhkdrc
-
-# 2. Test immediately
-pkill -USR1 -x sxhkd  # Reload
-# Test the actual keybinding
-
-# 3. Commit if working (Fish shell)
-dots add ~/.config/sxhkd/sxhkdrc
-dots commit -m "Fix: Improve keybinding for X feature"
-
-# Or in Claude Code:
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add ~/.config/sxhkd/sxhkdrc
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME commit -m "Fix: Improve keybinding for X feature"
-
-# 4. Move to next change
-# Repeat pattern
-```
-
-**Bad pattern (avoid this):**
-- Making 10 changes across multiple files
-- Testing everything at the end
-- One giant commit with "Various improvements"
-- Finding something broken with no idea which change caused it
-
-### Configuration Philosophy
-- **Simplicity First**: Prefer direct inline commands over helper scripts when possible
-- **Version Control**: All configuration changes should be committed to the dotfiles repo
-- **Documentation**: Update this file when adding new tools or changing workflows
-- **Test Checkpoints**: Always test-and-commit after each discrete change
-
-### Bootstrap Over Manual Configuration Pattern
-**System configuration should be reproducible through bootstrap scripts, not manual setup.**
-
-When adding new system tools or services:
-- ❌ **Don't**: Manually run configuration commands and document them
-- ✅ **Do**: Create bootstrap scripts that automate the entire setup
-
-**Why this matters:**
-- **Reproducibility**: Any new system can be configured identically
-- **Version Control**: Configuration logic is tracked as code
-- **Documentation**: The script IS the documentation - no drift between docs and reality
-- **Disaster Recovery**: Quick restoration after system failure
-- **Testing**: Can verify setup in VMs or containers
-
-**Example - The Wrong Way:**
-```bash
-# Manually configuring a service
-sudo systemctl enable some-service
-sudo edit /etc/some-service/config
-# Update documentation to tell future self what you did
-```
-
-**Example - The Right Way:**
-```bash
-# Create bootstrap/setup/common/10-some-service.sh
-#!/usr/bin/env bash
-# Script that configures the service
-# Configuration templates in bootstrap/configs/
-# Automatically run by bootstrap.sh
-```
-
-This principle is especially critical for:
-- System services (systemd units)
-- Package configurations (like snapper)
-- Security settings (sudoers, polkit)
-- Anything requiring root/sudo access
-
-### Commit Message Philosophy
-- **Clean Messages**: Focus on what changed and why, not who made the change
-- **No Attribution Footers**: Avoid "Generated by", "Co-authored-by", or emoji footers in personal dotfiles
-- **Git Tracks Authorship**: The version control system already records who made each commit
-- **Signal Over Noise**: Every line should add value - metadata that duplicates git's built-in tracking just adds clutter
-
-**Good commit message:**
-```
-Update CLAUDE.md: Remove outdated Zsh references
-
-- Fish is now the only shell (Zsh not installed)
-- Simplify dotfiles command examples
-```
-
-**Unnecessary additions:**
-```
-🤖 Generated with Claude Code
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
-
-These footers don't add value in a personal repository where you're the primary author and git already tracks timestamps and authorship.
-
-### When Making Configuration Changes
-1. Test changes locally first
-2. Review changes before committing:
-   - Fish shell: `dots diff`
-   - Claude Code: `git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME diff`
-3. Write clean, descriptive commit messages
-4. Skip attribution footers - git already tracks authorship
-
-### Best Practices
-- Keep SXHKD keybindings simple and well-commented
-- Use tabs (not spaces) for indentation in SXHKD config
-- Test keybindings after reloading SXHKD
-- Document any new tools or scripts added to the system
-
-## System-Specific Notes
-
-- **Package Manager**: `pacman` (with `yay` for AUR packages)
-- **Init System**: systemd
-- **Graphics**: Intel integrated graphics (Tiger Lake-LP)
-- **Backlight Path**: `/sys/class/backlight/intel_backlight/`
-
-## Claude Code Integration
-
-Claude Code is configured with a security-focused, layered approach.
-
-### Installation
-- **Method**: Automatically installed via `bootstrap.sh` using NPM
-- **Binary Location**: `~/.local/bin/claude` (via NPM prefix configuration)
-- **First-time Setup**: Run `claude login` to authenticate
-- **Notification Setup**: Handled by `setup-system.sh` (terminal bell)
-
-### Configuration Architecture
-
-#### **Settings Hierarchy**
-1. **Global Settings** (`~/.claude/settings.json`) - Tracked in dotfiles
-   - Model: `opus` (automatically uses latest)
-   - Output style: `Explanatory`
-   - Security-zoned permissions (Green + Yellow zones)
-   - Development environment variables
-
-2. **Dotfiles Project Settings** (`~/.config/dotfiles/.claude/settings.json`) - Tracked
-   - Dotfiles-specific permissions only (dots, bspwm, polybar)
-   - No duplication of global permissions
-
-3. **Local Overrides** (`*.local.json`) - Never tracked
-   - Machine-specific overrides (kept minimal)
-
-#### **Security Zone Model**
-
-**Green Zone** (Safe, read-only):
-- Information commands (echo, ps, which, env)
-- File inspection (ls, grep, cat, head, tail)
-- Package queries (pacman -Q, npm list)
-- Git status operations
-- System queries (fc-list, locale, bspc query)
-
-**Yellow Zone** (User-level modifications):
-- Process control (pkill, kill)
-- Development tools (make, npm, python, cargo)
-- Testing/linting (pytest, eslint, ruff)
-- Version control (git add/commit/push)
-- Common utilities (curl, wget, tar)
-
-**Red Zone** (Implicit - always asks):
-- System modifications (sudo, pacman -S)
-- Force operations (git push -f, rm -rf)
-- Global changes (/etc modifications)
-
-#### **Environment Variables**
+### Key Environment Variables
 ```json
 {
   "EDITOR": "helix",
   "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "1",
-  "BASH_MAX_OUTPUT_LENGTH": "50000",
-  "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "8192",
   "USE_BUILTIN_RIPGREP": "1"
 }
 ```
 
-### Common Pitfalls to Avoid
+### Philosophy
+"Configs just work" - track files where apps expect them, no templates/copying.
 
-**For Future Claude Code Instances - Learn from Our Mistakes:**
+## Quick Fixes
 
-❌ **Don't overthink it:**
-- Don't create template files that need copying - configs are tracked directly
-- Don't create per-app setup helper scripts - configs just work when in place
-- Don't track `.config/claude/` - that's the wrong location
+| Problem | Solution |
+|---------|----------|
+| `dots` not found | Use full git command (Fish function) |
+| SXHKD keybindings | `pkill -USR1 -x sxhkd` to reload |
+| Brightness keys | Run sudoers setup in bootstrap |
+| Polybar not hiding | Check `polybar-autohide.sh` daemon |
+| Colors wrong | Verify `$TERM` and font installation |
 
-✅ **Keep it simple:**
-- Track `~/.claude/settings.json` directly - these are user preferences
-- Follow the existing pattern - look at how alacritty, fish, or bspwm work
-- Install via bootstrap, track config, done - no additional abstraction needed
-
-### The Dotfiles Philosophy
-
-This repository follows a "configs just work" principle:
-1. **Install** via bootstrap (pacman/yay/npm)
-2. **Track** config files directly where the app expects them
-3. **That's it** - no unnecessary abstraction layers
-
-When adding new tools, resist the urge to be clever. The beauty of this dotfiles setup is its simplicity. Configs are tracked in their natural locations, apps find them automatically, everything just works.
-
-**Example of the pattern:**
-- Alacritty config? → Track `.config/alacritty/alacritty.toml`
-- Fish config? → Track `.config/fish/config.fish`
-- Claude user settings? → Track `.claude/settings.json`
-
-No templates, no copying, no setup scripts. Direct tracking.
-
-## Troubleshooting
-
-### If `dots` command not found
-The `dots` command is a Fish function that only works in Fish shell.
-- **In Claude Code**: Always use the full command: `git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME <command>`
-- **In Bash/other shells**: Use the full git command above
-- **In Fish shell**: Check if function exists: `type dots`
-
-### If keybindings don't work
-1. Check SXHKD is running: `pgrep sxhkd`
-2. Reload configuration: `pkill -USR1 -x sxhkd`
-3. Check for syntax errors: `sxhkd -c ~/.config/sxhkd/sxhkdrc`
-
-### Audio issues
-- Check PipeWire status: `systemctl --user status pipewire`
-- List audio sinks: `pactl list sinks short`
-- Check current default: `wpctl status`
-
-### Brightness keys not working
-If brightness keys prompt for password or don't work:
-1. Run the one-time setup command:
-   ```bash
-   echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/tee /sys/class/backlight/intel_backlight/brightness" | sudo tee /etc/sudoers.d/brightness
-   ```
-2. Test manually: `~/.local/bin/brightness up`
-3. Check backlight exists: `ls /sys/class/backlight/`
-4. Verify max brightness: `cat /sys/class/backlight/intel_backlight/max_brightness`
-
-### Polybar issues
-- Not appearing: Check logs at `/tmp/polybar.log`
-- Not hiding for videos:
-  - Check daemon: `pgrep -f polybar-autohide.sh`
-  - View logs: `tail -f /tmp/polybar-autohide.log`
-  - Restart: `pkill -f polybar-autohide.sh && nohup ~/.config/bspwm/polybar-autohide.sh &`
-- Manual toggle not working: Ensure `enable-ipc = true` in polybar config
-
-### Terminal colors look wrong
-- Verify terminal reports 256 colors: `echo $TERM`
-- Test colors: `for i in {0..255}; do printf "\x1b[38;5;${i}mcolor%-5i\x1b[0m" $i ; if ! (( ($i + 1 ) % 8 )); then echo ; fi ; done`
-- Check Alacritty config: `alacritty --print-events` (look for config errors)
-- Ensure font installed: `fc-list | grep -i meslo`
-
-### Fish shell issues
-- Abbreviations not working: Run `abbr --list` to see current abbreviations
-- Slow startup: Check for issues with `fish --profile-startup /tmp/fish-profile`
-- Config not loading: Verify file exists at `~/.config/fish/config.fish`
-
-### Window manager problems
-- BSPWM not starting: Check `~/.xsession-errors` or journalctl
-- Windows not tiling: Verify bspwm is running: `pgrep bspwm`
-- Can't switch workspaces: Check if sxhkd is running: `pgrep sxhkd`
-
-### Git/Dotfiles issues
-- `dots` command not found in Claude Code: Use full command: `git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME <command>`
-- `dots` command not found in Fish: Source fish config: `source ~/.config/fish/config.fish`
-- Permission denied on push: Check SSH key is loaded: `ssh-add -l`
-- Conflicts on checkout: Back up conflicting files first (see README.md)
-
-### Font rendering issues
-- Install required fonts:
-  ```bash
-  yay -S nerd-fonts-meslo ttf-font-awesome
-  fc-cache -fv
-  ```
-- Verify font in terminal: `fc-match "MesloLGS Nerd Font"`
-
-### System performance
-- High CPU from polybar: Check for infinite loops in scripts
-- Slow window switching: Disable compositor effects temporarily
-- Memory issues: Check for memory leaks: `ps aux --sort=-%mem | head`
-
----
-
-*This file helps Claude Code understand the system context and common workflows. Update it when making significant system changes.*
+**Note**: This file should be updated when adding new tools or changing workflows.
