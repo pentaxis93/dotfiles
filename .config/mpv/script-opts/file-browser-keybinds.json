@@ -1,0 +1,80 @@
+[
+    {
+        "comment": "============================================================================",
+        "comment": "MPV FILE BROWSER - VIM NAVIGATION KEYBINDS",
+        "comment": "============================================================================",
+        "comment": "Adds vim-style hjkl navigation to complement existing arrow keys.",
+        "comment": "Follows the same tri-modal navigation pattern used in bspwm, tmux, btop.",
+        "comment": "============================================================================"
+    },
+    {
+        "comment": "VIM NAVIGATION - Basic movement (mirrors arrow keys)",
+        "key": "h",
+        "command": ["script-binding", "file_browser/dynamic/up_dir"],
+        "name": "vim_up_dir"
+    },
+    {
+        "key": "j",
+        "command": ["script-binding", "file_browser/dynamic/scroll_down"],
+        "name": "vim_scroll_down"
+    },
+    {
+        "key": "k",
+        "command": ["script-binding", "file_browser/dynamic/scroll_up"],
+        "name": "vim_scroll_up"
+    },
+    {
+        "key": "l",
+        "command": ["script-binding", "file_browser/dynamic/down_dir"],
+        "name": "vim_down_dir"
+    },
+    {
+        "comment": "VIM NAVIGATION - Page movements (mirrors Shift+arrows in main config)",
+        "key": "Shift+j",
+        "command": ["script-binding", "file_browser/dynamic/page_down"],
+        "name": "vim_page_down"
+    },
+    {
+        "key": "Shift+k",
+        "command": ["script-binding", "file_browser/dynamic/page_up"],
+        "name": "vim_page_up"
+    },
+    {
+        "comment": "VIM NAVIGATION - List boundaries (Ctrl movements)",
+        "key": "Ctrl+j",
+        "command": ["script-binding", "file_browser/dynamic/list_bottom"],
+        "name": "vim_list_bottom"
+    },
+    {
+        "key": "Ctrl+k",
+        "command": ["script-binding", "file_browser/dynamic/list_top"],
+        "name": "vim_list_top"
+    },
+    {
+        "comment": "VIM SHORTCUTS - Common vim patterns",
+        "key": "g",
+        "command": ["script-binding", "file_browser/dynamic/list_top"],
+        "name": "vim_goto_top"
+    },
+    {
+        "key": "Shift+g",
+        "command": ["script-binding", "file_browser/dynamic/list_bottom"],
+        "name": "vim_goto_bottom"
+    },
+    {
+        "comment": "EXTENDED SHORTCUTS - Additional vim-like functionality",
+        "key": "u",
+        "command": ["script-binding", "file_browser/dynamic/up_dir"],
+        "name": "vim_up_shortcut"
+    },
+    {
+        "key": "HOME",
+        "command": ["script-binding", "file_browser/dynamic/goto_current"],
+        "name": "goto_playing_file"
+    },
+    {
+        "key": "r",
+        "command": ["script-binding", "file_browser/dynamic/reload"],
+        "name": "vim_reload"
+    }
+]
