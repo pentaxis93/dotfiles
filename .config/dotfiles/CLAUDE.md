@@ -176,6 +176,36 @@ exec uvx --from git+...zen-mcp-server.git zen-mcp-server "$@"
 ### Philosophy
 "Configs just work" - track files where apps expect them, no templates/copying.
 
+## MCP Servers
+
+### Context7 (Library Documentation)
+**Use**: Get up-to-date docs/examples for any library
+```bash
+# Workflow: resolve library ID → get docs
+mcp__context7__resolve-library-id <library-name>
+mcp__context7__get-library-docs <context7-id>
+```
+
+### Zen (Advanced Analysis)
+**Use**: Complex analysis, planning, debugging, reviews
+
+| Tool | When to Use |
+|------|-------------|
+| `chat` | Brainstorming, collaboration, second opinions |
+| `thinkdeep` | Complex bugs, architecture decisions |
+| `planner` | Breaking down complex tasks |
+| `consensus` | Multi-model decision making |
+| `codereview` | Systematic code quality analysis |
+| `precommit` | Git change validation |
+| `debug` | Root cause analysis |
+| `secaudit` | Security vulnerability assessment |
+| `analyze` | Architecture/performance analysis |
+| `refactor` | Code improvement opportunities |
+| `tracer` | Execution flow/dependency mapping |
+| `testgen` | Comprehensive test suite creation |
+
+**Pattern**: Use zen tools for deep analysis, context7 for quick library reference.
+
 ## Quick Fixes
 
 | Problem | Solution |
