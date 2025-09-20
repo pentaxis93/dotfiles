@@ -64,12 +64,12 @@ install_file_browser() {
 # ============================================================================
 configure_keybinding() {
     local input_conf="$MPV_CONFIG_DIR/input.conf"
-    local keybinding="MENU script-binding file-browser"
+    local keybinding="MENU script-binding browse-files"
 
     info "Configuring file browser keybinding..."
 
     # Check if keybinding already exists
-    if [[ -f "$input_conf" ]] && grep -q "script-binding file-browser" "$input_conf"; then
+    if [[ -f "$input_conf" ]] && grep -q "script-binding browse-files" "$input_conf"; then
         info "File browser keybinding already configured"
         return 0
     fi
@@ -85,7 +85,7 @@ configure_keybinding() {
         echo "$keybinding            # Open file browser interface" >> "$input_conf"
         echo "                           # WHY: MENU key is rarely used and intuitive" >> "$input_conf"
         echo "                           # Alternative: Tab key if MENU not available" >> "$input_conf"
-        echo "Tab script-binding file-browser  # Alternative file browser binding" >> "$input_conf"
+        echo "Tab script-binding browse-files  # Alternative file browser binding" >> "$input_conf"
         echo "                           # WHY: Tab is accessible on all keyboards" >> "$input_conf"
 
         success "File browser keybinding added to input.conf"
