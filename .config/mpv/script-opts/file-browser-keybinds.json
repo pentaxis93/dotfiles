@@ -1,14 +1,5 @@
 [
     {
-        "comment": "============================================================================",
-        "comment": "MPV FILE BROWSER - VIM NAVIGATION KEYBINDS",
-        "comment": "============================================================================",
-        "comment": "Adds vim-style hjkl navigation to complement existing arrow keys.",
-        "comment": "Follows the same tri-modal navigation pattern used in bspwm, tmux, btop.",
-        "comment": "============================================================================"
-    },
-    {
-        "comment": "VIM NAVIGATION - Basic movement (mirrors arrow keys)",
         "key": "h",
         "command": ["script-binding", "file_browser/dynamic/up_dir"],
         "name": "vim_up_dir"
@@ -29,7 +20,6 @@
         "name": "vim_down_dir"
     },
     {
-        "comment": "VIM NAVIGATION - Page movements (mirrors Shift+arrows in main config)",
         "key": "Shift+j",
         "command": ["script-binding", "file_browser/dynamic/page_down"],
         "name": "vim_page_down"
@@ -40,7 +30,6 @@
         "name": "vim_page_up"
     },
     {
-        "comment": "VIM NAVIGATION - List boundaries (Ctrl movements)",
         "key": "Ctrl+j",
         "command": ["script-binding", "file_browser/dynamic/list_bottom"],
         "name": "vim_list_bottom"
@@ -51,7 +40,6 @@
         "name": "vim_list_top"
     },
     {
-        "comment": "VIM SHORTCUTS - Common vim patterns",
         "key": "g",
         "command": ["script-binding", "file_browser/dynamic/list_top"],
         "name": "vim_goto_top"
@@ -62,7 +50,6 @@
         "name": "vim_goto_bottom"
     },
     {
-        "comment": "EXTENDED SHORTCUTS - Additional vim-like functionality",
         "key": "u",
         "command": ["script-binding", "file_browser/dynamic/up_dir"],
         "name": "vim_up_shortcut"

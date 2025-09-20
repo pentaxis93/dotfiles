@@ -108,15 +108,24 @@ exec uvx --from git+...zen-mcp-server.git zen-mcp-server "$@"
 **Key Features**: Series watching optimized with file browser script
 - Resume playback from any position
 - Watch history tracking (`.local/state/mpv/watch_history.jsonl`)
-- Built-in file browser for video selection
+- Built-in file browser starting in `~/Videos` folder
 
 ### File Browser Script
 | Key | Action |
 |-----|--------|
-| `MENU` or `Tab` | Open file browser interface |
-| Arrow keys | Navigate directories |
+| `MENU` or `b` | Open file browser interface |
+| `h/j/k/l` | Navigate (vim-style: left/down/up/right) |
+| Arrow keys | Navigate directories (alternative) |
+| `g` / `G` | Go to top / bottom of list |
+| `u` | Go up directory (vim-style) |
+| `r` | Reload current directory |
 | `Enter` | Select file/enter directory |
 | `ESC` | Close browser |
+
+**Features**:
+- Gruvbox color scheme matching system theme
+- Tri-modal navigation (vim/arrows/numpad consistency)
+- Mnemonic `b` key for "browse" (no conflicts)
 
 **Installation**: Handled by bootstrap setup script (`02-mpv-scripts.sh`)
 **Source**: [mpv-file-browser](https://github.com/CogentRedTester/mpv-file-browser)

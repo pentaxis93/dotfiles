@@ -119,26 +119,38 @@ create_gruvbox_config() {
 # Display settings optimized for file browsing
 num_entries=25
 wrap=true
-default_to_working_directory=true
+
+# Start in Videos folder by default, with home and root as fallbacks
+root=~/Videos,~/,/
+default_to_working_directory=false
 cursor_follows_playing_item=true
 home_label=true
 
-# Gruvbox color scheme (hex values without #)
-font_colour_header=8ec07c          # bright aqua
-font_colour_body=ebdbb2            # cream
-font_colour_wrappers=8ec07c        # bright aqua
-font_colour_cursor=8ec07c          # bright aqua
-font_colour_escape_chars=928374    # muted gray
-font_colour_multiselect=fe8019     # orange
-font_colour_selected=fabd2f        # yellow
-font_colour_playing=b8bb26         # green
-font_colour_playing_multiselected=8ec07c  # bright aqua
+# Gruvbox color scheme (BGR format - Blue Green Red order)
+font_colour_header=7cc08e          # bright aqua
+font_colour_body=b2dbeb            # cream
+font_colour_wrappers=7cc08e        # bright aqua
+font_colour_cursor=7cc08e          # bright aqua
+font_colour_escape_chars=748392    # muted gray
+font_colour_multiselect=1980fe     # orange
+font_colour_selected=2fbdfa        # yellow
+font_colour_playing=26bbb8         # green
+font_colour_playing_multiselected=7cc08e  # bright aqua
 
 # Typography
 font_name_header=Monospace
 font_name_body=Monospace
+font_name_folder=Monospace
+font_name_cursor=Monospace
+font_name_wrappers=Monospace
 scaling_factor_header=1.2
 font_bold_header=true
+
+# Text-based icons with Gruvbox colors embedded
+# Using ASS tags: \c&H sets color in BGR format
+# 8ec07c (RGB) = 7cc08e (BGR) - bright aqua for folders
+folder_icon={\c&H7cc08e&}[DIR]{\r}\h
+cursor_icon=▶\h
 
 # Behavior
 custom_keybinds=true
@@ -164,7 +176,7 @@ create_vim_keybinds() {
 
     info "Creating vim navigation keybinds..."
 
-    # Create vim keybinds file
+    # Create vim keybinds file (valid JSON without comments)
     cat > "$keybinds_file" << 'EOF'
 [
     {
