@@ -2,10 +2,21 @@
 
 **Working Directory**: `~/.config/dotfiles/`
 **Launch Command**: Use `dotclaude` to start a dotfiles management session
-**Repository Type**: Bare git repo with work-tree in `$HOME`
+**Repository Type**: Bare git repo at `~/.dotfiles/` with work-tree in `$HOME`
+
+## Critical Git Commands for Claude Code
+Since `dots` is a Fish shell function, Claude Code must use the full git command:
+```bash
+# Fish shell (interactive use):
+dots status
+
+# Claude Code/Bash (what you MUST use):
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME status
+```
 
 ## Important Notes
-- Always use absolute paths when adding files: `dots add ~/path/to/file`
+- Always use absolute paths when adding files: `~/path/to/file` not relative paths
+- The `dots` command only works in Fish shell, not in Claude Code's Bash context
 - This CLAUDE.md only loads when working from the dotfiles workspace
 - Use `dotclaude` instead of `claude code` for dotfiles work
 
@@ -390,38 +401,145 @@ To verify tri-modal navigation works in any app:
 
 ## Dotfiles Management
 
-This system uses a **bare Git repository** for dotfiles management, accessible via the `dots` command.
+This system uses a **bare Git repository** for dotfiles management - a clever technique that tracks config files without making your entire home directory a git repository.
 
-### How It Works
+### Understanding the Bare Repository Setup
 
-The dotfiles are managed using a bare Git repository located at `~/.dotfiles/`. This approach allows version control of configuration files without turning the entire home directory into a Git repository.
+#### What is a Bare Repository?
+A bare repository contains only git's version control data (normally in `.git/`), without a working directory. Our setup:
+- **Bare repo location**: `~/.dotfiles/` (contains git objects, refs, config, etc.)
+- **Work tree**: `$HOME` (your actual home directory with the config files)
+- **Key configuration**: `showUntrackedFiles = no` (only shows explicitly tracked files)
 
-### The `dots` Command
+#### Why Use a Bare Repository for Dotfiles?
+1. **No `.gitignore` pollution**: You don't need a massive `.gitignore` in your home directory
+2. **Selective tracking**: Only track the specific config files you want
+3. **Clean `git status`**: Untracked files are hidden by default
+4. **No nested repo issues**: Works seamlessly with other git projects in your home
 
-`dots` is a Fish shell function defined in `~/.config/fish/functions/dots.fish`:
+### Critical Commands - Two Forms
+
+**IMPORTANT FOR CLAUDE CODE**: The `dots` command is a Fish shell function. In Claude Code's Bash context, you MUST use the full git command:
+
 ```bash
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $argv
+# Fish Shell Form (for interactive terminal use):
+dots status
+dots add ~/.config/newapp/config
+dots commit -m "Add newapp configuration"
+dots push
+
+# Claude Code/Bash Form (REQUIRED in Claude Code):
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME status
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add ~/.config/newapp/config
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME commit -m "Add newapp configuration"
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME push
 ```
 
-### Common Dotfiles Commands
+### Common Operations
 
+#### Checking Repository Status
 ```bash
-dots status           # Check status of tracked files
-dots add <file>       # Stage a file for commit
-dots commit -m "msg"  # Commit changes
-dots push            # Push to remote repository
-dots diff            # View unstaged changes
-dots log             # View commit history
+# Claude Code must use:
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME status
+
+# Shows only tracked files (untracked files are hidden due to showUntrackedFiles = no)
+# To see untracked files temporarily:
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME status -u
+```
+
+#### Adding a New Configuration File
+```bash
+# ALWAYS use absolute paths starting with ~ or /home/username
+# Claude Code:
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add ~/.config/alacritty/alacritty.toml
+
+# Fish shell:
+dots add ~/.config/alacritty/alacritty.toml
+```
+
+#### Viewing Changes
+```bash
+# See unstaged changes in tracked files
+# Claude Code:
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME diff
+
+# See staged changes:
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME diff --cached
+```
+
+#### Committing Changes
+```bash
+# Claude Code:
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME commit -m "Update alacritty theme"
+
+# Fish shell:
+dots commit -m "Update alacritty theme"
+```
+
+#### Viewing History
+```bash
+# Claude Code:
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME log --oneline -n 10
+
+# See what changed in a specific file:
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME log -p ~/.config/fish/config.fish
 ```
 
 ### Fish Shell Abbreviations
 
-The following abbreviations are configured in Fish:
+For interactive use in Fish shell, these abbreviations are configured:
 - `da` → `dots add`
 - `dc` → `dots commit`
 - `dp` → `dots push`
 - `dst` → `dots status`
 - `dd` → `dots diff`
+
+**Note**: These abbreviations do NOT work in Claude Code's Bash context.
+
+### Common Pitfalls & Solutions
+
+#### Pitfall: "dots: command not found" in Claude Code
+**Solution**: Use the full git command:
+```bash
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME <command>
+```
+
+#### Pitfall: File not showing in status after adding
+**Cause**: Using relative paths
+**Solution**: Always use absolute paths:
+```bash
+# Wrong:
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add .config/app/config
+
+# Right:
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add ~/.config/app/config
+```
+
+#### Pitfall: Tons of untracked files showing
+**Cause**: Missing the `showUntrackedFiles = no` configuration
+**Solution**: This should already be configured, but if not:
+```bash
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME config status.showUntrackedFiles no
+```
+
+#### Pitfall: Can't push/pull
+**Cause**: Remote not configured properly
+**Check**:
+```bash
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME remote -v
+```
+
+### Understanding the Output
+
+When you run status, you'll only see:
+- Files that have been modified (if they were previously tracked)
+- Files that have been staged for commit
+- Files that have been deleted (if they were previously tracked)
+
+You will NOT see:
+- Untracked files (unless you use `-u` flag)
+- Files outside your home directory
+- System files you haven't explicitly added
 
 
 ## Key Configuration Files
@@ -552,9 +670,15 @@ tail -f /tmp/window-title-daemon.log
 
 ### Adding New Configuration to Dotfiles
 ```bash
+# Fish shell:
 dots add ~/.config/newapp/config
 dots commit -m 'Add newapp configuration'
 dots push
+
+# Claude Code/Bash (use this in Claude Code):
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add ~/.config/newapp/config
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME commit -m 'Add newapp configuration'
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME push
 ```
 
 ### Reloading Configurations
@@ -882,9 +1006,13 @@ vi ~/.config/sxhkd/sxhkdrc
 pkill -USR1 -x sxhkd  # Reload
 # Test the actual keybinding
 
-# 3. Commit if working
+# 3. Commit if working (Fish shell)
 dots add ~/.config/sxhkd/sxhkdrc
 dots commit -m "Fix: Improve keybinding for X feature"
+
+# Or in Claude Code:
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add ~/.config/sxhkd/sxhkdrc
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME commit -m "Fix: Improve keybinding for X feature"
 
 # 4. Move to next change
 # Repeat pattern
@@ -963,7 +1091,9 @@ These footers don't add value in a personal repository where you're the primary 
 
 ### When Making Configuration Changes
 1. Test changes locally first
-2. Use `dots diff` to review changes
+2. Review changes before committing:
+   - Fish shell: `dots diff`
+   - Claude Code: `git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME diff`
 3. Write clean, descriptive commit messages
 4. Skip attribution footers - git already tracks authorship
 
@@ -1071,10 +1201,10 @@ No templates, no copying, no setup scripts. Direct tracking.
 ## Troubleshooting
 
 ### If `dots` command not found
-The `dots` command is a Fish function. If it's not available, check that Fish is running or use the full Git command:
-```bash
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME status
-```
+The `dots` command is a Fish function that only works in Fish shell.
+- **In Claude Code**: Always use the full command: `git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME <command>`
+- **In Bash/other shells**: Use the full git command above
+- **In Fish shell**: Check if function exists: `type dots`
 
 ### If keybindings don't work
 1. Check SXHKD is running: `pgrep sxhkd`
@@ -1121,7 +1251,8 @@ If brightness keys prompt for password or don't work:
 - Can't switch workspaces: Check if sxhkd is running: `pgrep sxhkd`
 
 ### Git/Dotfiles issues
-- `dots` command not found: Source fish config: `source ~/.config/fish/config.fish`
+- `dots` command not found in Claude Code: Use full command: `git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME <command>`
+- `dots` command not found in Fish: Source fish config: `source ~/.config/fish/config.fish`
 - Permission denied on push: Check SSH key is loaded: `ssh-add -l`
 - Conflicts on checkout: Back up conflicting files first (see README.md)
 
