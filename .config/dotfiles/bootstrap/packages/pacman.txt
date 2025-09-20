@@ -35,6 +35,7 @@ github-cli
 unzip
 rofi
 qutebrowser
+mpv
 bitwarden-cli
 python-tldextract
 python-pyperclip

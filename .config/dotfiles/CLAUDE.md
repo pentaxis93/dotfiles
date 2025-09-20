@@ -98,8 +98,28 @@ exec uvx --from git+...zen-mcp-server.git zen-mcp-server "$@"
 | Terminal | `~/.config/alacritty/alacritty.toml` |
 | Bar | `~/.config/polybar/config.ini` |
 | Editor | `~/.config/helix/config.toml` |
+| Media Player | `~/.config/mpv/mpv.conf` |
+| MPV Hotkeys | `~/.config/mpv/input.conf` |
 | Claude | `~/.claude/settings.json` |
 
+
+## MPV Configuration
+
+**Key Features**: Series watching optimized with file browser script
+- Resume playback from any position
+- Watch history tracking (`.local/state/mpv/watch_history.jsonl`)
+- Built-in file browser for video selection
+
+### File Browser Script
+| Key | Action |
+|-----|--------|
+| `MENU` or `Tab` | Open file browser interface |
+| Arrow keys | Navigate directories |
+| `Enter` | Select file/enter directory |
+| `ESC` | Close browser |
+
+**Installation**: Handled by bootstrap setup script (`02-mpv-scripts.sh`)
+**Source**: [mpv-file-browser](https://github.com/CogentRedTester/mpv-file-browser)
 
 ## Polybar Window Titles
 
