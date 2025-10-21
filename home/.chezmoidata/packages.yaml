@@ -66,6 +66,7 @@ packages:
       - npm  # Node package manager (provides npx for MCP servers)
       - uv  # Astral's fast Python package manager (provides uvx for MCP servers)
       - go  # Go programming language and toolchain for systems programming
+      - zola  # Fast static site generator for blog publishing
       - github-cli  # GitHub CLI for PR/issue/repo management
       - lazygit  # TUI for git with vi keybindings and reverse video selections
       - python-colour  # Perceptually-uniform color interpolation for spectrum generation
