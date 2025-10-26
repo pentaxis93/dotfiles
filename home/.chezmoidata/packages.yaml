@@ -77,3 +77,6 @@ packages:
     aur:
       # System & Security - Foundation for secure operations
       - zfs-auto-snapshot  # Automated ZFS snapshots for time-machine backups
+
+      # Web Browsing - Specialized browser tools
+      - browseros  # AUR browser package
