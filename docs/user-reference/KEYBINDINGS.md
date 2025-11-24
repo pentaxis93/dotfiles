@@ -149,6 +149,10 @@ MOD Keys:             Super (left hand), PrtSc (right hand)
 │ MOD+J/K     Focus up/down          │
 │ MOD+TAB     Next workspace         │
 │ MOD+1-9     Go to workspace N      │
+│                                    │
+│ Monitor Navigation:                │
+│ MOD+;/'     Focus left/right mon   │
+│ MOD+SHIFT+H/L Focus monitors (alt) │
 ╰─────────────────────────────────────╯
 
 ╭─────────────── TRANSFORM ──────────╮
@@ -163,6 +167,10 @@ MOD Keys:             Super (left hand), PrtSc (right hand)
 │ MOD+CTRL+J/K  Move window          │
 │ MOD+CTRL+1-9  Move to workspace N  │
 │ MOD+SHIFT+-/= Resize height        │
+│                                    │
+│ Move to Monitor:                   │
+│ MOD+CTRL+;/'  Move to left/right   │
+│ MOD+SHIFT+CTRL+H/L  (alternative)  │
 ╰─────────────────────────────────────╯
 
 ╭─────────────── INVOKE ─────────────╮

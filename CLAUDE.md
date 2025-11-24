@@ -283,6 +283,10 @@ Selections use **reverse video** (fg/bg swap), not colored backgrounds:
 
 **Display Configuration** (Niri):
 - **Desktop**: Dual monitors - HDMI-A-1 (primary, right) and DP-1 (secondary, left)
+  - Per-monitor workspaces: Each monitor has independent workspace 1-9
+  - Monitor focus: `MOD+;` (left) / `MOD+'` (right) - spatial 2-key shortcuts
+  - Alternative: `MOD+SHIFT+H/L` or arrow keys for monitor switching
+  - Move windows: `MOD+CTRL+;/'` or `MOD+SHIFT+CTRL+H/L`
 - **Laptop**: Single eDP-1 display with auto-detected resolution
 - **Implementation**: `home/dot_config/niri/config.kdl.tmpl` - Conditional `output` blocks based on `.is_laptop`
 

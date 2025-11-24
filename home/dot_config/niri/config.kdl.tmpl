@@ -118,14 +118,30 @@ binds {
     MOD+CTRL+END                        { move-column-to-last; }
 
     MOD+SHIFT+LEFT                      { focus-monitor-left; }
+    MOD+SHIFT+H                         { focus-monitor-left; }
     MOD+SHIFT+RIGHT                     { focus-monitor-right; }
+    MOD+SHIFT+L                         { focus-monitor-right; }
     MOD+SHIFT+UP                        { focus-monitor-up; }
+    MOD+SHIFT+K                         { focus-monitor-up; }
     MOD+SHIFT+DOWN                      { focus-monitor-down; }
+    MOD+SHIFT+J                         { focus-monitor-down; }
+
+    // Spatial shortcuts - easier 2-key chords (semicolon left of quote = left/right monitor)
+    MOD+SEMICOLON                       { focus-monitor-left; }
+    MOD+APOSTROPHE                      { focus-monitor-right; }
 
     MOD+SHIFT+CTRL+LEFT                 { move-column-to-monitor-left; }
+    MOD+SHIFT+CTRL+H                    { move-column-to-monitor-left; }
     MOD+SHIFT+CTRL+RIGHT                { move-column-to-monitor-right; }
+    MOD+SHIFT+CTRL+L                    { move-column-to-monitor-right; }
     MOD+SHIFT+CTRL+UP                   { move-column-to-monitor-up; }
+    MOD+SHIFT+CTRL+K                    { move-column-to-monitor-up; }
     MOD+SHIFT+CTRL+DOWN                 { move-column-to-monitor-down; }
+    MOD+SHIFT+CTRL+J                    { move-column-to-monitor-down; }
+
+    // Spatial shortcuts for moving windows to monitors
+    MOD+CTRL+SEMICOLON                  { move-column-to-monitor-left; }
+    MOD+CTRL+APOSTROPHE                 { move-column-to-monitor-right; }
 
     // ─── Workspace Switching ───
     MOD+WHEELSCROLLDOWN                 cooldown-ms=150 { focus-workspace-down; }
