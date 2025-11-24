@@ -16,7 +16,6 @@ packages:
 
       # Torrenting - VPN-bound downloading
       - transmission-cli  # BitTorrent client with daemon and VPN killswitch
-      - tremc  # Terminal UI for transmission with vi-like keybindings
 
       # Media - Video playback with resuming and history
       - mpv  # Media player with position save, file browser, and subtitle support
@@ -80,6 +79,9 @@ packages:
     aur:
       # System & Security - Foundation for secure operations
       - zfs-auto-snapshot  # Automated ZFS snapshots for time-machine backups
+
+      # Torrenting - Terminal UI for Transmission
+      - tremc  # TUI for transmission with vi-like keybindings
 
       # Web Browsing - Specialized browser tools
       - browseros  # AUR browser package

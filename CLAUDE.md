@@ -14,6 +14,8 @@
 
 ## QUICK DECISIONS
 
+**Fresh installation?** → Pre-install `python-colour` + `fortune-mod` (CRITICAL) + `bitwarden-cli` (optional, needs login) BEFORE `chezmoi apply`
+
 **Adding a package?** → Edit `home/.chezmoidata/packages.yaml` (declarative only)
 
 **Need secrets?** → Use Bitwarden templates (`@bitwarden-*.tmpl`)
@@ -220,6 +222,7 @@ Selections use **reverse video** (fg/bg swap), not colored backgrounds:
 
 ## THINGS NOT TO DO
 
+**DON'T** run `chezmoi apply` on fresh install without pre-installing `python-colour` and `fortune-mod` first (will fail during template/script processing).
 **DON'T** create duplicate configs outside chezmoi source directory.
 **DON'T** hardcode colors - MUST use semantic color templates from `colors.yaml`.
 **DON'T** hardcode semantic keybindings - MUST use keybind templates from `keybindings.yaml`.

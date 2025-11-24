@@ -7,21 +7,58 @@ Personal configuration files managed with [chezmoi](https://www.chezmoi.io/).
 ## Quick Start
 
 ### Prerequisites
+
+**IMPORTANT**: Install these packages BEFORE running `chezmoi init` or `chezmoi apply` to avoid template processing errors.
+
+#### Essential Tools
 - `chezmoi` ([installation guide](https://www.chezmoi.io/install/))
 - `git`
+
+#### Template-Time Dependencies
+
+These packages are called during template processing and must be installed first:
+
+**Required (Always)**:
+```bash
+sudo pacman -S python-colour fortune-mod
+```
+- `python-colour`: Waybar color spectrum generation (LAB interpolation)
+- `fortune-mod`: Fortune database index generation for Zen quotes
+
+**Optional (Only if Using Secrets)**:
+```bash
+sudo pacman -S bitwarden-cli
+# Then login and unlock:
+bw login
+export BW_SESSION=$(bw unlock --raw)
+```
+*Why*: VPN credentials, API keys, and secure secret templating. Skip if not using VPN or AI model access features.
+
+**Quick Install (All Prerequisites)**:
+```bash
+# Full feature set (with secrets support)
+sudo pacman -S --needed python-colour fortune-mod bitwarden-cli
+
+# OR minimal (skip secrets)
+sudo pacman -S --needed python-colour fortune-mod
+```
 
 ### Setup
 
 ```bash
-# Initialize from this repository
+# 1. Install prerequisites (see above)
+
+# 2. Initialize from this repository
 chezmoi init https://github.com/pentaxis93/dotfiles.git
 
-# Preview changes
+# 3. Preview changes
 chezmoi diff
 
-# Apply configuration
+# 4. Apply configuration (will auto-install all other packages)
 chezmoi apply -v
 ```
+
+**Note**: All other packages (Helix, Fish, MPV, Qutebrowser, etc.) are installed automatically during `chezmoi apply` via the package management system. Only the template-time dependencies above need manual pre-installation.
 
 ### Updates
 
@@ -192,6 +229,41 @@ diff ~/.bashrc /home/.zfs/snapshot/before-upgrade/pentaxis93/.bashrc
 - `run_after_` → run after each apply
 
 ## Troubleshooting
+
+### Common Errors
+
+**Error: "No module named 'colour'"**
+```bash
+# Cause: python-colour not installed before chezmoi apply
+# Solution: Install the missing dependency
+sudo pacman -S python-colour
+
+# Then retry
+chezmoi apply -v
+```
+
+**Error: "bw: executable file not found"**
+```bash
+# Cause: bitwarden-cli not installed or not logged in
+# Solution: Install and login to Bitwarden
+
+sudo pacman -S bitwarden-cli
+bw login  # Enter email and master password
+export BW_SESSION=$(bw unlock --raw)  # Unlock vault
+chezmoi apply -v
+
+# Or skip if not using secrets (VPN/API keys) - install later when needed
+```
+
+**Error: "strfile: command not found"**
+```bash
+# Cause: fortune-mod not installed before chezmoi apply
+# Solution: Install fortune-mod
+sudo pacman -S fortune-mod
+chezmoi apply -v
+```
+
+### General Debugging
 
 ```bash
 # Check configuration
