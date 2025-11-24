@@ -14,7 +14,7 @@
 
 ## QUICK DECISIONS
 
-**Fresh installation?** → Pre-install `python-colour` + `fortune-mod` (CRITICAL) + `bitwarden-cli` (optional, needs login) BEFORE `chezmoi apply`
+**Fresh installation?** → Pre-install `yay` + `python-colour` + `fortune-mod` (CRITICAL) + `bitwarden-cli` (optional, needs login) BEFORE `chezmoi apply`
 
 **Adding a package?** → Edit `home/.chezmoidata/packages.yaml` (declarative only)
 

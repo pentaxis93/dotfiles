@@ -13,6 +13,7 @@ Personal configuration files managed with [chezmoi](https://www.chezmoi.io/).
 #### Essential Tools
 - `chezmoi` ([installation guide](https://www.chezmoi.io/install/))
 - `git`
+- `yay` - AUR helper (install with `sudo pacman -S yay` on CachyOS)
 
 #### Template-Time Dependencies
 
@@ -260,6 +261,21 @@ chezmoi apply -v
 # Cause: fortune-mod not installed before chezmoi apply
 # Solution: Install fortune-mod
 sudo pacman -S fortune-mod
+chezmoi apply -v
+```
+
+**Error: "yay: command not found"**
+```bash
+# Cause: AUR helper not installed (needed for AUR packages)
+# Solution: Install yay
+sudo pacman -S yay
+
+# If yay not in repos, build from AUR manually:
+sudo pacman -S --needed git base-devel
+git clone https://aur.archlinux.org/yay.git
+cd yay && makepkg -si && cd .. && rm -rf yay
+
+# Then retry
 chezmoi apply -v
 ```
 
