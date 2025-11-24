@@ -8,7 +8,7 @@
 - **VPN Killswitch** - Transmission stops automatically if VPN disconnects
 - **Magnet Link Handler** - Browser clicks on magnet links auto-add to Transmission
 - **Minimal Seeding** - Ultra-low upload limits (10KB/s, 0.1 ratio, 5min idle)
-- **Security Hardened** - Required encryption, no DHT/PEX/LPD, blocklist enabled
+- **Security Hardened** - Required encryption, DHT/PEX enabled for public trackers, LPD disabled, blocklist enabled
 - **Tremc TUI** - Kanagawa-themed terminal interface with vi keybindings
 
 ## Configuration Files
@@ -36,7 +36,7 @@ tui      # Launch tremc interface
 - **Auto-stop on VPN disconnect** - Killswitch via systemd BindsTo
 - **Minimal upload** - 10KB/s limit, 0.1 ratio, 5-minute idle timeout
 - **Full encryption** - Peer connections require encryption
-- **No discovery** - DHT, PEX, LPD all disabled for privacy
+- **Balanced discovery** - DHT and PEX enabled for public tracker performance, LPD disabled
 - **Random ports** - New peer port on each start
 - **Download to ~/Videos** - Organized media storage
 
