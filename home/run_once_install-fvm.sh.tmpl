@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+# Install Flutter Version Manager (fvm) and set up global default Flutter version
+# This provides dart and flutter commands available everywhere
+
+set -euo pipefail
+
+# Configuration
+# Note: fvm 4.0+ uses ~/fvm (no dot) as default cache directory
+FVM_CACHE_DIR="$HOME/fvm"
+FVM_DEFAULT_BIN="$FVM_CACHE_DIR/default/bin"
+PUB_CACHE_DIR="$HOME/.pub-cache"
+FLUTTER_VERSION="stable"  # Or specific version like "3.24.0"
+FISH_CONFIG="$HOME/.config/fish/config.fish"
+
+# Color output helpers
+info() { echo "[INFO] $*"; }
+success() { echo "[✓] $*"; }
+warning() { echo "[!] $*"; }
+error() { echo "[✗] $*" >&2; }
+
+info "Installing Flutter Version Manager (fvm)..."
+
+# Create directories
+mkdir -p "$FVM_CACHE_DIR"
+mkdir -p "$PUB_CACHE_DIR/bin"
+
+# Check if fvm is already installed
+if command -v fvm &>/dev/null; then
+    info "fvm is already installed at $(command -v fvm)"
+else
+    info "Installing fvm..."
+
+    # Install fvm using pub (requires dart, so we use the bootstrap approach)
+    # Alternative: Use the standalone installer
+    if ! command -v dart &>/dev/null; then
+        info "Dart SDK not found. Installing fvm standalone..."
+
+        # Download fvm standalone installer
+        FVM_INSTALL_SCRIPT=$(mktemp)
+        trap "rm -f $FVM_INSTALL_SCRIPT" EXIT
+
+        curl -fsSL https://fvm.app/install.sh -o "$FVM_INSTALL_SCRIPT"
+        bash "$FVM_INSTALL_SCRIPT"
+
+        # Add fvm to current PATH for this script
+        export PATH="$PUB_CACHE_DIR/bin:$PATH"
+    else
+        info "Using dart to install fvm via pub..."
+        dart pub global activate fvm
+        export PATH="$PUB_CACHE_DIR/bin:$PATH"
+    fi
+fi
+
+# Verify fvm is now available
+if ! command -v fvm &>/dev/null; then
+    error "fvm installation failed"
+    exit 1
+fi
+
+success "fvm installed successfully"
+
+# Install global Flutter version
+info "Installing global Flutter version: $FLUTTER_VERSION"
+if fvm install "$FLUTTER_VERSION" --no-setup 2>/dev/null || fvm install "$FLUTTER_VERSION"; then
+    success "Flutter $FLUTTER_VERSION installed"
+else
+    warning "Flutter installation may have encountered issues, but continuing..."
+fi
+
+# Set global default Flutter version
+info "Setting global default Flutter version to $FLUTTER_VERSION"
+if fvm global "$FLUTTER_VERSION"; then
+    success "Global Flutter version set to $FLUTTER_VERSION"
+else
+    error "Failed to set global Flutter version"
+    exit 1
+fi
+
+# Clean up installer-added fish config line (if present)
+# The fvm installer adds its own PATH line, but we manage PATH via chezmoi
+if [[ -f "$FISH_CONFIG" ]]; then
+    if grep -q "\.fvm_flutter/bin" "$FISH_CONFIG" 2>/dev/null; then
+        info "Removing installer-added PATH line from fish config..."
+        sed -i '/\.fvm_flutter\/bin/d' "$FISH_CONFIG"
+        success "Cleaned up fish config"
+    fi
+fi
+
+# Verify installation
+if [[ -d "$FVM_DEFAULT_BIN" ]] && [[ -x "$FVM_DEFAULT_BIN/dart" ]]; then
+    success "FVM default symlink created at $FVM_DEFAULT_BIN"
+    success "Dart SDK available at $FVM_DEFAULT_BIN/dart"
+else
+    warning "FVM default symlink not found at expected location"
+    warning "This may be normal if fvm uses a different directory structure"
+    info "Checking for Flutter SDK..."
+    if command -v fvm &>/dev/null; then
+        fvm list || true
+    fi
+fi
+
+# Show version info
+info "Installed versions:"
+fvm list 2>/dev/null || echo "  (fvm list command not available yet)"
+
+success "FVM setup complete!"
+info "Configured PATH in chezmoi:"
+info "  - \$HOME/fvm/default/bin (flutter, dart commands)"
+info "  - \$HOME/.pub-cache/bin (pub global packages)"
+info ""
+info "After running 'chezmoi apply' and restarting your shell:"
+info "  dart --version    # Test Dart SDK"
+info "  flutter --version # Test Flutter SDK"
+info "  fvm list          # Show installed versions"
+info ""
+info "Per-project Flutter versions: 'fvm use <version>' in project directory"

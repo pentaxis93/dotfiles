@@ -55,6 +55,7 @@ Located in `home/.chezmoitemplates/`:
 - `scripts/generate-spectrum.py` - LAB color interpolation for spectrums
 - `home/dot_local/bin/executable_transmission-vpn-bind.tmpl` - VPN binding script
 - `home/dot_local/bin/executable_mpv.tmpl` - MPV wrapper for LF pre-selection
+- `home/run_once_install-fvm.sh.tmpl` - Flutter Version Manager installation and setup
 - `home/run_once_install-mpv-scripts.sh.tmpl` - MPV directory setup
 - `home/run_once_install-weechat-scripts.sh.tmpl` - Installs xdccq.py
 - `home/run_after_claude-code.sh` - Configure Claude Code and MCP servers (context7, zen)

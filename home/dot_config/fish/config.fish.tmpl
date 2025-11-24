@@ -11,6 +11,11 @@ source /usr/share/cachyos-fish-config/cachyos-config.fish
 
 export PATH="$HOME/.local/bin:$PATH"
 
+# Flutter Version Manager (fvm) - Language foundation
+# Provides global dart and flutter commands
+export PATH="$HOME/fvm/default/bin:$PATH"      # flutter, dart commands
+export PATH="$HOME/.pub-cache/bin:$PATH"       # pub global packages
+
 # Set default editor
 set -gx EDITOR helix
 set -gx VISUAL helix
