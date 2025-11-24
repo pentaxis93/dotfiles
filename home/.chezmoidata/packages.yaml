@@ -82,6 +82,3 @@ packages:
 
       # Torrenting - Terminal UI for Transmission
       - tremc  # TUI for transmission with vi-like keybindings
-
-      # Web Browsing - Specialized browser tools
-      - browseros  # AUR browser package
