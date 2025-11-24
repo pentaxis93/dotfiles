@@ -55,6 +55,9 @@ packages:
       # Audio - PipeWire mixer
       - wiremix  # TUI audio mixer for PipeWire with vi keybindings
 
+      # Bluetooth - Device management
+      - bluetui  # TUI bluetooth manager for Waybar widget integration and device pairing
+
       # Shell Navigation - Smart directory jumping
       - zoxide  # Frecency-based directory navigation
 

@@ -247,6 +247,7 @@ Selections use **reverse video** (fg/bg swap), not colored backgrounds:
 ### System Tools
 - @docs/ai-context/apps/vpn.md - OpenVPN with Bitwarden secrets
 - @docs/ai-context/apps/wiremix.md - PipeWire audio mixer TUI
+- @docs/ai-context/apps/bluetui.md - Bluetooth device manager TUI
 - @docs/ai-context/apps/shell-enhancements.md - eza, zoxide, Fish shell
 - @docs/ai-context/apps/fortune.md - Fortune with Zen quotes for contemplative terminal sessions
 - @docs/ai-context/apps/zen-mcp-server.md - AI model access via OpenRouter
