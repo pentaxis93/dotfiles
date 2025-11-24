@@ -17,11 +17,11 @@ L     seek  10                   # Semantic navigate: 10 seconds forward (large 
 J     playlist-prev              # Semantic navigate: Previous in playlist
 K     playlist-next              # Semantic navigate: Next in playlist
 
-# Line/File navigation (Helix semantic) - Semantic keybindings
-{{ template "keybind-mpv.tmpl" dict "category" "navigate" "action" "line_start" "command" "seek 0 absolute-percent" "comment" "Go home: Start of video" "keybindings" $kb }}
-{{ template "keybind-mpv.tmpl" dict "category" "navigate" "action" "line_end" "command" "seek 100 absolute-percent" "comment" "Go line end: End of video" "keybindings" $kb }}
-{{ template "keybind-mpv.tmpl" dict "category" "navigate" "action" "file_start" "command" "seek 0 absolute" "comment" "Go to beginning" "keybindings" $kb }}
-{{ template "keybind-mpv.tmpl" dict "category" "navigate" "action" "file_end" "command" "seek 100 absolute-percent" "comment" "Go end (Helix, not G)" "keybindings" $kb }}
+# Line/File navigation (Helix semantic) - MPV uses single-key alternatives
+{{ template "keybind-mpv.tmpl" dict "category" "navigate" "action" "line_start" "command" "seek 0 absolute-percent" "comment" "Go home: Start of video" "custom_key" "0" "keybindings" $kb }}
+{{ template "keybind-mpv.tmpl" dict "category" "navigate" "action" "line_end" "command" "seek 100 absolute-percent" "comment" "Go line end: End of video" "custom_key" "$" "keybindings" $kb }}
+{{ template "keybind-mpv.tmpl" dict "category" "navigate" "action" "file_start" "command" "seek 0 absolute" "comment" "Go to beginning" "custom_key" "HOME" "keybindings" $kb }}
+{{ template "keybind-mpv.tmpl" dict "category" "navigate" "action" "file_end" "command" "seek 100 absolute-percent" "comment" "Go end (Helix spirit)" "custom_key" "END" "keybindings" $kb }}
 
 # Word-like navigation (chapters) - Semantic keybindings
 {{ template "keybind-mpv.tmpl" dict "category" "navigate" "action" "word_next" "command" "add chapter 1" "comment" "Word next: Next chapter" "keybindings" $kb }}

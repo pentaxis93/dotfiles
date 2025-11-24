@@ -5,13 +5,14 @@
 
 ## Architecture
 - **MPV Core** - Feature-rich media player with reliable position resuming
+- **PipeWire Audio** - Explicitly configured for PipeWire with fallback to PulseAudio/ALSA
 - **Auto-Save Script** - Periodic position saving (every 30s) ensures no loss on crashes/reboots
 - **LF File Browser** - Integrated lf terminal browser for file selection (press 'b')
 - **Kanagawa Theme** - Consistent theming across OSD, subtitles, and lf browser
 - **Semantic Keybindings** - Comprehensive semantic keybinding system
   - 23 template-based bindings: navigation (seek, chapters), manipulation (Ctrl modifiers), transform (f/i/v), preserve (s), discover (/?), select (SPACE), dismiss (q/ESC)
   - 80+ bindings with semantic comments categorized by intent
-  - Helix-native: ge for end, gh/gl for start/end, w/b for chapters
+  - Helix-inspired navigation: 0/$ for start/end, HOME/END for file start/end, w/b for chapters
   - All 100+ bindings organized by semantic categories
 - **Fish Integration** - Semantic functions for media management (mp, mpb, mps, mpc)
 
@@ -35,8 +36,10 @@ mpsub <cmd>       # Subtitle management (find/organize/rename/check)
 
 # Within MPV:
 b                 # Open lf file browser with context-sensitive 'l' key
-hjkl              # Navigate (vi-style)
-ge                # Go to end (Helix-native)
+hjkl              # Navigate (vi-style: h=back 5s, l=forward 5s, j=back 1min, k=forward 1min)
+0/$               # Jump to start/end of video (Helix-inspired)
+HOME/END          # Jump to beginning/end of file
+w/b               # Next/previous chapter
 q                 # Quit and save position
 
 # Subtitle controls:
@@ -49,6 +52,7 @@ V                 # Toggle secondary subtitles (dual subs)
 ```
 
 ## Features
+- **PipeWire Audio Integration** - Configured to use PipeWire directly (ao=pipewire,pulse,alsa) for modern audio stack compatibility
 - **Reliable Position Resuming** - Auto-saves every 30s + on quit/seek (survives crashes/reboots)
 - **Saved Positions** - Stored in `~/.local/state/mpv/watch_later/` as hash-named files
 - **Smart Directories** - Starts in ~/Videos, falls back to ~/Downloads
@@ -66,5 +70,5 @@ V                 # Toggle secondary subtitles (dual subs)
 - **In Player**: Press `b` to launch lf browser in terminal
 - **Pre-Selection**: Launch `mp` without args for lf browser
 - **Context-Sensitive**: 'l' key enters directories or selects media files
-- **Helix-Native**: `ge` for end, consistent with editor navigation
+- **Helix-Inspired**: `0/$` for video start/end, `HOME/END` for file jumps - semantic clarity adapted to MPV's single-key constraints
 - **Semantic Functions**: `mp` (media-play), `mpb` (media-play-browse)

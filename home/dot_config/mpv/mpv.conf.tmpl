@@ -126,6 +126,7 @@ demuxer-max-back-bytes=256M      # 256MB back buffer
 # ============================================================================
 # "Sound balanced with intention"
 
+ao=pipewire,pulse,alsa           # Prefer PipeWire, fallback to PulseAudio/ALSA
 audio-channels=stereo            # Downmix to stereo
 audio-normalize-downmix=yes     # Normalize when downmixing
 audio-pitch-correction=yes       # Maintain pitch when speed changes
