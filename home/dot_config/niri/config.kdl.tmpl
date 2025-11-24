@@ -26,13 +26,28 @@ input {
 
 // ────────────── Output Configuration ──────────────
 // You can run `niri msg outputs` to get the correct name for your displays.
-// You will have to remove "/-" and edit it before it takes effect.
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Outputs
 
-/- output "DP-1" {
-    mode "2560x1440@359.979" // Set resolution and refresh rate
-    scale 1 // No scaling (use 2 for HiDPI)
+{{- if not .is_laptop }}
+// Desktop: Dual monitor configuration
+output "HDMI-A-1" {
+    mode "2560x1440@60.000" // Primary monitor (right side)
+    scale 1
+    position x=2560 y=0 // Position to the right
 }
+
+output "DP-1" {
+    mode "2560x1440@60.000" // Secondary monitor (left side)
+    scale 1
+    position x=0 y=0 // Position to the left
+}
+{{- else }}
+// Laptop: Single display configuration
+output "eDP-1" {
+    // Resolution auto-detected for laptop display
+    scale 1
+}
+{{- end }}
 
 // ────────────── Keybindings ──────────────
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Key-Bindings

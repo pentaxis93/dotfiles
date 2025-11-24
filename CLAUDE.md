@@ -263,6 +263,65 @@ Selections use **reverse video** (fg/bg swap), not colored backgrounds:
 
 ---
 
+## MULTI-MACHINE CONFIGURATION
+
+### Dual Laptop/Desktop Architecture
+
+**Philosophy**: *"One configuration flows to many machines; hardware differences manifest through feature detection, not explicit naming"*
+
+### Machine Detection System
+
+**Auto-detection via `.is_laptop`**:
+- **Detection Method**: Presence of `/sys/class/power_supply/BAT*` (battery detection)
+- **Configuration**: Set in `home/.chezmoi.toml.tmpl` via `promptBoolOnce` with smart defaults
+- **Benefits**: Works on new machines without hardcoding hostnames
+
+### Machine-Specific Configurations
+
+**Display Configuration** (Niri):
+- **Desktop**: Dual monitors - HDMI-A-1 (primary, right) and DP-1 (secondary, left)
+- **Laptop**: Single eDP-1 display with auto-detected resolution
+- **Implementation**: `home/dot_config/niri/config.kdl.tmpl` - Conditional `output` blocks based on `.is_laptop`
+
+**Network Interface** (Waybar):
+- **Auto-detection enabled**: No hardcoded interface specification
+- **Desktop**: Automatically shows active interface (Ethernet enp42s0 or WiFi wlan0)
+- **Laptop**: Automatically shows WiFi (wlan0)
+- **Implementation**: `home/dot_config/waybar/config.tmpl` - Interface auto-detection
+- **Benefit**: Handles failover scenarios automatically
+
+**Battery Widget** (Waybar):
+- **Conditional inclusion**: Only appears when `.is_laptop` is true
+- **Implementation**: `home/dot_config/waybar/config.tmpl` - Conditional battery module
+
+### What Remains Universal
+
+**Application Configurations**: All app configs (Helix, Fish, MPV, etc.) are identical across machines
+**Semantic Systems**: Both color and keybinding systems are machine-agnostic
+**Security & Secrets**: Bitwarden integration works identically everywhere
+**ZFS Configuration**: Gracefully handles presence/absence of ZFS
+
+### Troubleshooting Multi-Machine Setup
+
+**Display Issues**:
+- Run `niri msg outputs` to verify output names match configuration
+- Check that `.is_laptop` is set correctly in `chezmoi data`
+
+**Network Widget Not Showing**:
+- Auto-detection should work automatically
+- Verify interface is up: `ip link`
+- Check Waybar logs if widget shows "offline"
+
+**Battery Widget Missing on Laptop**:
+- Verify `.is_laptop` detection: `chezmoi data | grep is_laptop`
+- Check battery exists: `ls /sys/class/power_supply/BAT*`
+
+**Wrong Configuration Applied**:
+- Check `.is_laptop` value: `chezmoi data | grep is_laptop`
+- Re-run chezmoi to re-prompt: `chezmoi init --force`
+
+---
+
 ## REFERENCE FILES
 
 - @docs/ai-context/critical-files.md - Key files and their purposes
