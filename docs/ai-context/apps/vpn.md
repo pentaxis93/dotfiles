@@ -10,23 +10,25 @@
   - Work both as abbreviations (interactive) and functions (scripts)
   - Abbreviations expand: `vpc` → `vpn-connect`
   - Functions call: `vpc` → `vpn-connect` directly
-- **Systemd Service** - Optional user-level service for automatic connection
+- **Systemd System Service** - System-level service for reliability and auto-start on boot
 
 ## Configuration Files
 - **VPN Config**: `home/dot_config/private_openvpn/goosevpn.conf.tmpl` - Main OpenVPN configuration
 - **Auth File**: `home/dot_local/state/private_secrets/openvpn/goosevpn-auth.tmpl` - Credentials from Bitwarden
-- **Service**: `home/dot_config/systemd/user/goosevpn.service.tmpl` - Systemd service (optional)
+- **Service Installer**: `home/run_once_install-goosevpn-system-service.sh.tmpl` - Creates /etc/systemd/system/goosevpn.service
 - **Auto-loading**: `home/dot_config/fish/conf.d/00-secrets.fish.tmpl` - Loads secrets into environment
 
 ## Usage
 ```bash
-vpc  # Connect to VPN (vpn-connect)
-vpd  # Disconnect from VPN (vpn-disconnect)
-vps  # Check VPN status (vpn-status)
+vpc  # Connect to VPN (vpn-connect) - uses systemd service
+vpd  # Disconnect from VPN (vpn-disconnect) - stops systemd service
+vps  # Check VPN status (vpn-status) - shows systemd service state
 
-# Or use systemd (after enabling)
-systemctl --user start goosevpn
-systemctl --user enable goosevpn  # Auto-connect on boot
+# Manual systemd control (requires sudo)
+sudo systemctl start goosevpn      # Start VPN
+sudo systemctl stop goosevpn       # Stop VPN
+sudo systemctl enable goosevpn     # Auto-start on boot
+sudo systemctl status goosevpn     # Check detailed status
 ```
 
 ## Security Features

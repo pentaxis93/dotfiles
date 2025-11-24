@@ -1,9 +1,14 @@
 {{- /* Ultra-Zen VPN Status Check */ -}}
-function vpn-status --description "Check VPN connection status"
+function vpn-status --description "Check VPN connection status via systemd service"
     # Semantic: Observe the state of our secure tunnel
 
-    if pgrep -x openvpn >/dev/null
-        echo "🟢 VPN Status: Connected"
+    if sudo systemctl is-active --quiet goosevpn.service
+        echo "🟢 VPN Status: Connected (systemd managed)"
+
+        # Show service status
+        set -l service_state (sudo systemctl show -p ActiveState --value goosevpn.service)
+        set -l uptime (sudo systemctl show -p ActiveEnterTimestamp --value goosevpn.service)
+        echo "   Service: $service_state"
 
         # Show tunnel interface if available
         set -l tun_ip (ip addr show tun0 2>/dev/null | grep -oP 'inet \K[\d.]+')
@@ -20,6 +25,13 @@ function vpn-status --description "Check VPN connection status"
         end
     else
         echo "🔴 VPN Status: Disconnected"
+
+        # Check if service exists
+        if sudo systemctl list-unit-files goosevpn.service >/dev/null 2>&1
+            echo "   Service: installed but inactive"
+        else
+            echo "   Service: not installed (run 'chezmoi apply')"
+        end
 
         # Show current public IP if available
         if command -q curl

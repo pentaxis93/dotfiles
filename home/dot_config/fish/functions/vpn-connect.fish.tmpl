@@ -1,31 +1,32 @@
 {{- /* Ultra-Zen VPN Connection */ -}}
-function vpn-connect --description "Connect to Goose VPN via OpenVPN"
+function vpn-connect --description "Connect to Goose VPN via systemd service"
     # Semantic: Establish secure tunnel through vault-authenticated gateway
 
-    set -l config_file "$HOME/.config/openvpn/goosevpn.conf"
     set -l vpn_name "GooseVPN"
 
-    # Check if config exists
-    if not test -f $config_file
-        echo "⚠️  VPN config not found. Run 'chezmoi apply' first."
-        return 1
-    end
-
     # Check if already connected
-    if pgrep -x openvpn >/dev/null
+    if sudo systemctl is-active --quiet goosevpn.service
         echo "✓ Already connected to VPN"
         return 0
     end
 
     echo "🔐 Connecting to $vpn_name..."
 
-    # Use sudo to run OpenVPN (requires root for TUN device)
-    sudo openvpn --config $config_file --daemon
+    # Start system service (requires sudo)
+    sudo systemctl start goosevpn.service
 
     if test $status -eq 0
-        echo "✓ Connected to $vpn_name"
+        # Wait a moment for connection to establish
+        sleep 2
+        if sudo systemctl is-active --quiet goosevpn.service
+            echo "✓ Connected to $vpn_name"
+        else
+            echo "✗ Service started but connection failed"
+            sudo systemctl status goosevpn.service
+            return 1
+        end
     else
-        echo "✗ Failed to connect to $vpn_name"
+        echo "✗ Failed to start $vpn_name service"
         return 1
     end
 end

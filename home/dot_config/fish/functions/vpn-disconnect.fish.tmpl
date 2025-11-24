@@ -1,16 +1,16 @@
 {{- /* Ultra-Zen VPN Disconnection */ -}}
-function vpn-disconnect --description "Disconnect from VPN"
+function vpn-disconnect --description "Disconnect from VPN via systemd service"
     # Semantic: Terminate secure tunnel and restore default route
 
-    if not pgrep -x openvpn >/dev/null
+    if not sudo systemctl is-active --quiet goosevpn.service
         echo "ℹ️  No active VPN connection"
         return 0
     end
 
     echo "🔒 Disconnecting VPN..."
 
-    # Kill OpenVPN process
-    sudo pkill -x openvpn
+    # Stop system service (requires sudo)
+    sudo systemctl stop goosevpn.service
 
     if test $status -eq 0
         echo "✓ VPN disconnected"

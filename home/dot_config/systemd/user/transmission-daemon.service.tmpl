@@ -4,7 +4,8 @@ Description=Transmission BitTorrent Daemon (VPN-bound)
 Documentation=man:transmission-daemon(1)
 After=network-online.target
 Wants=network-online.target
-# VPN binding handled by ExecStartPre script
+# VPN killswitch: transmission-vpn-bind script ensures VPN is connected before starting
+# Manual stop required if VPN disconnects (user services can't BindsTo system services)
 
 [Service]
 Type=notify

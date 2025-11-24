@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Install GooseVPN system service (requires root)
+
+set -euo pipefail
+
+SERVICE_FILE="/etc/systemd/system/goosevpn.service"
+
+# Create /run/openvpn directory if it doesn't exist
+sudo mkdir -p /run/openvpn
+
+# Create system service file
+sudo tee "$SERVICE_FILE" > /dev/null << EOF
+[Unit]
+Description=Goose VPN Connection
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+NotifyAccess=all
+ExecStart=/usr/bin/openvpn --config {{ .chezmoi.homeDir }}/.config/openvpn/goosevpn.conf
+Restart=on-failure
+RestartSec=5s
+
+# Runtime directory for OpenVPN
+RuntimeDirectory=openvpn
+RuntimeDirectoryMode=0755
+
+# Capabilities needed for OpenVPN
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_DAC_OVERRIDE
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Reload systemd to pick up the new service
+sudo systemctl daemon-reload
+
+echo "✓ GooseVPN system service installed"
+echo "  Start with: sudo systemctl start goosevpn"
+echo "  Enable on boot: sudo systemctl enable goosevpn"
