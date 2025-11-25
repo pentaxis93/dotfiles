@@ -37,7 +37,8 @@
 
 {{- /* System configuration with auto-detected defaults */ -}}
 {{- $editor := promptStringOnce . "editor" "Your preferred editor" $defaultEditor -}}
-{{- $isLaptop := promptBoolOnce . "is_laptop" "Is this a laptop (for battery widgets)" $defaultIsLaptop -}}
+{{- /* is_laptop is auto-detected from battery presence - no prompt needed */ -}}
+{{- $isLaptop := $defaultIsLaptop -}}
 
 {{- /* Optional but useful with better defaults */ -}}
 {{- $aurHelper := promptStringOnce . "aur_helper" "AUR helper (yay/paru)" "yay" -}}
