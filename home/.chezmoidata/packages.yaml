@@ -82,3 +82,6 @@ packages:
 
       # Torrenting - Terminal UI for Transmission
       - tremc  # TUI for transmission with vi-like keybindings
+
+      # Web Browsing - Modern Firefox-based browser
+      - zen-browser-bin  # Privacy-focused Firefox fork with Arc-style vertical tabs and zero telemetry
