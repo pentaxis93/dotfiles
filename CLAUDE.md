@@ -315,7 +315,7 @@ When creating a new custom command:
 ### Core Applications
 - @docs/ai-context/apps/helix.md - Modal editor with semantic colors and soft wrap
 - @docs/ai-context/apps/mpv.md - Media player with LF browser integration
-- @docs/ai-context/apps/zen-browser.md - Privacy-focused Firefox fork with vertical tabs and semantic theming (primary browser)
+- @docs/ai-context/apps/zen-browser.md - Privacy-focused browser with vertical tabs and semantic theming (primary browser)
 - @docs/ai-context/apps/qutebrowser.md - Keyboard-driven web browser
 - @docs/ai-context/apps/weechat.md - IRC client with XDCC support
 - @docs/ai-context/apps/transmission.md - BitTorrent with VPN killswitch

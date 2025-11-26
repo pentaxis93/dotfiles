@@ -46,9 +46,9 @@ fi
 # Find the active Zen profile
 # ────────────────────────────────────────────────────────────────────────────
 
-# Look for profiles ending with .default or containing "release" or "default"
+# Look for release profile (active/locked profile from profiles.ini)
 ZEN_PROFILE=$(find "$ZEN_BASE_DIR" -maxdepth 1 -type d \
-    \( -name "*.default" -o -name "*.Default*" -o -name "*release*" \) \
+    -name "*release*" \
     | head -n 1)
 
 if [[ -z "$ZEN_PROFILE" ]]; then
