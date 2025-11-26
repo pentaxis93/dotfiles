@@ -1,0 +1,14 @@
+#!/usr/bin/env fish
+# ZFS Pool Disk Usage for Waybar (Desktop)
+# Shows [/0:XX%] for the ZFS boot pool
+
+set pool "zpcachyos"
+
+# Get pool capacity (used percentage)
+set capacity (zpool list -Ho capacity $pool 2>/dev/null | tr -d '%')
+
+if test -n "$capacity"
+    echo "[/0:$capacity%]"
+else
+    echo "[/0:--]"
+end

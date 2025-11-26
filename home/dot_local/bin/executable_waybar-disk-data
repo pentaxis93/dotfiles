@@ -1,0 +1,23 @@
+#!/usr/bin/env fish
+# Data Archive Disk Usage for Waybar (Desktop)
+# Shows [/1:XX%] for the btrfs data drive (nvme0n1p1)
+# Shows [/1:--] if not mounted
+
+# Check common mount points for the data drive
+set device "nvme0n1p1"
+
+# Find where nvme0n1p1 is mounted (if at all)
+set mountpoint (lsblk -no MOUNTPOINT /dev/$device 2>/dev/null | head -1)
+
+if test -n "$mountpoint"
+    # Drive is mounted - get usage percentage
+    set usage (df --output=pcent "$mountpoint" 2>/dev/null | tail -1 | tr -d ' %')
+    if test -n "$usage"
+        echo "[/1:$usage%]"
+    else
+        echo "[/1:??]"
+    end
+else
+    # Drive not mounted
+    echo "[/1:--]"
+end

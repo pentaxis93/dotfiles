@@ -21,6 +21,8 @@ window#waybar {
 #battery,
 #backlight,
 #disk,
+#custom-disk0,
+#custom-disk1,
 #bluetooth,
 #network,
 #cpu,
@@ -38,13 +40,15 @@ window#waybar {
 /* Unified Spectrum: Red → Blue (Pure Warm to Pure Cool)
    The entire bar is one continuous spectrum from warmest (left) to coolest (right)
    Position 0: All workspaces + window title (warmest)
-   Positions 1-10: Status modules (progressively cooler)
+   Positions 1-10/11: Status modules (progressively cooler)
 
    This design dissolves the workspace count constraint - all workspaces share
-   the warmest color, and the spectrum flows uninterrupted across the bar. */
-{{- $modules := list "left-side" "disk" "cpu" "memory" "backlight" "pulseaudio" "bluetooth" "network" "custom-weather" "battery" "clock" -}}
+   the warmest color, and the spectrum flows uninterrupted across the bar.
+   Desktop: 11 positions (disk0, disk1 instead of single disk, no battery)
+   Laptop: 11 positions (single disk, has battery) */
+{{- $numModules := 11 -}}
 {{- $script := joinPath .chezmoi.sourceDir ".." "scripts" "generate-spectrum.py" -}}
-{{- $output := output "python3" $script (index $c "red") (index $c "blue") (toString (len $modules)) -}}
+{{- $output := output "python3" $script (index $c "red") (index $c "blue") (toString $numModules) -}}
 {{- $spectrum := $output | trim | splitList "\n" -}}
 
 /* Position 0: Unified left side (all workspaces + window title) */
@@ -92,7 +96,9 @@ window#waybar.empty #window {
     color: {{ template "color-hex.tmpl" $c.bg_lighter }};
 }
 
-/* Positions 1-10: Status modules - Perceptually uniform spectrum (LAB interpolation) */
+/* Status modules - Perceptually uniform spectrum (LAB interpolation) */
+{{- if .is_laptop }}
+/* Laptop: 11 positions (single disk, has battery) */
 #disk {
     color: #{{ index $spectrum 1 }};
 }
@@ -134,6 +140,50 @@ window#waybar.empty #window {
     font-weight: 600;
     padding-right: 12px;
 }
+{{- else }}
+/* Desktop: 11 positions (dual disk, no battery) */
+#custom-disk0 {
+    color: #{{ index $spectrum 1 }};
+}
+
+#custom-disk1 {
+    color: #{{ index $spectrum 2 }};
+}
+
+#cpu {
+    color: #{{ index $spectrum 3 }};
+}
+
+#memory {
+    color: #{{ index $spectrum 4 }};
+}
+
+#backlight {
+    color: #{{ index $spectrum 5 }};
+}
+
+#pulseaudio {
+    color: #{{ index $spectrum 6 }};
+}
+
+#bluetooth {
+    color: #{{ index $spectrum 7 }};
+}
+
+#network {
+    color: #{{ index $spectrum 8 }};
+}
+
+#custom-weather {
+    color: #{{ index $spectrum 9 }};
+}
+
+#clock {
+    color: #{{ index $spectrum 10 }};
+    font-weight: 600;
+    padding-right: 12px;
+}
+{{- end }}
 /* VPN - Blue (secure connectivity) - integrates visually with network */
 #custom-vpn {
     color: {{ template "color-hex.tmpl" $c.blue }};

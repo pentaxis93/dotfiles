@@ -15,7 +15,12 @@
     "modules-center": [],
 
     "modules-right": [
+        {{- if .is_laptop }}
         "disk",
+        {{- else }}
+        "custom/disk0",
+        "custom/disk1",
+        {{- end }}
         "cpu",
         "memory",
         "backlight",
@@ -65,12 +70,28 @@
         "tooltip": false
     },
 
+    {{- if .is_laptop }}
     "disk": {
         "interval": 30,
         "format": "[/:{percentage_used}%]",
         "path": "/",
         "tooltip": false
     },
+    {{- else }}
+    // Desktop: Two drives - ZFS boot (nvme1n1) and btrfs data archive (nvme0n1)
+    "custom/disk0": {
+        "format": "{}",
+        "exec": "~/.local/bin/waybar-disk-zfs",
+        "interval": 30,
+        "tooltip": false
+    },
+    "custom/disk1": {
+        "format": "{}",
+        "exec": "~/.local/bin/waybar-disk-data",
+        "interval": 30,
+        "tooltip": false
+    },
+    {{- end }}
 
     "bluetooth": {
         "format": "[bt:on]",
