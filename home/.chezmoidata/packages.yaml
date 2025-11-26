@@ -85,3 +85,6 @@ packages:
 
       # Web Browsing - Modern Firefox-based browser
       - zen-browser-bin  # Privacy-focused Firefox fork with Arc-style vertical tabs and zero telemetry
+
+      # Development - AI-assisted coding tools
+      - cursor-bin  # AI-first coding environment for supplementary AI-assisted development
