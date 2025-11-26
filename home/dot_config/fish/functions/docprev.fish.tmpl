@@ -1,0 +1,30 @@
+function docprev --description 'Preview any document as plain text with bat'
+    # Ultra-Zen Philosophy: "Any document reveals its essence as text"
+
+    if test (count $argv) -eq 0
+        echo "Usage: docprev <document-file>"
+        echo "Converts any document to plain text and displays with bat"
+        echo ""
+        echo "Supported formats: DOCX, ODT, EPUB, HTML, Markdown, PDF (via pandoc)"
+        return 1
+    end
+
+    set -l file $argv[1]
+
+    if not test -f "$file"
+        echo "Error: File not found: $file" >&2
+        return 1
+    end
+
+    if not command -v pandoc >/dev/null 2>&1
+        echo "Error: pandoc not installed (install via packages.yaml)" >&2
+        return 1
+    end
+
+    # Convert to plain text and display with bat
+    if command -v bat >/dev/null 2>&1
+        pandoc -s -t plain "$file" | bat --language=markdown --style=plain
+    else
+        pandoc -s -t plain "$file"
+    end
+end

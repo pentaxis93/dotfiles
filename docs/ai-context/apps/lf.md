@@ -6,7 +6,7 @@
   - 13 template-based bindings: navigation (h/j/k/l, gg/ge, gh/gl), selection (x/V/A), search (/?)
   - Helix-native: ge for end, gh/gl for line start/end
   - All bindings categorized by semantic intent (navigate, select, discover, transform)
-- **Required Dependencies** - fzf (Ctrl+f fuzzy directory jump), ripgrep (Ctrl+g content search)
+- **Required Dependencies** - fzf (Ctrl+f fuzzy directory jump), ripgrep (Ctrl+g content search), pandoc-cli (office document previews)
 - **Handlr Integration** - Modern file handler replacing xdg-open with wofi selector
 
 ## Configuration Files
@@ -32,6 +32,7 @@ Two-key system for maximum simplicity:
 - Archives showing contents (atool)
 - PDFs as text or images (poppler)
 - JSON pretty-printed (jq)
+- **Office documents** - DOCX, EPUB, ODT converted to plain text (pandoc)
 - Directories as tree structure
 
 ## Advanced Commands

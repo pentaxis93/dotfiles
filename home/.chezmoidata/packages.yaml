@@ -82,3 +82,7 @@ packages:
 
       # Torrenting - Terminal UI for Transmission
       - tremc  # TUI for transmission with vi-like keybindings
+
+      # Document Conversion - Universal document transformer (binary-only, no Haskell dependencies)
+      - pandoc-bin  # Pandoc executable for DOCX/EPUB/ODT/Markdown conversion without 750MB Haskell chain
+      - wkhtmltopdf-bin  # HTML to PDF via QtWebKit (pandoc PDF engine, static binary)

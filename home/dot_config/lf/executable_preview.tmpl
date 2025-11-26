@@ -75,6 +75,20 @@ handle_extension() {
             fi
             exit 1;;
 
+        # Microsoft Word
+        docx|doc)
+            if command -v pandoc >/dev/null 2>&1; then
+                pandoc -s -t plain -- "${FILE_PATH}" && exit 0
+            fi
+            exit 1;;
+
+        # EPUB ebooks
+        epub)
+            if command -v pandoc >/dev/null 2>&1; then
+                pandoc -s -t plain -- "${FILE_PATH}" && exit 0
+            fi
+            exit 1;;
+
         # Markdown
         md|markdown|mkd|mdown)
             if command -v bat >/dev/null 2>&1; then

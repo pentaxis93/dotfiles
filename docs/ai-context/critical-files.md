@@ -30,6 +30,7 @@ Located in `home/.chezmoitemplates/`:
 - `home/dot_config/fish/functions/vpc.fish.tmpl` - VPN connect wrapper (works in scripts)
 - `home/dot_config/fish/functions/vpd.fish.tmpl` - VPN disconnect wrapper
 - `home/dot_config/fish/functions/vps.fish.tmpl` - VPN status wrapper
+- `home/dot_config/fish/functions/docprev.fish.tmpl` - Document preview with pandoc and bat
 
 ## Security & VPN
 - `home/dot_config/private_openvpn/` - OpenVPN configuration files

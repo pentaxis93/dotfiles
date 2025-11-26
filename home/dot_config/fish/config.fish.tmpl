@@ -171,6 +171,14 @@ abbr -a idc "irc-downloads clean"  # Clean old files (semantic: maintain)
 abbr -a h "helix"                  # Modal editor (semantic: invoke.editor)
 abbr -a lg "lazygit"               # Launch lazygit TUI (semantic: git-visual)
 
+# Document Conversion - Universal document transformation
+# "Any format flows into any other through pandoc's universal bridge"
+abbr -a md2pdf "pandoc --pdf-engine=wkhtmltopdf -o output.pdf"  # Markdown to PDF (semantic: transform)
+abbr -a md2epub "pandoc -o output.epub"   # Markdown to EPUB (semantic: transform)
+abbr -a md2docx "pandoc -o output.docx"   # Markdown to DOCX (semantic: transform)
+abbr -a docx2md "pandoc -o output.md"     # DOCX to Markdown (semantic: transform)
+abbr -a md2html "pandoc -s --toc -o output.html"  # Markdown to HTML with TOC (semantic: publish)
+
 # Auto-lock Bitwarden on terminal exit - Security first
 # "The wise seal their treasures when departing"
 function __bw_auto_lock_on_exit --on-event fish_exit
