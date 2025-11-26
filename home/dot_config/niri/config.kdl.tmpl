@@ -51,32 +51,6 @@ output "eDP-1" {
 }
 {{- end }}
 
-// ────────────── Named Workspaces ──────────────
-// Persistent workspaces that always exist (won't disappear when empty)
-// https://github.com/yalter/niri/wiki/Configuration:-Named-Workspaces
-
-{{- if not .is_laptop }}
-// Desktop: Named workspaces across dual monitors
-// DP-1 (left): Browser workspace
-workspace "1-browser" {
-    open-on-output "DP-1"
-}
-
-// HDMI-A-1 (right): Development workspaces
-workspace "1-zenvestor" {
-    open-on-output "HDMI-A-1"
-}
-
-workspace "2-chezmoi" {
-    open-on-output "HDMI-A-1"
-}
-{{- else }}
-// Laptop: Named workspaces (single monitor, no output assignment needed)
-workspace "1-browser"
-workspace "1-zenvestor"
-workspace "2-chezmoi"
-{{- end }}
-
 // ────────────── Keybindings ──────────────
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Key-Bindings
 
@@ -187,12 +161,8 @@ binds {
     MOD+CTRL+SHIFT+WHEELSCROLLDOWN      { move-column-right; }
     MOD+CTRL+SHIFT+WHEELSCROLLUP        { move-column-left; }
 
-    // Named workspaces - persistent, always exist
-    // 1-browser on DP-1 (left), 1-zenvestor/2-chezmoi on HDMI-A-1 (right)
-    // MOD+1/2 focus named workspaces on focused monitor
-    MOD+1                               { focus-workspace "1-zenvestor"; }
-    MOD+2                               { focus-workspace "2-chezmoi"; }
-    // Dynamic workspaces (3-9) - created/destroyed as needed
+    MOD+1                               { focus-workspace 1; }
+    MOD+2                               { focus-workspace 2; }
     MOD+3                               { focus-workspace 3; }
     MOD+4                               { focus-workspace 4; }
     MOD+5                               { focus-workspace 5; }
@@ -201,9 +171,8 @@ binds {
     MOD+8                               { focus-workspace 8; }
     MOD+9                               { focus-workspace 9; }
 
-    // Move windows to workspaces
-    MOD+CTRL+1                          { move-column-to-workspace "1-zenvestor"; }
-    MOD+CTRL+2                          { move-column-to-workspace "2-chezmoi"; }
+    MOD+CTRL+1                          { move-column-to-workspace 1; }
+    MOD+CTRL+2                          { move-column-to-workspace 2; }
     MOD+CTRL+3                          { move-column-to-workspace 3; }
     MOD+CTRL+4                          { move-column-to-workspace 4; }
     MOD+CTRL+5                          { move-column-to-workspace 5; }
@@ -258,7 +227,6 @@ binds {
     spawn-sh-at-startup "swww-daemon" // Wallpaper daemon
     spawn-sh-at-startup "swww img /usr/share/wallpapers/cachyos-wallpapers/GreenFeathers.png" // Set wallpaper
     spawn-sh-at-startup "waybar" // Launch waybar
-    spawn-sh-at-startup "~/.local/bin/niri-workspace-setup &" // Initialize named workspaces with apps
 
     prefer-no-csd // Disable program decorations
     screenshot-path null // Disable screenshot saving

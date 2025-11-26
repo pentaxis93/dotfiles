@@ -1,6 +1,7 @@
 ---
 name: storyline
 description: Analyze uncommitted changes and execute a Zen commit strategy
+model: haiku
 ---
 
 # Storyline Commit Strategy

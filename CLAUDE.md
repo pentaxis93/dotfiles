@@ -68,6 +68,23 @@ See: @docs/ai-context/apps/bitwarden.md
 
 **Documentation Synchronization**: After any code change, update all relevant docs including `CLAUDE.md`, `README.md`, and subdirectory READMEs. Documentation updates and code updates are **integral parts of the same action** - never complete a task without updating affected documentation.
 
+### Enabling Claude Code to Run `chezmoi apply` (IMPORTANT)
+
+By default, Claude Code cannot run `chezmoi apply` because Bitwarden templates require an unlocked vault with interactive password entry.
+
+**Solution**: Export `BW_SESSION` before starting Claude Code:
+```bash
+export BW_SESSION=$(bw unlock --raw)
+claude   # Now Claude Code can run chezmoi apply autonomously
+```
+
+**Why this matters**: With `BW_SESSION` exported, Claude Code can:
+- Apply configuration changes without user intervention
+- Restart services after config updates
+- Complete full edit→apply→verify cycles independently
+
+**Security note**: The session token is ephemeral and scoped to your terminal session.
+
 ---
 
 ## MCP SERVER USAGE GUIDE
@@ -236,11 +253,69 @@ Selections use **reverse video** (fg/bg swap), not colored backgrounds:
 
 ---
 
+## CLAUDE CODE CUSTOM COMMANDS
+
+### Slash Commands with Model Configuration
+
+Custom slash commands can specify their default model via frontmatter metadata. This ensures consistent behavior when invoking specific workflows.
+
+**File Location**: `~/.claude/private_commands/` (project-specific) or `~/.claude/commands/` (global)
+
+**Frontmatter Format**:
+```markdown
+---
+name: commandname
+description: What this command does
+model: haiku
+---
+
+## Command Instructions
+
+Your detailed instructions here...
+```
+
+**Available Model Aliases** (short aliases automatically update to latest versions):
+- `haiku` - Fast, lightweight model (ideal for structured tasks)
+- `sonnet` - Balanced model (default for general work)
+- `opus` - Most capable model (for complex analysis)
+- `opusplan` - Hybrid mode: Opus planning + Sonnet execution
+- `default` - Your account's recommended model
+
+**Note**: Use short aliases (`haiku`, `sonnet`, `opus`) instead of dated versions. Short aliases automatically point to the latest model releases without manual updates.
+
+**Examples**:
+- **`/storyline`** - Uses Haiku for fast atomic commit planning
+  - File: `home/dot_claude/private_commands/storyline.md`
+  - Purpose: Analyze uncommitted changes and plan Zen commits
+  - Why Haiku: Structured analysis task, fast execution
+
+**Benefits**:
+- **Predictable Performance**: Each command uses its optimal model
+- **Cost Efficiency**: Haiku for structured tasks, Sonnet for complex work
+- **Consistency**: Commands always use the same model regardless of global settings
+
+### Adding New Custom Commands
+
+When creating a new custom command:
+1. **Create file**: `~/.claude/private_commands/mycommand.md`
+2. **Add frontmatter** with name, description, and model
+3. **Write instructions** as clear, actionable prompts
+4. **Document in CLAUDE.md** why that model was chosen
+
+**Model Selection Guidelines** (use short aliases):
+- **`model: haiku`** for: Structured analysis, planning, pattern matching, fast iteration
+- **`model: sonnet`** for: General-purpose work, code review, creative tasks
+- **`model: opus`** for: Complex architecture decisions, deep analysis, research
+- **`model: opusplan`** for: Hybrid workflows needing Opus reasoning with Sonnet execution
+
+---
+
 ## APPLICATION CONFIGURATIONS
 
 ### Core Applications
 - @docs/ai-context/apps/helix.md - Modal editor with semantic colors and soft wrap
 - @docs/ai-context/apps/mpv.md - Media player with LF browser integration
+- @docs/ai-context/apps/zen-browser.md - Privacy-focused Firefox fork with vertical tabs and semantic theming (primary browser)
 - @docs/ai-context/apps/qutebrowser.md - Keyboard-driven web browser
 - @docs/ai-context/apps/weechat.md - IRC client with XDCC support
 - @docs/ai-context/apps/transmission.md - BitTorrent with VPN killswitch
