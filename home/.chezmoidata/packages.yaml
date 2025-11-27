@@ -57,6 +57,9 @@ packages:
       # Bluetooth - Device management
       - bluetui  # TUI bluetooth manager for Waybar widget integration and device pairing
 
+      # Peripheral Configuration - Gaming hardware control
+      - libratbag  # DBus daemon for configuring gaming mice (provides ratbagctl CLI)
+
       # Shell Navigation - Smart directory jumping
       - zoxide  # Frecency-based directory navigation
 
