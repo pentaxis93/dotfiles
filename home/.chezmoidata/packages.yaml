@@ -91,3 +91,6 @@ packages:
 
       # Development - AI-assisted coding tools
       - cursor-bin  # AI-first coding environment for supplementary AI-assisted development
+
+      # Knowledge Management - Note-taking and personal knowledge base
+      - obsidian  # Markdown-based knowledge management with graph visualization and linking
