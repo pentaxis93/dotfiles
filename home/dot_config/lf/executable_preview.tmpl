@@ -80,6 +80,7 @@ handle_extension() {
             if command -v bat >/dev/null 2>&1; then
                 bat --color=always --style=numbers,changes --paging=never \
                     --theme="gruvbox-dark" \
+                    --wrap=character --terminal-width="${PV_WIDTH}" \
                     -- "${FILE_PATH}" && exit 0
             fi
             if command -v pandoc >/dev/null 2>&1; then
@@ -89,11 +90,21 @@ handle_extension() {
 
         # JSON
         json|jsonl|jsonld)
+            if command -v jq >/dev/null 2>&1 && command -v bat >/dev/null 2>&1; then
+                # Pretty-print with jq, then syntax highlight and wrap with bat
+                jq --color-output . "${FILE_PATH}" 2>/dev/null | \
+                    bat --color=always --style=plain --paging=never \
+                        --language=json \
+                        --wrap=character --terminal-width="${PV_WIDTH}" && exit 0
+            fi
             if command -v jq >/dev/null 2>&1; then
-                jq --color-output . "${FILE_PATH}" && exit 0
+                # Fallback: jq with fold for wrapping
+                jq --color-output . "${FILE_PATH}" 2>/dev/null | \
+                    fold -w "${PV_WIDTH}" && exit 0
             fi
             if command -v python3 >/dev/null 2>&1; then
-                python3 -m json.tool -- "${FILE_PATH}" && exit 0
+                python3 -m json.tool -- "${FILE_PATH}" | \
+                    fold -w "${PV_WIDTH}" && exit 0
             fi
             ;;
 
@@ -132,6 +143,7 @@ handle_mime() {
             if command -v bat >/dev/null 2>&1; then
                 bat --color=always --style=plain --paging=never \
                     --theme="TwoDark" \
+                    --wrap=character --terminal-width="${PV_WIDTH}" \
                     --line-range=":${PV_HEIGHT}" \
                     -- "${FILE_PATH}" && exit 0
             fi
