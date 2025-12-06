@@ -65,6 +65,7 @@ packages:
 
       # Web Browsing - Keyboard-driven browser
       - qutebrowser  # Web browser with vim-like navigation and semantic keybindings
+      - chromium  # Browser automation target for Playwright (MCP + CLI)
 
       # Development & Build Tools - Programming languages and workflows
       - helix  # Modal editor with semantic navigation and LSP integration
@@ -76,8 +77,14 @@ packages:
       - lazygit  # TUI for git with vi keybindings and reverse video selections
       - python-colour  # Perceptually-uniform color interpolation for spectrum generation
 
+      # Power Management - Idle and screen control
+      - swayidle  # Wayland idle daemon for automatic screen off and suspend
+
       # Contemplation & Wisdom - Daily doses of zen philosophy
       - fortune-mod  # Displays random quotations for contemplative terminal sessions
+
+      # Knowledge Management - Note-taking and personal knowledge base
+      - obsidian  # Markdown-based knowledge management with graph visualization and linking
 
     aur:
       # System & Security - Foundation for secure operations
@@ -91,6 +98,3 @@ packages:
 
       # Development - AI-assisted coding tools
       - cursor-bin  # AI-first coding environment for supplementary AI-assisted development
-
-      # Knowledge Management - Note-taking and personal knowledge base
-      - obsidian  # Markdown-based knowledge management with graph visualization and linking
