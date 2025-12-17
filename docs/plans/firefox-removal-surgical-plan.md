@@ -209,29 +209,6 @@ match app-id=r#"^(firefox|zen-browser)$"# title="^Picture-in-Picture$"
 
 ---
 
-## Known Issues & Workarounds
-
-### Bitwarden Template Error (UNRELATED)
-**Error during chezmoi apply**:
-```
-chezmoi: .local/state/secrets/env/openrouter-api: error calling bitwarden: unexpected end of JSON input
-```
-
-**Cause**: "OpenRouter API" item doesn't exist in Bitwarden vault
-
-**Workaround**: Added to `.chezmoiignore` temporarily
-```
-.local/state/secrets/env/openrouter-api
-```
-
-**Fix**: User should either:
-1. Create "OpenRouter API" item in Bitwarden with API key
-2. Or permanently ignore this file if not using OpenRouter MCP server
-
-**Impact**: Does NOT affect Firefox removal or Zen Browser fix
-
----
-
 ## Optional Cleanup (DEFERRED)
 
 These can be done later if desired (NOT required for safe Firefox removal):

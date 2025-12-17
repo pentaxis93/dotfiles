@@ -1,8 +1,0 @@
-{{- /* Ultra-Zen OpenRouter API Key Secret */ -}}
-{{- /* "API keys flow from vault to environment, enabling AI conversations" */ -}}
-
-# OpenRouter API Key for Zen MCP Server
-# Loaded automatically by Fish shell on startup
-# Used by Claude Code's zen-mcp-server for AI model access
-
-set -gx OPENROUTER_API_KEY "{{ template "bitwarden-password.tmpl" "OpenRouter API" }}"

@@ -26,8 +26,6 @@
 
 **Looking up external library docs?** → Use Context7 MCP (`resolve-library-id` → `get-library-docs`)
 
-**Need systematic investigation?** → Use Zen MCP workflows (debug, codereview, analyze, etc.)
-
 **Simple code change?** → Use built-in tools (Read, Edit, Write, Grep)
 
 **Refactoring workflow?** → `chezmoi edit` → `chezmoi diff` → `chezmoi apply -v` → **Update docs**
@@ -121,68 +119,6 @@ claude   # Now Claude Code can run chezmoi apply autonomously
 
 ---
 
-### Zen MCP - Systematic Investigation Workflows
-
-**Core Philosophy**:
-*"These are not merely other AI models - they are **structured investigation methodologies** that guide systematic analysis."*
-
-The value lies in the **workflows themselves**: multi-step investigations with hypothesis testing, evidence gathering, and expert validation. The models are vessels; the workflows are the meditation practice.
-
-**When to use:**
-- ✅ Complex problems requiring **systematic multi-step investigation**
-- ✅ Tasks demanding **structured methodology** (security audit, code review, deep debugging)
-- ✅ Situations where **hypothesis testing** and **evidence gathering** add rigor
-- ✅ Need **expert validation** to increase confidence in conclusions
-- ✅ Problems with **multiple valid approaches** requiring careful analysis
-
-**When NOT to use:**
-- ❌ Simple edits or straightforward implementations
-- ❌ Quick lookups or one-line answers
-- ❌ Trivial bug fixes with obvious solutions
-- ❌ Routine refactoring without architectural implications
-
-**Workflow-First Decision Tree:**
-
-```
-Problem Type                          → Zen MCP Workflow Tool
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Code needs review                     → mcp__zen__codereview
-Complex bug or mysterious behavior    → mcp__zen__debug
-Planning major refactor/redesign      → mcp__zen__planner
-Security concerns or audit needed     → mcp__zen__secaudit
-Understanding code execution flow     → mcp__zen__tracer
-Architecture or pattern analysis      → mcp__zen__analyze
-Need comprehensive test coverage      → mcp__zen__testgen
-Validating git changes pre-commit     → mcp__zen__precommit
-Refactoring code smells               → mcp__zen__refactor
-Generating documentation              → mcp__zen__docgen
-Complex decision needs consensus      → mcp__zen__consensus
-General deep investigation            → mcp__zen__thinkdeep
-Brainstorming or discussion           → mcp__zen__chat
-```
-
-**Key Workflows Explained:**
-
-- **codereview**: Systematic quality/security/performance analysis with expert validation
-- **debug**: Multi-stage root cause investigation with hypothesis testing
-- **planner**: Interactive task breakdown with revision and branching capabilities
-- **secaudit**: OWASP Top 10, compliance, threat modeling with structured assessment
-- **tracer**: Execution flow mapping or dependency analysis (precision/dependencies modes)
-- **analyze**: Architecture, performance, maintainability analysis with strategic insights
-- **testgen**: Edge case identification and comprehensive test suite generation
-- **precommit**: Multi-repository validation and change impact assessment
-- **refactor**: Code smell detection, decomposition planning, modernization opportunities
-- **docgen**: Function/class documentation with complexity analysis
-- **consensus**: Multi-model debate and synthesis for complex decisions
-- **thinkdeep**: Deep investigation with progressive hypothesis refinement
-- **chat**: Collaborative thinking partner for brainstorming
-
-**Core Insight**: These workflows provide **systematic rigor** that prevents overlooked edge cases, ensures comprehensive analysis, and builds confidence through structured investigation patterns.
-
-**Model Selection**: Each tool has optimal defaults. Respect token budgets - use larger models only for complex analysis. Use `continuation_id` for multi-turn conversations within same workflow.
-
----
-
 ### New Configuration Mandate (CRITICAL)
 
 When creating ANY new application configuration, you MUST use the semantic systems:
@@ -216,16 +152,11 @@ When creating ANY new application configuration, you MUST use the semantic syste
 - Delete before adding
 
 ### MCP Server Philosophy
-**"One mind seeks wisdom through systematic practice"**
+**"Bring external knowledge into our realm when needed"**
 
-- **Context7**: Brings external knowledge into our realm when needed
-- **Zen MCP**: Provides structured investigation workflows for complex problems
+- **Context7**: Fetches up-to-date documentation for external libraries
+- **Playwright**: Browser automation for testing and web interaction
 - **Built-in tools**: For execution and implementation
-- **MCP tools**: For contemplation, systematic analysis, and validation
-- **Workflow-first thinking**: Use the appropriate systematic methodology for the problem type
-- **Systematic rigor**: Prevents overlooked edge cases through structured investigation patterns
-
-The workflows themselves are the value - they guide multi-step investigations with hypothesis testing, evidence gathering, and expert validation. The models are merely vessels; the workflows are the meditation practice.
 
 ### Reverse Video Selections Philosophy
 *"Do not paint the water to make the fish visible. Let the fish and water exchange places."*
@@ -247,9 +178,7 @@ Selections use **reverse video** (fg/bg swap), not colored backgrounds:
 **DON'T** skip documentation updates after code changes (CRITICAL).
 **DON'T** install packages directly (use declarative `packages.yaml`).
 **DON'T** commit secrets (use Bitwarden templates).
-**DON'T** use Zen MCP workflows for trivial tasks (overkill for simple edits or quick answers).
 **DON'T** fetch Context7 docs for internal project files (use Read/Grep instead).
-**DON'T** mix `continuation_id` between different Zen MCP workflow types.
 
 ---
 
@@ -329,7 +258,6 @@ When creating a new custom command:
 - @docs/ai-context/apps/shell-enhancements.md - eza, zoxide, Fish shell
 - @docs/ai-context/apps/flutter.md - Flutter/Dart development with fvm version manager
 - @docs/ai-context/apps/fortune.md - Fortune with Zen quotes for contemplative terminal sessions
-- @docs/ai-context/apps/zen-mcp-server.md - AI model access via OpenRouter
 
 ---
 
