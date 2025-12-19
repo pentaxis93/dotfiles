@@ -38,25 +38,6 @@ claude mcp add --scope user context7 -- npx -y @upstash/context7-mcp@latest 2>/d
     echo "  context7 MCP server already configured"
 echo "✓ context7 MCP configured"
 
-# Configure playwright MCP server for browser automation (Fast Playwright - 70-90% token reduction)
-# Fork of Microsoft official with expectation params and batch execution
-echo "Configuring playwright MCP server..."
-claude mcp add-json --scope user playwright '{"command":"npx","args":["-y","@tontoko/fast-playwright-mcp@latest","--executable-path","/usr/bin/chromium"]}' 2>/dev/null || \
-    echo "  playwright MCP server already configured"
-echo "✓ playwright MCP configured"
-
-# Verify Playwright CLI availability (uses system chromium, no browser download needed)
-# CLI provides: codegen (record), screenshot, pdf, test runner
-# Usage: npx playwright codegen <url>    - Record and generate script
-#        npx playwright screenshot <url> - Capture screenshot
-# Note: MCP for exploration, CLI for repeated/scripted workflows
-echo "Verifying playwright CLI..."
-if npx playwright --version &>/dev/null; then
-    echo "✓ playwright CLI available ($(npx playwright --version))"
-else
-    echo "  playwright CLI will be available on first use via npx"
-fi
-
 # Configure private-journal MCP server for personal journaling
 echo "Configuring private-journal MCP server..."
 claude mcp add-json --scope user private-journal '{"command":"npx","args":["github:obra/private-journal-mcp"]}' 2>/dev/null || \

@@ -155,7 +155,7 @@ When creating ANY new application configuration, you MUST use the semantic syste
 **"Bring external knowledge into our realm when needed"**
 
 - **Context7**: Fetches up-to-date documentation for external libraries
-- **Playwright**: Browser automation for testing and web interaction
+- **Private Journal**: Personal learning and reflection tool for Claude Code
 - **Built-in tools**: For execution and implementation
 
 ### Reverse Video Selections Philosophy

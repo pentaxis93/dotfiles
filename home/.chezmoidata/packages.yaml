@@ -65,7 +65,6 @@ packages:
 
       # Web Browsing - Keyboard-driven browser
       - qutebrowser  # Web browser with vim-like navigation and semantic keybindings
-      - chromium  # Browser automation target for Playwright (MCP + CLI)
 
       # Development & Build Tools - Programming languages and workflows
       - helix  # Modal editor with semantic navigation and LSP integration

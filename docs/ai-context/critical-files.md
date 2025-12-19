@@ -57,7 +57,7 @@ Located in `home/.chezmoitemplates/`:
 - `home/run_once_install-fvm.sh.tmpl` - Flutter Version Manager installation and setup
 - `home/run_once_install-mpv-scripts.sh.tmpl` - MPV directory setup
 - `home/run_once_install-weechat-scripts.sh.tmpl` - Installs xdccq.py
-- `home/run_after_claude-code.sh` - Configure Claude Code and MCP servers (context7, playwright)
+- `home/run_after_claude-code.sh` - Configure Claude Code and MCP servers (context7, private-journal)
 
 ## Documentation
 - `CLAUDE.md` - AI assistant instructions (this file!)
