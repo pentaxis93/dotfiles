@@ -57,6 +57,12 @@ else
     echo "  playwright CLI will be available on first use via npx"
 fi
 
+# Configure private-journal MCP server for personal journaling
+echo "Configuring private-journal MCP server..."
+claude mcp add-json --scope user private-journal '{"command":"npx","args":["github:obra/private-journal-mcp"]}' 2>/dev/null || \
+    echo "  private-journal MCP server already configured"
+echo "✓ private-journal MCP configured"
+
 echo "✓ Claude Code configuration complete"
 
 # Check managed settings status
