@@ -36,16 +36,29 @@
 
 ## CRITICAL DIRECTIVES
 
-### Package Management (IMPORTANT)
+### Package Management (CRITICAL - NEVER VIOLATE)
 
-**NEVER** use `pacman`, `yay`, or other package managers directly.
-**ALWAYS** edit `home/.chezmoidata/packages.yaml` declaratively.
-**User runs** `chezmoi apply` to install packages.
+**ABSOLUTE PROHIBITION**: NEVER execute `pacman`, `yay`, `sudo pacman`, `sudo yay`, or ANY package manager command directly.
+**ONLY PATH**: Edit `home/.chezmoidata/packages.yaml` declaratively.
+**USER INSTALLS**: User runs `chezmoi apply` to install packages.
 
-**Workflow**:
+**Even if**:
+- ❌ Mirrors are down → Do NOT manually install
+- ❌ Package download fails → Do NOT troubleshoot with direct commands
+- ❌ Package unavailable in repo → Do NOT try alternative methods
+- ❌ User asks you to install → Still edit packages.yaml, inform them to run `chezmoi apply`
+
+**Correct Workflow** (non-negotiable):
 1. Edit `home/.chezmoidata/packages.yaml` to add/remove packages
 2. Inform user that packages have been added to the manifest
 3. User runs `chezmoi apply` to trigger installation
+4. If installation fails, inform user of the error and let THEM troubleshoot
+
+**Why This Matters**:
+- Configuration as code - all changes tracked in git
+- Reproducible across machines
+- User maintains control over their system
+- Prevents AI from making untracked system modifications
 
 ### Security Rules (IMPORTANT)
 
@@ -237,6 +250,37 @@ When creating a new custom command:
 - **`model: opus`** for: Complex architecture decisions, deep analysis, research
 - **`model: opusplan`** for: Hybrid workflows needing Opus reasoning with Sonnet execution
 
+### Superpowers Plugin
+
+The **superpowers plugin** provides 20+ battle-tested skills for structured software development workflows.
+
+**Installation** (manual one-time setup):
+```bash
+# Start Claude Code in interactive mode
+claude
+
+# Run these slash commands
+/plugin marketplace add obra/superpowers-marketplace
+/plugin install superpowers@superpowers-marketplace --scope user
+
+# Restart Claude Code to activate
+```
+
+**Why Manual?**: Plugin installation cannot be automated from CLI - it requires slash commands in an interactive Claude Code session.
+
+**What You Get**:
+- **Structured Workflows**: `/superpowers:brainstorm`, `/superpowers:write-plan`, `/superpowers:execute-plan`
+- **20+ Skills**: TDD, debugging, collaboration patterns, and more
+- **Skill Discovery**: `find_skills` and `use_skill` tools for exploring available capabilities
+- **SessionStart Context**: Automatic context injection on session start
+
+**Configuration**:
+- Script: `home/run_after_claude-code.sh` - Checks installation status and prompts if needed
+- Marketplace: obra/superpowers-marketplace (auto-registered in known marketplaces)
+- Scope: User-level (works across all projects)
+
+**Verification**: After installation, ask Claude "do you have superpowers?" or check `/help` for the superpowers commands.
+
 ---
 
 ## APPLICATION CONFIGURATIONS
@@ -252,6 +296,7 @@ When creating a new custom command:
 - @docs/ai-context/apps/lazygit.md - Git TUI with reverse video
 
 ### System Tools
+- @docs/ai-context/apps/automation.md - System automation (ydotool, wev, socat, slurp, grim)
 - @docs/ai-context/apps/vpn.md - OpenVPN with Bitwarden secrets
 - @docs/ai-context/apps/wiremix.md - PipeWire audio mixer TUI
 - @docs/ai-context/apps/bluetui.md - Bluetooth device manager TUI

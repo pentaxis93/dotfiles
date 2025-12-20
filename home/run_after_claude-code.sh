@@ -46,6 +46,26 @@ echo "✓ private-journal MCP configured"
 
 echo "✓ Claude Code configuration complete"
 
+# Check superpowers plugin installation status
+if ! grep -q '"superpowers@superpowers-marketplace"' ~/.claude/plugins/installed_plugins.json 2>/dev/null || \
+   ! grep -q '"scope": "user"' ~/.claude/plugins/installed_plugins.json 2>/dev/null; then
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "🔌 To install superpowers plugin (manual one-time setup):"
+    echo ""
+    echo "   1. Start Claude Code in interactive mode:"
+    echo "      claude"
+    echo ""
+    echo "   2. Run these slash commands:"
+    echo "      /plugin marketplace add obra/superpowers-marketplace"
+    echo "      /plugin install superpowers@superpowers-marketplace --scope user"
+    echo ""
+    echo "   3. Restart Claude Code to activate"
+    echo ""
+    echo "   Note: Plugin installation cannot be automated from CLI."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+fi
+
 # Check managed settings status
 SETTINGS_FILE="/etc/claude-code/managed-settings.json"
 if [ ! -f "$SETTINGS_FILE" ]; then
