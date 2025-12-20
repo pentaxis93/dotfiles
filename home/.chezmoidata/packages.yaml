@@ -45,8 +45,14 @@ packages:
 
       # Graphics & Images - Visual editing and viewing
       - imv  # Wayland-native image viewer with better performance
+      - slurp  # Interactive region selection for Wayland screenshots (pairs with grim)
       - satty  # Screenshot annotation tool for quick edits
       - gimp  # Full-featured image editor for advanced editing
+
+      # System Automation - Agentic process and app manipulation
+      - ydotool  # Wayland input automation for keyboard/mouse simulation across all GUI apps
+      - wev  # Wayland event viewer for debugging and understanding input events
+      - socat  # Socket manipulation for advanced IPC and service communication
 
       # Communication - IRC with XDCC support
       - weechat  # Modern IRC client with superior vi-mode and extensibility

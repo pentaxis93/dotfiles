@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Add user to input group for ydotool functionality
+# This script runs once after chezmoi apply
+
+set -e
+
+echo "Checking input group membership for ydotool..."
+
+# Check if user is already in input group
+if groups {{ .chezmoi.username }} | grep -q '\binput\b'; then
+    echo "✓ User {{ .chezmoi.username }} is already in the input group"
+    exit 0
+fi
+
+echo "Adding user {{ .chezmoi.username }} to input group..."
+
+# Add user to input group
+if sudo usermod -aG input {{ .chezmoi.username }}; then
+    echo "✓ User {{ .chezmoi.username }} added to input group"
+    echo ""
+    echo "⚠ IMPORTANT: Log out and log back in for group changes to take effect"
+    echo "   Or run: newgrp input"
+else
+    echo "✗ Failed to add user to input group"
+    exit 1
+fi

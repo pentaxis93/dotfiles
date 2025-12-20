@@ -1,0 +1,17 @@
+[Unit]
+Description=ydotool daemon for Wayland input automation
+Documentation=man:ydotool(1) man:ydotoold(8)
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ydotoold
+Restart=on-failure
+RestartSec=3
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

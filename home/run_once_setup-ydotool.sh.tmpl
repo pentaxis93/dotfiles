@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Setup ydotool daemon for Wayland input automation
+# This script runs once after chezmoi apply to enable the ydotool service
+
+set -e
+
+echo "Setting up ydotool daemon..."
+
+# Reload systemd user daemon to pick up new service
+systemctl --user daemon-reload
+
+# Enable and start ydotool service
+if systemctl --user enable --now ydotool.service; then
+    echo "✓ ydotool daemon enabled and started"
+
+    # Verify it's running
+    if systemctl --user is-active --quiet ydotool.service; then
+        echo "✓ ydotool daemon is running"
+    else
+        echo "⚠ ydotool daemon failed to start, check status with:"
+        echo "  systemctl --user status ydotool"
+    fi
+else
+    echo "✗ Failed to enable ydotool service"
+    exit 1
+fi
+
+echo "ydotool setup complete!"
