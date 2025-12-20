@@ -58,7 +58,7 @@ map <space>x invert  # Semantic select: Invert selection
 # File Operations
 map . set hidden!  # Toggle hidden files
 map r reload
-map <enter> shell  # Execute shell command
+map <enter> open  # Open file/directory (same as 'l')
 
 # Quick Actions
 map af push %touch<space>  # Add file
@@ -354,8 +354,7 @@ Selection:
 
 Files:
   .        - Toggle hidden files
-  Enter    - Shell command
-  l        - Open with default app
+  Enter/l  - Open file/directory
   L        - Choose app from available handlers
   af/A     - Add file/directory
   R        - Rename file
