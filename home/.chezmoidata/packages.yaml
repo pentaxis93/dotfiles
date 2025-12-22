@@ -101,5 +101,8 @@ packages:
       # Web Browsing - Modern Firefox-based browser
       - zen-browser-bin  # Privacy-focused Firefox fork with Arc-style vertical tabs and zero telemetry
 
+      # Design & Prototyping - Wireframing and app design
+      - frame0  # Hand-drawn wireframing tool for sketching app ideas and interactive prototypes
+
       # Development - AI-assisted coding tools
       - cursor-bin  # AI-first coding environment for supplementary AI-assisted development
