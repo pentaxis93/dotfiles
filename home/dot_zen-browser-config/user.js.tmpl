@@ -189,13 +189,33 @@ user_pref("browser.urlbar.suggest.quicksuggest.sponsored", false);
 user_pref("browser.urlbar.suggest.quicksuggest.nonsponsored", false);
 
 // ────────────────────────────────────────────────────────────────────────────
-// PERFORMANCE
+// PERFORMANCE & MEMORY MANAGEMENT
 // ────────────────────────────────────────────────────────────────────────────
 // Betterfox already optimizes these, but we can tune further.
 
 // Hardware Acceleration
 user_pref("gfx.webrender.all", true);
 user_pref("media.ffmpeg.vaapi.enabled", true); // Linux VA-API hardware video decoding
+
+// Session Store - Reduce save frequency to prevent freeze during writes
+// Default is 15000ms (15s) - increase to reduce freeze frequency
+user_pref("browser.sessionstore.interval", 60000); // Save every 60s instead of 15s
+
+// Tab Unloading - Automatically unload tabs when memory is low
+user_pref("browser.tabs.unloadOnLowMemory", true);
+
+// Content Process Limits - Reduce memory overhead
+// Default is 8, reduce if you have many tabs and limited RAM
+user_pref("dom.ipc.processCount", 4); // Max 4 content processes
+user_pref("dom.ipc.processCount.webIsolated", 2); // Isolate fewer origins
+
+// Memory Pressure Response
+user_pref("javascript.options.mem.gc_on_memory_pressure", true);
+user_pref("javascript.options.mem.notify_on_memory_pressure", true);
+
+// Reduce GC Pause Frequency (incremental GC)
+user_pref("javascript.options.mem.gc_incremental", true);
+user_pref("javascript.options.mem.gc_incremental_slice_ms", 5); // Smaller GC slices
 
 // ────────────────────────────────────────────────────────────────────────────
 // USERCHROME.CSS SUPPORT
