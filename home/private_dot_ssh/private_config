@@ -10,3 +10,7 @@ Host acfs
     HostName 15.204.249.134
     User pentaxis
     IdentityFile ~/.ssh/id_ed25519
+
+Host *
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
