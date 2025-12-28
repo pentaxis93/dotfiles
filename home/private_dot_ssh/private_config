@@ -1,0 +1,12 @@
+# SSH Configuration
+# Managed by chezmoi
+
+Host gallery
+    HostName 138.197.99.109
+    User pentaxis
+    IdentityFile ~/.ssh/id_rsa
+
+Host acfs
+    HostName 15.204.249.134
+    User pentaxis
+    IdentityFile ~/.ssh/id_ed25519
