@@ -1,4 +1,4 @@
-{{- /* Transparent ls replacement using eza */ -}}
-function ls --wraps eza --description 'Enhanced ls using eza with icons and colors'
-    eza --icons --group-directories-first $argv
+{{- /* Transparent ls replacement using lsd */ -}}
+function ls --wraps lsd --description 'Enhanced ls using lsd with icons and colors'
+    lsd --group-directories-first $argv
 end

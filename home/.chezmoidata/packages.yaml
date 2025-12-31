@@ -68,6 +68,7 @@ packages:
 
       # Shell Navigation - Smart directory jumping
       - zoxide  # Frecency-based directory navigation
+      - lsd  # Modern ls replacement with icons and colors
 
       # Web Browsing - Keyboard-driven browser
       - qutebrowser  # Web browser with vim-like navigation and semantic keybindings

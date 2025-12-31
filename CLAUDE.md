@@ -300,7 +300,7 @@ claude
 - @docs/ai-context/apps/vpn.md - OpenVPN with Bitwarden secrets
 - @docs/ai-context/apps/wiremix.md - PipeWire audio mixer TUI
 - @docs/ai-context/apps/bluetui.md - Bluetooth device manager TUI
-- @docs/ai-context/apps/shell-enhancements.md - eza, zoxide, Fish shell
+- @docs/ai-context/apps/shell-enhancements.md - lsd, zoxide, Fish shell
 - @docs/ai-context/apps/flutter.md - Flutter/Dart development with fvm version manager
 - @docs/ai-context/apps/fortune.md - Fortune with Zen quotes for contemplative terminal sessions
 

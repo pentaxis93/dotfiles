@@ -1,17 +1,17 @@
 # Shell Enhancements
 
-## eza - Modern ls Replacement
+## lsd - Modern ls Replacement
 
 ### Architecture
-- **Transparent Integration**: `ls` command transparently replaced with eza
-- **Enhanced Features**: Icons, colors, git status integration
+- **Transparent Integration**: `ls` command transparently replaced with lsd
+- **Enhanced Features**: Icons, colors, tree view support
 - **Zero Learning Curve**: All standard ls options pass through unchanged
 - **Implementation**: Fish function wrapper at `home/dot_config/fish/functions/ls.fish.tmpl`
 
 ### Benefits
 - Nerd Font icons for file types
 - Automatic directory grouping
-- Git-aware file listings
+- Tree view (`--tree`) for hierarchical display
 - Better color coding and formatting
 
 ## zoxide - Smart Directory Navigation
