@@ -6,9 +6,9 @@ Host gallery
     User pentaxis
     IdentityFile ~/.ssh/id_rsa
 
-Host acfs
+Host babbie
     HostName 15.204.249.134
-    User pentaxis
+    User pentaxis93
     IdentityFile ~/.ssh/id_ed25519
 
 Host *
