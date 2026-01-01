@@ -11,6 +11,7 @@ packages:
       # System & Security - Foundation for secure operations
       - bitwarden-cli  # Password manager CLI for secure secret management
       - openvpn  # Secure tunneling daemon for VPN connections
+      - tailscale  # Mesh VPN for secure device-to-device connectivity
       - zfs-meta  # Metapackage for pre-compiled ZFS (provides "zfs" virtual package)
       - zfs-utils  # ZFS filesystem utilities and command-line tools
 
@@ -107,3 +108,4 @@ packages:
 
       # Development - AI-assisted coding tools
       - cursor-bin  # AI-first coding environment for supplementary AI-assisted development
+      - opencode  # Terminal-native AI coding agent
