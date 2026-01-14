@@ -3,7 +3,12 @@ theme = "kanagawa-dragon"
 [editor]
 line-number = "relative"
 mouse = false
+{{ if .has_gui -}}
 shell = ["fish", "-c"]
+{{ else -}}
+# VPS: Use bash as shell (fish may not be installed)
+shell = ["bash", "-c"]
+{{ end }}
 cursorline = true
 true-color = true
 rulers = [80]

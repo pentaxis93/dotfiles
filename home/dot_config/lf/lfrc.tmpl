@@ -70,8 +70,13 @@ map T trash  # Move to trash
 map U unselect  # Unselect all
 
 # Semantic File Actions (intention-driven)
+{{ if .has_gui -}}
 map L :open_with  # Choose app from available handlers
-map W $printf "%s" "$fx" | wl-copy  # Copy paths to clipboard
+map W $printf "%s" "$fx" | wl-copy  # Copy paths to clipboard (Wayland)
+{{ else -}}
+# VPS: No GUI handlers, copy paths to tmux buffer or echo
+map W $printf "%s" "$fx" | tee /dev/stderr  # Show paths (no clipboard on VPS)
+{{ end }}
 
 # Archive Operations
 map az zip  # Create zip
@@ -110,6 +115,7 @@ map <f1> :show_help  # Semantic discover: Show help
 map <esc> quit  # Semantic dismiss: Quit application (LF uses ESC instead of q)
 
 # Custom Commands
+{{ if .has_gui -}}
 cmd open ${{ "{{" }}
     case $(file --mime-type -Lb "$f") in
         text/*) $EDITOR "$fx";;
@@ -121,6 +127,26 @@ cmd open ${{ "{{" }}
         *) for f in $fx; do handlr open "$f" & done;;
     esac
 {{ "}}" }}
+{{ else -}}
+# VPS: Simplified open command (no GUI apps)
+cmd open ${{ "{{" }}
+    case $(file --mime-type -Lb "$f") in
+        text/*|application/json|application/javascript|application/x-shellscript)
+            $EDITOR "$fx";;
+        application/x-bzip2|application/x-gzip|application/x-tar|application/zip|application/x-7z-compressed|application/x-rar)
+            atool -l "$f" | less ;;
+        *)
+            # Default: try to view as text, or show file info
+            if file "$f" | grep -q text; then
+                $EDITOR "$fx"
+            else
+                file "$f"
+                echo "Press enter to continue..."
+                read
+            fi;;
+    esac
+{{ "}}" }}
+{{ end }}
 
 cmd mkdir %mkdir -p "$@"
 
@@ -283,9 +309,11 @@ cmd usage %du -sh "$f" | less
 
 # Quick shortcuts for common tasks
 map ee $$EDITOR "$f"  # Edit in editor
+{{ if .has_gui -}}
 map sv $mpv .  # Play all videos in current dir
-map st !bash  # Open terminal here
 map sT &alacritty --working-directory "$PWD"  # Open new terminal window
+{{ end }}
+map st !bash  # Open terminal here
 
 # Copy/Move to directory with FZF
 cmd copyto ${{ "{{" }}
@@ -308,7 +336,8 @@ cmd moveto ${{ "{{" }}
 map C copyto
 map M moveto
 
-# Set wallpaper (if using niri/sway)
+{{ if .has_gui -}}
+# Set wallpaper (if using niri/sway) - GUI only
 cmd set_wallpaper ${{ "{{" }}
     case $(file --mime-type -Lb "$f") in
         image/*)
@@ -332,6 +361,7 @@ map sw set_wallpaper
 cmd open_with ${{ "{{" }}
     handlr open "$f"
 {{ "}}" }}
+{{ end }}
 
 cmd show_help ${{ "{{" }}
     cat << 'EOF' | less
