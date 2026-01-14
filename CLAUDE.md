@@ -32,6 +32,8 @@
 
 **ZFS snapshots?** → `zsnap` (manual), `zlist` (view), `zclean` (prune), `zfsstatus` (health) - See @docs/ai-context/systems/zfs.md
 
+**VPS configuration?** → Uses `machine_type = "vps"` - CLI tools only, no GUI configs. See MULTI-MACHINE CONFIGURATION section
+
 ---
 
 ## CRITICAL DIRECTIVES
@@ -318,64 +320,102 @@ claude
 
 ## MULTI-MACHINE CONFIGURATION
 
-### Dual Laptop/Desktop Architecture
+### Three-Tier Architecture: Desktop, Laptop, VPS
 
 **Philosophy**: *"One configuration flows to many machines; hardware differences manifest through feature detection, not explicit naming"*
 
+### Machine Types
+
+| Machine | Type | OS | Purpose |
+|---------|------|-----|---------|
+| **mani** | Desktop | CachyOS | Primary workstation with dual monitors |
+| **oreb** | Laptop | CachyOS | Mobile workstation with battery |
+| **babbie** | VPS | Debian | Remote server for OpenCode, PIM stack, automation |
+
 ### Machine Detection System
 
-**Auto-detection via `.is_laptop`**:
-- **Detection Method**: Presence of `/sys/class/power_supply/BAT*` (battery detection)
-- **Configuration**: Set in `home/.chezmoi.toml.tmpl` via `promptBoolOnce` with smart defaults
-- **Benefits**: Works on new machines without hardcoding hostnames
+**Primary Detection: `.machine_type`** (desktop/laptop/vps):
+- **Auto-detection**: Based on OS + display presence
+- **Debian without display** → defaults to `vps`
+- **CachyOS/Arch** → defaults to `desktop` or `laptop` (battery-based)
 
-### Machine-Specific Configurations
+**Derived Variables**:
+- `.is_vps` - True for VPS machines (no GUI)
+- `.has_gui` - True for desktop/laptop (has GUI apps)
+- `.is_laptop` - True if battery present
+- `.is_arch` / `.is_debian` - OS family detection
+
+**Configuration**: Set in `home/.chezmoi.toml.tmpl` with smart auto-detection
+
+### What Gets Deployed Where
+
+| Component | Desktop/Laptop | VPS |
+|-----------|----------------|-----|
+| **CLI Tools** (helix, lf, lazygit, fish) | Yes | Yes |
+| **Semantic Colors/Keybindings** | Yes | Yes |
+| **Git/SSH Config** | Yes | Yes |
+| **Wayland/Niri/Waybar** | Yes | No |
+| **GUI Apps** (MPV, qutebrowser, etc.) | Yes | No |
+| **Bitwarden CLI** | Yes | No (uses `pass`) |
+| **OpenCode Server** | No | Yes |
+| **VPN/Transmission** | Yes | No |
+
+### VPS-Specific Configuration (babbie)
+
+**Services Deployed**:
+- `opencode-server.service` - AI coding server on port 4096
+- Accessible via Tailscale at `babbie:4096`
+
+**Package Management**:
+- Uses `apt` instead of `pacman`
+- Many CLI tools installed via cargo (helix, bat, zoxide, etc.)
+- Defined in `packages.debian.apt` section of `packages.yaml`
+
+**What's NOT Deployed on VPS**:
+- All GUI configs (niri, waybar, mpv, qutebrowser, etc.)
+- Wayland-specific tools (wl-clipboard, wofi, handlr)
+- Desktop systemd services (ydotool, transmission, goosevpn)
+- Fish functions for GUI apps (volume, bluetooth, vpn)
+
+### Desktop/Laptop Differences
 
 **Display Configuration** (Niri):
 - **Desktop**: Dual monitors - HDMI-A-1 (primary, right) and DP-1 (secondary, left)
   - Per-monitor workspaces: Each monitor has independent workspace 1-9
-  - Monitor focus: `MOD+;` (left) / `MOD+'` (right) - spatial 2-key shortcuts
-  - Alternative: `MOD+SHIFT+H/L` or arrow keys for monitor switching
-  - Move windows: `MOD+CTRL+;/'` or `MOD+SHIFT+CTRL+H/L`
+  - Monitor focus: `MOD+;` (left) / `MOD+'` (right)
 - **Laptop**: Single eDP-1 display with auto-detected resolution
-- **Implementation**: `home/dot_config/niri/config.kdl.tmpl` - Conditional `output` blocks based on `.is_laptop`
+- **Implementation**: `home/dot_config/niri/config.kdl.tmpl`
 
-**Network Interface** (Waybar):
-- **Auto-detection enabled**: No hardcoded interface specification
-- **Desktop**: Automatically shows active interface (Ethernet enp42s0 or WiFi wlan0)
-- **Laptop**: Automatically shows WiFi (wlan0)
-- **Implementation**: `home/dot_config/waybar/config.tmpl` - Interface auto-detection
-- **Benefit**: Handles failover scenarios automatically
-
-**Battery Widget** (Waybar):
-- **Conditional inclusion**: Only appears when `.is_laptop` is true
-- **Implementation**: `home/dot_config/waybar/config.tmpl` - Conditional battery module
+**Network/Battery** (Waybar):
+- Auto-detection for network interface
+- Battery widget only on laptop
 
 ### What Remains Universal
 
-**Application Configurations**: All app configs (Helix, Fish, MPV, etc.) are identical across machines
-**Semantic Systems**: Both color and keybinding systems are machine-agnostic
-**Security & Secrets**: Bitwarden integration works identically everywhere
-**ZFS Configuration**: Gracefully handles presence/absence of ZFS
+- **CLI Tools**: Helix, lf, lazygit work identically everywhere
+- **Semantic Systems**: Colors and keybindings are machine-agnostic
+- **Fish Config**: Adapts automatically (sources CachyOS config on Arch, minimal on VPS)
+- **Git Configuration**: Identical across all machines
 
 ### Troubleshooting Multi-Machine Setup
 
-**Display Issues**:
-- Run `niri msg outputs` to verify output names match configuration
-- Check that `.is_laptop` is set correctly in `chezmoi data`
+**Check Machine Type**:
+```bash
+chezmoi data | grep -E '(machine_type|is_vps|has_gui|is_arch|is_debian)'
+```
 
-**Network Widget Not Showing**:
-- Auto-detection should work automatically
-- Verify interface is up: `ip link`
-- Check Waybar logs if widget shows "offline"
+**Re-detect Machine Type**:
+```bash
+chezmoi init --force  # Re-prompts for machine_type
+```
 
-**Battery Widget Missing on Laptop**:
-- Verify `.is_laptop` detection: `chezmoi data | grep is_laptop`
-- Check battery exists: `ls /sys/class/power_supply/BAT*`
+**VPS Not Getting CLI Configs**:
+- Verify `machine_type = "vps"` in chezmoi data
+- Check `.chezmoiignore` is correctly excluding GUI configs
 
-**Wrong Configuration Applied**:
-- Check `.is_laptop` value: `chezmoi data | grep is_laptop`
-- Re-run chezmoi to re-prompt: `chezmoi init --force`
+**Desktop Getting VPS Configs**:
+- Verify `is_vps = false` in chezmoi data
+- Run `chezmoi diff` to see what would be applied
 
 ---
 

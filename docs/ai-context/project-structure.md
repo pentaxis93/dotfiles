@@ -13,7 +13,7 @@ Source directory containing all dotfiles (mapped to `~`)
 
 ### `home/.chezmoidata/`
 Data files for templates:
-- `packages.yaml` - Declarative package definitions
+- `packages.yaml` - Declarative package definitions (multi-OS: CachyOS + Debian)
 - `colors.yaml` - Centralized Kanagawa Dragon color palette
 - `keybindings.yaml` - Semantic keybinding definitions
 
@@ -48,6 +48,21 @@ Project documentation:
 - `docs/semantic-color-architecture.md` - Color system docs
 
 ## Special Files
-- `.chezmoiignore` - Prevent unwanted management
+- `.chezmoiignore` - Conditional file exclusion based on machine type (VPS vs desktop)
+- `.chezmoi.toml.tmpl` - Machine detection and configuration prompts
 - `CLAUDE.md` - AI assistant instructions
 - `README.md` - User-facing documentation
+
+## Multi-Machine Support
+
+The dotfiles support three machine types:
+- **Desktop** (`mani`) - CachyOS with full GUI stack
+- **Laptop** (`oreb`) - CachyOS with battery support
+- **VPS** (`babbie`) - Debian with CLI tools only
+
+Machine detection happens automatically based on:
+- OS detection (`/etc/os-release`)
+- Display presence (`$DISPLAY` / `$WAYLAND_DISPLAY`)
+- Battery presence (`/sys/class/power_supply/BAT*`)
+
+See `CLAUDE.md` → MULTI-MACHINE CONFIGURATION for details.
