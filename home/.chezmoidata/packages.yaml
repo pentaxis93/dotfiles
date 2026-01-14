@@ -1,11 +1,70 @@
-# Declarative package management for CachyOS
+# Declarative package management
 # Add packages here and they'll be installed automatically
 # when running chezmoi apply
 #
 # Organization philosophy: Packages grouped by semantic intention
 # Each category reveals purpose; each comment explains why
+#
+# Structure:
+#   packages.<os_id>.apt/pacman/aur - OS-specific package lists
+#   - cachyos: CachyOS/Arch-based systems (pacman + AUR)
+#   - debian: Debian/Ubuntu VPS systems (apt only)
 
 packages:
+  # =============================================================================
+  # Debian/Ubuntu VPS Configuration (babbie)
+  # =============================================================================
+  # Minimal server setup - CLI tools only, no GUI dependencies
+  # Many tools are installed via cargo/manual download on VPS
+  debian:
+    apt:
+      # Core CLI Tools - Foundation for server operations
+      - fish  # Modern shell with better defaults than bash
+      - git  # Version control (usually pre-installed)
+      - git-lfs  # Large file storage for git
+      - tmux  # Terminal multiplexer for persistent sessions
+      - fzf  # Fuzzy finder for navigation
+      - ripgrep  # Fast content search
+      - jq  # JSON processor
+      - tree  # Directory visualization
+      - htop  # System monitor
+      - btop  # Modern system monitor TUI
+      - curl  # HTTP client
+      - wget  # Download utility
+      - unzip  # Archive extraction
+      - p7zip-full  # 7-zip support
+
+      # Development - Languages and build tools
+      - build-essential  # GCC, make, etc.
+      - python3  # Python runtime
+      - python3-pip  # Python package installer
+      # NOTE: nodejs/npm installed via nodesource repo on babbie, not from apt
+
+      # Network & Security
+      - tailscale  # Mesh VPN for secure connectivity
+      - pass  # Password manager (GNU Pass)
+      - gnupg  # GPG for encryption
+
+      # PIM Stack Dependencies - Personal Information Management
+      - isync  # mbsync for IMAP email sync
+      - notmuch  # Email indexing and search
+      - khal  # Calendar TUI
+      - khard  # Contacts TUI
+      - vdirsyncer  # CalDAV/CardDAV sync
+      - taskwarrior  # Task management (GTD)
+
+    # NOTE: Additional CLI tools are installed via run_once_install-cli-tools-debian.sh:
+    # - helix (cargo)   - Modal editor
+    # - bat (cargo)     - Syntax-highlighted cat
+    # - zoxide (cargo)  - Smart directory jumping  
+    # - fd (cargo)      - Better find
+    # - lsd (cargo)     - Modern ls with icons
+    # - lf (GitHub)     - Terminal file manager
+    # - lazygit (GitHub)- Git TUI
+
+  # =============================================================================
+  # CachyOS/Arch Desktop & Laptop Configuration (mani, oreb)
+  # =============================================================================
   cachyos:
     pacman:
       # System & Security - Foundation for secure operations

@@ -1,0 +1,121 @@
+{{ if .is_debian -}}
+#!/usr/bin/env bash
+# Install CLI tools on Debian that aren't available via apt
+# These tools are typically installed via cargo or downloaded from GitHub releases
+
+set -euo pipefail
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🛠️  Installing CLI tools for Debian"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Ensure directories exist
+mkdir -p ~/.local/bin
+mkdir -p ~/.cargo/bin
+
+# Check if cargo is available
+if ! command -v cargo &>/dev/null; then
+    echo "📦 Installing Rust toolchain..."
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source ~/.cargo/env
+fi
+
+# Function to check if a command exists
+has_cmd() {
+    command -v "$1" &>/dev/null
+}
+
+# Function to get latest GitHub release
+get_latest_release() {
+    curl -sL "https://api.github.com/repos/$1/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
+}
+
+echo ""
+echo "📦 Installing tools via cargo..."
+
+# Helix editor - if not installed or outdated
+if ! has_cmd hx; then
+    echo "  → Installing helix..."
+    cargo install --locked helix-term
+    echo "  ✓ helix installed"
+else
+    echo "  ✓ helix already installed"
+fi
+
+# Bat - syntax highlighting cat
+if ! has_cmd bat; then
+    echo "  → Installing bat..."
+    cargo install --locked bat
+    echo "  ✓ bat installed"
+else
+    echo "  ✓ bat already installed"
+fi
+
+# Zoxide - smart cd
+if ! has_cmd zoxide; then
+    echo "  → Installing zoxide..."
+    cargo install --locked zoxide
+    echo "  ✓ zoxide installed"
+else
+    echo "  ✓ zoxide already installed"
+fi
+
+# fd - better find
+if ! has_cmd fd; then
+    echo "  → Installing fd..."
+    cargo install --locked fd-find
+    echo "  ✓ fd installed"
+else
+    echo "  ✓ fd already installed"
+fi
+
+# lsd - modern ls (optional, may take a while)
+if ! has_cmd lsd; then
+    echo "  → Installing lsd..."
+    cargo install --locked lsd
+    echo "  ✓ lsd installed"
+else
+    echo "  ✓ lsd already installed"
+fi
+
+echo ""
+echo "📦 Installing tools from GitHub releases..."
+
+# LF file manager
+if ! has_cmd lf; then
+    echo "  → Installing lf..."
+    LF_VERSION=$(get_latest_release "gokcehan/lf")
+    curl -sL "https://github.com/gokcehan/lf/releases/download/${LF_VERSION}/lf-linux-amd64.tar.gz" | tar xz -C ~/.local/bin
+    chmod +x ~/.local/bin/lf
+    echo "  ✓ lf installed (${LF_VERSION})"
+else
+    echo "  ✓ lf already installed"
+fi
+
+# Lazygit
+if ! has_cmd lazygit; then
+    echo "  → Installing lazygit..."
+    LAZYGIT_VERSION=$(get_latest_release "jesseduffield/lazygit" | sed 's/^v//')
+    curl -sL "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" | tar xz -C ~/.local/bin lazygit
+    chmod +x ~/.local/bin/lazygit
+    echo "  ✓ lazygit installed (v${LAZYGIT_VERSION})"
+else
+    echo "  ✓ lazygit already installed"
+fi
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "✅ CLI tools installation complete"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "Installed tools:"
+echo "  • helix (hx)  - Modal editor"
+echo "  • bat         - Syntax-highlighted cat"
+echo "  • zoxide (z)  - Smart directory jumping"
+echo "  • fd          - Better find"
+echo "  • lsd         - Modern ls with icons"
+echo "  • lf          - Terminal file manager"
+echo "  • lazygit     - Git TUI"
+echo ""
+echo "💡 Run 'source ~/.cargo/env' or restart your shell to use cargo tools"
+{{ end -}}

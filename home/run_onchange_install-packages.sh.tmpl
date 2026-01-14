@@ -1,16 +1,28 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Declarative package installation for CachyOS
+# Declarative package installation for multiple OS types
 # Automatically installs packages defined in .chezmoidata/packages.yaml
 # Only runs when the package list changes (tracked by hash comment)
 
-# Hash of package list for change detection
-# packages: {{ list .packages.cachyos.pacman .packages.cachyos.aur | toJson | sha256sum }}
+# Hash of package list for change detection (includes all OS types)
+# packages: {{ if .is_arch }}{{ list .packages.cachyos.pacman .packages.cachyos.aur | toJson | sha256sum }}{{ else if .is_debian }}{{ .packages.debian.apt | toJson | sha256sum }}{{ end }}
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "📦 Installing system packages for CachyOS"
+{{ if .is_arch -}}
+echo "📦 Installing system packages for {{ .os_id }}"
+{{ else if .is_debian -}}
+echo "📦 Installing system packages for Debian"
+{{ else -}}
+echo "📦 Package installation skipped (unsupported OS: {{ .os_id }})"
+exit 0
+{{ end -}}
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+{{ if .is_arch -}}
+# =============================================================================
+# Arch/CachyOS Installation (pacman + AUR)
+# =============================================================================
 
 # Track what needs installation
 PACMAN_PACKAGES=()
@@ -50,7 +62,7 @@ fi
 if [ ${#AUR_PACKAGES[@]} -gt 0 ]; then
     echo ""
     echo "Installing ${#AUR_PACKAGES[@]} AUR package(s)..."
-    yay -S --noconfirm "${AUR_PACKAGES[@]}"
+    {{ .aur_helper }} -S --noconfirm "${AUR_PACKAGES[@]}"
     echo "✓ AUR packages installed successfully"
 fi
 
@@ -59,6 +71,40 @@ if [ ${#PACMAN_PACKAGES[@]} -eq 0 ] && [ ${#AUR_PACKAGES[@]} -eq 0 ]; then
     echo ""
     echo "✓ All packages already installed"
 fi
+
+{{ else if .is_debian -}}
+# =============================================================================
+# Debian/Ubuntu Installation (apt)
+# =============================================================================
+
+# Track what needs installation
+APT_PACKAGES=()
+
+# Check apt packages
+{{ range .packages.debian.apt -}}
+if ! dpkg -l "{{ . }}" 2>/dev/null | grep -q "^ii"; then
+    APT_PACKAGES+=("{{ . }}")
+    echo "📋 Will install (apt): {{ . }}"
+else
+    echo "✓ Already installed: {{ . }}"
+fi
+{{ end }}
+
+# Install apt packages
+if [ ${#APT_PACKAGES[@]} -gt 0 ]; then
+    echo ""
+    echo "Updating package lists..."
+    sudo apt-get update
+    echo ""
+    echo "Installing ${#APT_PACKAGES[@]} apt package(s)..."
+    sudo apt-get install -y "${APT_PACKAGES[@]}"
+    echo "✓ APT packages installed successfully"
+else
+    echo ""
+    echo "✓ All packages already installed"
+fi
+
+{{ end -}}
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -69,4 +115,11 @@ echo "💡 To add more packages:"
 echo "   1. Edit: ~/.local/share/chezmoi/home/.chezmoidata/packages.yaml"
 echo "   2. Run:  chezmoi apply"
 echo ""
+{{ if .is_arch -}}
 echo "   Supported sections: pacman (official repos), aur (AUR packages)"
+{{ else if .is_debian -}}
+echo "   Supported section: apt (Debian/Ubuntu packages)"
+echo ""
+echo "   NOTE: Many CLI tools (helix, lf, lazygit, zoxide, bat) are best"
+echo "   installed via cargo or downloaded from GitHub releases on Debian."
+{{ end -}}
