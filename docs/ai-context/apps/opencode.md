@@ -161,6 +161,28 @@ ocr status | grep "Working Directory"
 ocr restart /home/pentaxis93/src
 ```
 
+### Custom Commands Not Updating
+```bash
+# Problem: Changed /command file but server still runs old version
+# Cause: OpenCode caches custom commands/skills in server memory
+
+# Solution: Restart server to reload commands from disk
+ocr restart
+
+# Why: Performance optimization - commands cached at server startup
+# File changes don't trigger automatic reload of command definitions
+```
+
+**When server restart is needed**:
+- ✅ Custom command files changed (/.commands/, skills, etc.)
+- ✅ MCP server configuration changes
+- ✅ Server configuration updates
+
+**When restart is NOT needed**:
+- ❌ Code files changed (auto-detected)
+- ❌ Instruction files changed (auto-detected)
+- ❌ Project files changed (auto-detected)
+
 ## Security Considerations
 
 **Current state**: Server is unauthenticated (no password)
