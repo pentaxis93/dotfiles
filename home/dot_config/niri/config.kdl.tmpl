@@ -67,6 +67,16 @@ binds {
     // Please choose your own file manager
     {{ template "keybind-invoke.tmpl" (dict "action" "files" "context" "niri" "keybindings" $kb) }} hotkey-overlay-title="File Manager: Nautilus" { spawn-sh "nautilus"; }
 
+    // ─── Custom Wofi Prompts ───
+    // Example: Custom input prompt (replace with your actual use case)
+    MOD+SHIFT+P                         hotkey-overlay-title="Wofi Prompt Example" { spawn-sh "wofi-prompt-example"; }
+
+    // Example: Quick action selector
+    MOD+SHIFT+A                         hotkey-overlay-title="Quick Actions" { spawn-sh "wofi-selector-example"; }
+
+    // Example: Password/secret input (hidden text)
+    // MOD+SHIFT+S                       hotkey-overlay-title="Secret Input" { spawn-sh "wofi-password-example"; }
+
     // ─── Audio Controls ───
     // Example volume keys mappings for PipeWire & WirePlumber.
     // The allow-when-locked=true property makes them work even when the session is locked.

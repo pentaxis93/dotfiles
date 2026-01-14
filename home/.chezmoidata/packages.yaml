@@ -43,6 +43,7 @@ packages:
 
       # File Handling - Modern xdg-open replacement
       - handlr  # File handler with wofi selector and better defaults
+      - wofi  # Wayland-native launcher and input prompt (dmenu replacement)
 
       # Graphics & Images - Visual editing and viewing
       - imv  # Wayland-native image viewer with better performance

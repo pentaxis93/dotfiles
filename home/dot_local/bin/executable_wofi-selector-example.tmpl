@@ -1,0 +1,25 @@
+#!/usr/bin/env fish
+# Example: Present options to user and execute based on selection
+
+# Define options
+set options "Open Browser\nCheck VPN\nLaunch Terminal\nTake Screenshot"
+
+# Show selection menu
+set choice (printf "$options" | wofi --show dmenu --prompt "Quick Action:")
+
+# Exit if cancelled
+if test -z "$choice"
+    exit 0
+end
+
+# Execute based on choice
+switch "$choice"
+    case "Open Browser"
+        zen-browser &
+    case "Check VPN"
+        vps
+    case "Launch Terminal"
+        alacritty &
+    case "Take Screenshot"
+        grim -g (slurp) ~/Pictures/screenshot-(date +%Y%m%d-%H%M%S).png
+end
