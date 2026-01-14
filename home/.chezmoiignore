@@ -1,0 +1,173 @@
+# Chezmoi Ignore File
+# Skip files based on machine type and OS
+# Syntax: https://www.chezmoi.io/reference/special-files-and-directories/chezmoiignore/
+# NOTE: Use TARGET paths (not source paths) - no dot_ prefix, no .tmpl suffix
+
+# =============================================================================
+# VPS-specific ignores (no GUI, no Wayland, no desktop apps)
+# =============================================================================
+{{ if .is_vps }}
+# Wayland/GUI configs
+.config/niri
+.config/waybar
+.config/wofi
+.config/alacritty
+.config/gtk-3.0
+.config/gtk-4.0
+.config/handlr
+
+# Desktop applications
+.config/mpv
+.config/qutebrowser
+.config/tremc
+.config/transmission-daemon
+.config/wiremix
+.config/bluetui
+.zen-browser-config
+
+# Wayland-specific systemd services
+.config/systemd/user/ydotool.service
+.config/systemd/user/transmission-daemon.service
+.config/systemd/user/goosevpn.service
+
+# VPN configs (desktop-specific)
+.config/openvpn
+
+# Fish functions that require GUI/Wayland
+.config/fish/functions/bt.fish
+.config/fish/functions/vol.fish
+.config/fish/functions/vold.fish
+.config/fish/functions/vols.fish
+.config/fish/functions/volu.fish
+.config/fish/functions/volm.fish
+.config/fish/functions/qb.fish
+.config/fish/functions/qbp.fish
+.config/fish/functions/qbs.fish
+.config/fish/functions/mp.fish
+.config/fish/functions/mpb.fish
+.config/fish/functions/mpc.fish
+.config/fish/functions/mps.fish
+.config/fish/functions/mpsub.fish
+.config/fish/functions/tadd.fish
+.config/fish/functions/tclean.fish
+.config/fish/functions/tlist.fish
+.config/fish/functions/tpause.fish
+.config/fish/functions/tpurge.fish
+.config/fish/functions/transmission-auth.fish
+.config/fish/functions/tremove.fish
+.config/fish/functions/tresume.fish
+.config/fish/functions/tstart.fish
+.config/fish/functions/tstatus.fish
+.config/fish/functions/tstop.fish
+.config/fish/functions/tui.fish
+.config/fish/functions/vpc.fish
+.config/fish/functions/vpd.fish
+.config/fish/functions/vps.fish
+.config/fish/functions/vpn-connect.fish
+.config/fish/functions/vpn-disconnect.fish
+.config/fish/functions/vpn-status.fish
+.config/fish/functions/bw-copy.fish
+.config/fish/functions/bw-generate.fish
+.config/fish/functions/bw-help.fish
+.config/fish/functions/bw-lock.fish
+.config/fish/functions/bw-unlock.fish
+
+# Transmission-related fish config
+.config/fish/conf.d/10-transmission-vpn.fish
+.config/fish/conf.d/20-transmission-abbreviations.fish
+
+# ZFS functions (not on VPS)
+.config/fish/functions/zclean.fish
+.config/fish/functions/zfsstatus.fish
+.config/fish/functions/zlist.fish
+.config/fish/functions/zsnap.fish
+
+# Claude Code script (desktop-specific, requires GUI/terminal emulator check)
+run_after_claude-code.sh
+
+# Desktop-only scripts in .local/bin
+.local/bin/fortune
+.local/bin/mpv
+.local/bin/transmission-magnet-handler
+.local/bin/transmission-vpn-bind
+.local/bin/waybar-disk-data
+.local/bin/waybar-disk-zfs
+.local/bin/waybar-vpn-check
+.local/bin/wofi-password-example
+.local/bin/wofi-selector-example
+
+# Desktop-only weechat configs
+.config/weechat
+
+# Desktop-only .desktop files
+.local/share/applications/transmission-magnet.desktop
+.local/share/applications/tremc.desktop
+.local/share/applications/zathura.desktop
+
+# Fortune files (not on VPS)
+.local/share/fortune
+
+# Desktop-only secrets/configs
+.local/state/secrets/env/vpn-config
+.local/state/secrets/openvpn
+
+# Run-once scripts that are desktop-only
+configure-zfs-snapshots.sh
+generate-fortune-index.sh
+install-fvm.sh
+install-goosevpn-system-service.sh
+install-mpv-scripts.sh
+install-sudoers.sh
+install-weechat-scripts.sh
+set-dark-mode.sh
+setup-handlr-defaults.sh
+setup-input-group.sh
+setup-keyd.sh
+setup-ydotool.sh
+setup-zen-browser.sh
+setup-zfs-automation.sh
+claude-code.sh
+{{ end }}
+
+# =============================================================================
+# Desktop-specific ignores (VPS services not needed)
+# =============================================================================
+{{ if not .is_vps }}
+# VPS-only services
+.config/systemd/user/opencode-server.service
+{{ end }}
+
+# =============================================================================
+# Debian-specific ignores (no pacman/AUR)
+# =============================================================================
+{{ if .is_debian }}
+# AUR helper not relevant on Debian - skip sudoers script
+# (Note: This script uses sudo pacman which won't work on Debian anyway)
+{{ end }}
+
+# =============================================================================
+# Arch-specific ignores (no apt)
+# =============================================================================
+{{ if .is_arch }}
+# Nothing specific yet
+{{ end }}
+
+# =============================================================================
+# Global ignores (all machines)
+# =============================================================================
+# Chezmoi's own config - we set this up manually per-machine to avoid TTY prompts
+# Each machine has its own config in ~/.config/chezmoi/chezmoi.toml
+.config/chezmoi/chezmoi.toml
+
+# Example files
+.config/env.tmpl.example
+.aws/credentials.tmpl.example
+
+# Editor/IDE files
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

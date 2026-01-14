@@ -1,6 +1,19 @@
 {{- /* Machine detection */ -}}
 {{- $hostname := .chezmoi.hostname -}}
 
+{{- /* Machine type detection - determines configuration scope */ -}}
+{{- /* VPS detection: no GUI, systemd present, typically a known hostname */ -}}
+{{- $hasDisplay := or (env "DISPLAY") (env "WAYLAND_DISPLAY") -}}
+{{- $osRelease := output "sh" "-c" "cat /etc/os-release 2>/dev/null | grep '^ID=' | cut -d= -f2 | tr -d '\"'" | trim -}}
+{{- $isDebian := eq $osRelease "debian" -}}
+{{- $isCachyOS := eq $osRelease "cachyos" -}}
+{{- $isArch := or (eq $osRelease "arch") $isCachyOS -}}
+{{- /* Default machine type based on OS and display presence */ -}}
+{{- $defaultMachineType := "desktop" -}}
+{{- if and $isDebian (not $hasDisplay) -}}
+{{-   $defaultMachineType = "vps" -}}
+{{- end -}}
+
 {{- /* Auto-detect system defaults */ -}}
 {{- $envEditor := env "EDITOR" -}}
 {{- $visualEditor := env "VISUAL" -}}
@@ -40,10 +53,20 @@
 {{- /* is_laptop is auto-detected from battery presence - no prompt needed */ -}}
 {{- $isLaptop := $defaultIsLaptop -}}
 
-{{- /* Optional but useful with better defaults */ -}}
-{{- $aurHelper := promptStringOnce . "aur_helper" "AUR helper (yay/paru)" "yay" -}}
-{{- $displayServer := promptStringOnce . "display_server" "Display server (wayland/x11)" $defaultDisplayServer -}}
-{{- $compositor := promptStringOnce . "compositor" "Window manager/compositor" $defaultCompositor -}}
+{{- /* Machine type: desktop, laptop, vps - determines which configs to apply */ -}}
+{{- $machineType := promptStringOnce . "machine_type" "Machine type (desktop/laptop/vps)" $defaultMachineType -}}
+{{- $isVPS := eq $machineType "vps" -}}
+{{- $hasGUI := not $isVPS -}}
+
+{{- /* Optional but useful with better defaults - only prompt on GUI machines */ -}}
+{{- $aurHelper := "yay" -}}
+{{- $displayServer := "none" -}}
+{{- $compositor := "none" -}}
+{{- if $hasGUI -}}
+{{-   $aurHelper = promptStringOnce . "aur_helper" "AUR helper (yay/paru)" "yay" -}}
+{{-   $displayServer = promptStringOnce . "display_server" "Display server (wayland/x11)" $defaultDisplayServer -}}
+{{-   $compositor = promptStringOnce . "compositor" "Window manager/compositor" $defaultCompositor -}}
+{{- end -}}
 
 [data]
     # Machine identity
@@ -57,13 +80,21 @@
     git_name = {{ $gitName | quote }}
     git_email = {{ $gitEmail | quote }}
 
-    # System capabilities
+    # Machine type and capabilities
+    machine_type = {{ $machineType | quote }}
+    is_vps = {{ $isVPS }}
+    has_gui = {{ $hasGUI }}
     is_laptop = {{ $isLaptop }}
 
-    # Package management
+    # OS detection
+    os_id = {{ $osRelease | quote }}
+    is_arch = {{ $isArch }}
+    is_debian = {{ $isDebian }}
+
+    # Package management (only relevant for Arch-based)
     aur_helper = {{ $aurHelper | quote }}
 
-    # Display server
+    # Display server (only relevant for GUI machines)
     display_server = {{ $displayServer | quote }}
     compositor = {{ $compositor | quote }}
 
