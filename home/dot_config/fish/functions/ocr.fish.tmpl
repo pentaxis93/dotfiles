@@ -1,0 +1,25 @@
+function ocr --description "Control OpenCode server on babbie remotely"
+    set -l cmd $argv[1]
+    set -l args $argv[2..-1]
+
+    switch $cmd
+        case start
+            ssh babbie "~/.local/bin/ocstart $args"
+        case stop
+            ssh babbie "~/.local/bin/ocstop"
+        case restart
+            ssh babbie "~/.local/bin/ocrestart $args"
+        case status
+            ssh babbie "~/.local/bin/ocstatus"
+        case '*'
+            echo "Usage: ocr {start|stop|restart|status} [directory]"
+            echo ""
+            echo "Examples:"
+            echo "  ocr status                    - Show server status"
+            echo "  ocr start                     - Start server (default dir: ~/src)"
+            echo "  ocr start ~/docs              - Start server in ~/docs"
+            echo "  ocr restart ~/go              - Restart server in ~/go"
+            echo "  ocr stop                      - Stop server"
+            return 1
+    end
+end

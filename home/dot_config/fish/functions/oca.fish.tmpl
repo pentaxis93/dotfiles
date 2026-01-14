@@ -1,0 +1,11 @@
+function oca --description "Attach to OpenCode server on babbie"
+    set -l babbie_ip "100.125.136.73"
+    set -l port "4096"
+
+    if test (count $argv) -gt 0
+        # Directory argument provided - attach to specific remote directory
+        opencode attach http://$babbie_ip:$port --dir $argv[1]
+    else
+        opencode attach http://$babbie_ip:$port
+    end
+end
