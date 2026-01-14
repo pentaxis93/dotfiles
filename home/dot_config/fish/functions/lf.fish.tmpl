@@ -1,0 +1,42 @@
+{{- $selection := .themes.kanagawa.dragon.selection -}}
+{{- $green := .themes.kanagawa.dragon.green -}}
+{{- $comment := .themes.kanagawa.dragon.bright_black -}}
+{{- /* Convert hex to RGB values */ -}}
+{{- $sel_r := printf "0x%s" (substr 0 2 $selection) | atoi -}}
+{{- $sel_g := printf "0x%s" (substr 2 4 $selection) | atoi -}}
+{{- $sel_b := printf "0x%s" (substr 4 6 $selection) | atoi -}}
+{{- $grn_r := printf "0x%s" (substr 0 2 $green) | atoi -}}
+{{- $grn_g := printf "0x%s" (substr 2 4 $green) | atoi -}}
+{{- $grn_b := printf "0x%s" (substr 4 6 $green) | atoi -}}
+{{- $com_r := printf "0x%s" (substr 0 2 $comment) | atoi -}}
+{{- $com_g := printf "0x%s" (substr 2 4 $comment) | atoi -}}
+{{- $com_b := printf "0x%s" (substr 4 6 $comment) | atoi -}}
+function lf --description 'lf wrapper that changes directory on exit' --wraps lf
+    # Ultra-Zen: "The file manager and shell walk together as one"
+    # This wrapper makes cd-on-exit the default behavior for all lf invocations
+    # Simply typing 'lf' will now change your shell directory when you quit
+
+    set tmp (mktemp)
+
+    # Start lf with last dir printing and themed prompt
+    if count $argv > /dev/null
+        command lf -last-dir-path="$tmp" -command "set promptfmt \"\\033[38;2;{{ $sel_r }};{{ $sel_g }};{{ $sel_b }}m lf\\033[0m:\\033[38;2;{{ $grn_r }};{{ $grn_g }};{{ $grn_b }}m %w\\033[0m\\033[38;2;{{ $com_r }};{{ $com_g }};{{ $com_b }}m/%f\\033[0m\"" $argv
+    else
+        command lf -last-dir-path="$tmp" -command "set promptfmt \"\\033[38;2;{{ $sel_r }};{{ $sel_g }};{{ $sel_b }}m lf\\033[0m:\\033[38;2;{{ $grn_r }};{{ $grn_g }};{{ $grn_b }}m %w\\033[0m\\033[38;2;{{ $com_r }};{{ $com_g }};{{ $com_b }}m/%f\\033[0m\""
+    end
+
+    set ret $status
+
+    # Change to last directory if it exists and differs from current
+    if test -f "$tmp"
+        set dir (cat "$tmp")
+        rm -f "$tmp"
+        if test -d "$dir"
+            if test "$dir" != (pwd)
+                cd "$dir"
+            end
+        end
+    end
+
+    return $ret
+end

@@ -1,7 +1,16 @@
 {{- $kb := .keybindings -}}
 {{- $theme := .themes.kanagawa.dragon -}}
 {{- $s := .semantic -}}
+{{ if .is_arch -}}
+# CachyOS/Arch-specific fish configuration
 source /usr/share/cachyos-fish-config/cachyos-config.fish
+{{ else -}}
+# Non-Arch systems: minimal fish setup
+# Set a simple greeting for VPS/servers
+function fish_greeting
+    echo "Welcome to $(hostname)"
+end
+{{ end }}
 
 # overwrite greeting
 # potentially disabling fastfetch
@@ -11,13 +20,23 @@ source /usr/share/cachyos-fish-config/cachyos-config.fish
 
 export PATH="$HOME/.local/bin:$PATH"
 
-# Flutter Version Manager (fvm) - Language foundation
+{{ if .has_gui -}}
+# Flutter Version Manager (fvm) - Language foundation (desktop only)
 # Provides global dart and flutter commands
 export PATH="$HOME/fvm/default/bin:$PATH"      # flutter, dart commands
 export PATH="$HOME/.pub-cache/bin:$PATH"       # pub global packages
+{{ end }}
 
 # Go binaries
 export PATH="$HOME/go/bin:$PATH"
+
+# Rust/Cargo binaries (common on VPS where tools are cargo-installed)
+export PATH="$HOME/.cargo/bin:$PATH"
+
+# Bun runtime (if installed)
+if test -d "$HOME/.bun/bin"
+    export PATH="$HOME/.bun/bin:$PATH"
+end
 
 # Set default editor
 set -gx EDITOR helix
@@ -101,8 +120,9 @@ function fish_user_key_bindings
 
     # File browser integration - Quick navigation with lf
     # Ultra-Zen: "From command line to file explorer, one key bridges the realms"
-    bind -M default \co 'lfcd; commandline -f repaint'  # Ctrl+O opens lf, changes directory on exit
-    bind -M insert \co 'lfcd; commandline -f repaint'   # Available in insert mode too
+    # NOTE: All lf invocations now cd-on-exit by default (via lf wrapper function)
+    bind -M default \co 'lf; commandline -f repaint'  # Ctrl+O opens lf (with automatic cd)
+    bind -M insert \co 'lf; commandline -f repaint'   # Available in insert mode too
 end
 
 # Editor alias - 'h' for helix (ultrathink keybinding consistency)
@@ -115,11 +135,13 @@ if command -v zoxide &>/dev/null
     zoxide init fish | source
 end
 
-# Dark Mode Configuration - System-wide dark theme preferences
+{{ if .has_gui -}}
+# Dark Mode Configuration - System-wide dark theme preferences (GUI only)
 # Ensures consistent dark theme across GTK and Qt applications
 # Note: Using Adwaita:dark for GTK4 apps (like pavucontrol) since cachyos-nord lacks GTK4 support
 export GTK_THEME="Adwaita:dark"
 export QT_STYLE_OVERRIDE="adwaita-dark"
+{{ end }}
 
 # nmtui Configuration - Dynamic Kanagawa color theme from centralized palette
 # Following project guidelines: unified color theme from colors.yaml
@@ -149,7 +171,8 @@ function nmtui
     command nmtui $argv
 end
 
-# Ultra-Zen Bitwarden Integration
+{{ if .has_gui -}}
+# Ultra-Zen Bitwarden Integration (GUI machines with bitwarden-cli)
 # "Secrets flow through semantic intentions"
 
 # Bitwarden abbreviations - Following semantic philosophy
@@ -177,12 +200,21 @@ abbr -a is "irc-status"            # IRC status (semantic: observe)
 abbr -a id "irc-downloads"         # Manage downloads (semantic: organize)
 abbr -a idl "irc-downloads list"   # List downloads (semantic: discover)
 abbr -a idc "irc-downloads clean"  # Clean old files (semantic: maintain)
+{{ else -}}
+# VPS/Server abbreviations
+# GNU Pass abbreviations (VPS uses pass instead of bitwarden-cli)
+abbr -a p "pass"                   # Password manager
+abbr -a ps "pass show"             # Show password
+abbr -a pc "pass -c"               # Copy password to clipboard
+{{ end }}
 
-# Development Tools
+# Development Tools (universal)
 abbr -a h "helix"                  # Modal editor (semantic: invoke.editor)
+abbr -a hx "helix"                 # Alternative helix alias
 abbr -a lg "lazygit"               # Launch lazygit TUI (semantic: git-visual)
 
-# Auto-lock Bitwarden on terminal exit - Security first
+{{ if .has_gui -}}
+# Auto-lock Bitwarden on terminal exit - Security first (desktop only)
 # "The wise seal their treasures when departing"
 function __bw_auto_lock_on_exit --on-event fish_exit
     if test -n "$BW_SESSION"
@@ -190,3 +222,4 @@ function __bw_auto_lock_on_exit --on-event fish_exit
         set -e BW_SESSION
     end
 end
+{{ end }}
