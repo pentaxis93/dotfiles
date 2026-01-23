@@ -122,5 +122,150 @@
                    (org-get-heading t t t t)
                    (org-get-todo-state))))
 
+;;; JSON-Returning Agent API
+;; These functions return JSON for reliable parsing by external agents.
+;; All include error handling and return {success: bool, data/error: ...}
+
+(require 'json)
+
+(defun beadsmith/agent-query (query)
+  "Execute org-ql QUERY, return JSON-encoded results.
+QUERY should be a valid org-ql query sexp.
+Returns JSON with success status and structured task data."
+  (condition-case err
+      (json-encode
+       `(("success" . t)
+         ("data" . ,(org-ql-select (org-agenda-files) query
+                      :action '(list :id (org-id-get-create)
+                                     :heading (substring-no-properties
+                                               (org-get-heading t t t t))
+                                     :todo (org-get-todo-state)
+                                     :tags (org-get-tags)
+                                     :priority (org-entry-get (point) "PRIORITY")
+                                     :scheduled (org-entry-get (point) "SCHEDULED")
+                                     :deadline (org-entry-get (point) "DEADLINE")
+                                     :blocker (org-entry-get (point) "BLOCKER")
+                                     :file (buffer-file-name)
+                                     :line (line-number-at-pos))))))
+    (error
+     (json-encode `(("success" . :json-false)
+                    ("error" . ,(error-message-string err)))))))
+
+(defun beadsmith/agent-get-task (id)
+  "Get task details by ID, return JSON-encoded result."
+  (condition-case err
+      (let ((marker (org-id-find id 'marker)))
+        (if marker
+            (org-with-point-at marker
+              (json-encode
+               `(("success" . t)
+                 ("data" . ((:id . ,id)
+                            (:heading . ,(substring-no-properties
+                                          (org-get-heading t t t t)))
+                            (:todo . ,(org-get-todo-state))
+                            (:tags . ,(org-get-tags))
+                            (:priority . ,(org-entry-get (point) "PRIORITY"))
+                            (:scheduled . ,(org-entry-get (point) "SCHEDULED"))
+                            (:deadline . ,(org-entry-get (point) "DEADLINE"))
+                            (:blocker . ,(org-entry-get (point) "BLOCKER"))
+                            (:trigger . ,(org-entry-get (point) "TRIGGER"))
+                            (:file . ,(buffer-file-name))
+                            (:line . ,(line-number-at-pos)))))))
+          (json-encode '(("success" . :json-false)
+                         ("error" . "ID not found")))))
+    (error
+     (json-encode `(("success" . :json-false)
+                    ("error" . ,(error-message-string err)))))))
+
+(defun beadsmith/agent-complete-task (id)
+  "Complete task by ID, firing org-edna triggers. Return JSON status.
+Uses org-todo to ensure triggers fire correctly."
+  (condition-case err
+      (let ((marker (org-id-find id 'marker)))
+        (if marker
+            (progn
+              (org-with-point-at marker
+                (let ((org-log-note-state nil))  ; suppress note prompts
+                  (org-todo "DONE")))
+              (save-some-buffers t)
+              (json-encode '(("success" . t))))
+          (json-encode '(("success" . :json-false)
+                         ("error" . "ID not found")))))
+    (error
+     (json-encode `(("success" . :json-false)
+                    ("error" . ,(error-message-string err)))))))
+
+(defun beadsmith/agent-set-todo-state (id state)
+  "Set TODO state of task ID to STATE. Return JSON status.
+STATE should be a valid TODO keyword (TODO, NEXT, WAITING, DONE, CANCELLED)."
+  (condition-case err
+      (let ((marker (org-id-find id 'marker)))
+        (if marker
+            (progn
+              (org-with-point-at marker
+                (let ((org-log-note-state nil))  ; suppress note prompts
+                  (org-todo state)))
+              (save-some-buffers t)
+              (json-encode `(("success" . t)
+                             ("new_state" . ,state))))
+          (json-encode '(("success" . :json-false)
+                         ("error" . "ID not found")))))
+    (error
+     (json-encode `(("success" . :json-false)
+                    ("error" . ,(error-message-string err)))))))
+
+(defun beadsmith/agent-task-blocked-p (id)
+  "Check if task ID is blocked by org-edna. Return JSON with status.
+Checks ids() blockers by verifying referenced tasks are DONE.
+Returns blocked=true/false and list of blocking task IDs."
+  (condition-case err
+      (let ((marker (org-id-find id 'marker)))
+        (if marker
+            (org-with-point-at marker
+              (let* ((blocker-str (org-entry-get nil "BLOCKER"))
+                     (blocking-ids nil))
+                ;; Parse ids(...) syntax and check each referenced task
+                (when (and blocker-str
+                           (string-match "ids(\\([^)]+\\))" blocker-str))
+                  (let ((id-list (split-string (match-string 1 blocker-str) " " t)))
+                    (dolist (dep-id id-list)
+                      ;; Remove quotes if present
+                      (setq dep-id (replace-regexp-in-string "\"" "" dep-id))
+                      (let ((dep-marker (org-id-find dep-id 'marker)))
+                        (when dep-marker
+                          (org-with-point-at dep-marker
+                            (let ((state (org-get-todo-state)))
+                              (unless (member state org-done-keywords)
+                                (push dep-id blocking-ids)))))))))
+                (json-encode `(("success" . t)
+                               ("blocked" . ,(if blocking-ids t :json-false))
+                               ("blocker_property" . ,blocker-str)
+                               ("blocking_tasks" . ,(nreverse blocking-ids))))))
+          (json-encode '(("success" . :json-false)
+                         ("error" . "ID not found")))))
+    (error
+     (json-encode `(("success" . :json-false)
+                    ("error" . ,(error-message-string err)))))))
+
+(defun beadsmith/agent-list-next-actions ()
+  "Return all NEXT actions as JSON."
+  (beadsmith/agent-query '(todo "NEXT")))
+
+(defun beadsmith/agent-list-blocked ()
+  "Return all tasks with BLOCKER property as JSON."
+  (beadsmith/agent-query '(property "BLOCKER")))
+
+(defun beadsmith/agent-list-waiting ()
+  "Return all WAITING tasks as JSON."
+  (beadsmith/agent-query '(todo "WAITING")))
+
+(defun beadsmith/agent-list-overdue ()
+  "Return all overdue tasks as JSON."
+  (beadsmith/agent-query '(and (not (done)) (deadline :to -1))))
+
+(defun beadsmith/agent-list-scheduled-today ()
+  "Return tasks scheduled for today or earlier as JSON."
+  (beadsmith/agent-query '(and (not (done)) (scheduled :to today))))
+
 (provide 'init)
 ;;; init.el ends here
