@@ -53,6 +53,9 @@ packages:
       - vdirsyncer  # CalDAV/CardDAV sync
       - taskwarrior  # Task management (GTD)
 
+      # Project Planning - Agent-accessible org-mode infrastructure
+      - emacs  # Emacs editor for org-mode planning system
+
     # NOTE: Additional CLI tools are installed via run_once_install-cli-tools-debian.sh:
     # - helix (cargo)   - Modal editor
     # - bat (cargo)     - Syntax-highlighted cat

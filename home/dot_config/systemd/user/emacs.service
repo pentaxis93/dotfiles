@@ -1,0 +1,20 @@
+[Unit]
+Description=Emacs daemon for org-mode planning infrastructure
+Documentation=info:emacs man:emacs(1)
+After=default.target
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/emacs --fg-daemon
+ExecStop=/usr/bin/emacsclient --eval "(kill-emacs)"
+Restart=on-failure
+RestartSec=5
+
+# Environment for consistent operation
+Environment=HOME=%h
+
+# Reasonable resource limits
+TimeoutStartSec=30
+
+[Install]
+WantedBy=default.target
