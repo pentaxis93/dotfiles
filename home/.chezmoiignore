@@ -123,6 +123,7 @@ set-dark-mode.sh
 setup-handlr-defaults.sh
 setup-input-group.sh
 setup-keyd.sh
+setup-syncthing.sh
 setup-ydotool.sh
 setup-zen-browser.sh
 setup-zfs-automation.sh

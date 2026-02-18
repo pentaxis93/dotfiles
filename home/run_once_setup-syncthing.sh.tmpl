@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Enable syncthing as a persistent user service
+# Syncthing ships its own unit file via the package; we just need to enable it.
+{{ if .is_vps -}}
+echo "Skipping syncthing setup on VPS"
+exit 0
+{{ end -}}
+
+set -e
+
+echo "Setting up syncthing user service..."
+
+systemctl --user daemon-reload
+
+if systemctl --user enable --now syncthing.service; then
+    echo "✓ syncthing enabled and started"
+
+    if systemctl --user is-active --quiet syncthing.service; then
+        echo "✓ syncthing is running"
+    else
+        echo "⚠ syncthing failed to start, check: systemctl --user status syncthing"
+    fi
+else
+    echo "✗ Failed to enable syncthing service"
+    exit 1
+fi
+
+echo "syncthing setup complete!"
