@@ -7,7 +7,7 @@ Host gallery
     IdentityFile ~/.ssh/id_rsa
 
 Host babbie
-    HostName 15.204.249.134
+    HostName 100.125.136.73
     User pentaxis93
     IdentityFile ~/.ssh/id_ed25519
 

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Setup Docker service and user permissions
+
+set -e
+
+echo "Setting up Docker..."
+
+# Enable and start Docker service
+if ! systemctl is-enabled docker.service &>/dev/null; then
+    echo "Enabling Docker service..."
+    sudo systemctl enable docker.service
+fi
+
+if ! systemctl is-active docker.service &>/dev/null; then
+    echo "Starting Docker service..."
+    sudo systemctl start docker.service
+fi
+
+# Add user to docker group if not already a member
+if ! groups {{ .chezmoi.username }} | grep -q docker; then
+    echo "Adding {{ .chezmoi.username }} to docker group..."
+    sudo usermod -aG docker {{ .chezmoi.username }}
+    echo "⚠️  You'll need to log out and back in for docker group membership to take effect"
+    echo "   Or run: newgrp docker"
+else
+    echo "User {{ .chezmoi.username }} is already in docker group"
+fi
+
+echo "Docker setup complete!"
