@@ -78,6 +78,9 @@ packages:
       - zfs-meta  # Metapackage for pre-compiled ZFS (provides "zfs" virtual package)
       - zfs-utils  # ZFS filesystem utilities and command-line tools
 
+      # File Sync - Continuous peer-to-peer file synchronization
+      - syncthing  # Decentralized file sync across devices without cloud intermediary
+
       # Torrenting - VPN-bound downloading
       - transmission-cli  # BitTorrent client with daemon and VPN killswitch
 
