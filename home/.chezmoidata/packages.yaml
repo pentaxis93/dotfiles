@@ -176,5 +176,6 @@ packages:
       - frame0  # Hand-drawn wireframing tool for sketching app ideas and interactive prototypes
 
       # Development - AI-assisted coding tools
+      - claude-desktop-appimage  # Claude Desktop app for conversational AI with MCP server support
       - cursor-bin  # AI-first coding environment for supplementary AI-assisted development
       - opencode  # Terminal-native AI coding agent
