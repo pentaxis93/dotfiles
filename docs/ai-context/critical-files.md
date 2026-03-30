@@ -52,6 +52,7 @@ Located in `home/.chezmoitemplates/`:
 
 ## Scripts & Utilities
 - `scripts/generate-spectrum.py` - LAB color interpolation for spectrums
+- `home/dot_local/bin/executable_groundwork-sync` - Projects Groundwork skills into `~/.agents/skills` and `~/.claude/skills` using only shapes Codex actually registers (`resolved_dir/SKILL.md` must be a real file)
 - `home/dot_local/bin/executable_transmission-vpn-bind.tmpl` - VPN binding script
 - `home/dot_local/bin/executable_mpv.tmpl` - MPV wrapper for LF pre-selection
 - `home/run_once_install-fvm.sh.tmpl` - Flutter Version Manager installation and setup

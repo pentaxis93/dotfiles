@@ -1,0 +1,142 @@
+#!/bin/bash
+# Sync groundwork skills and protocols into agent skill directories.
+# Codex discovers top-level skill directories, but it does not reliably load
+# entries whose resolved SKILL.md is itself a symlink.
+set -euo pipefail
+shopt -s nullglob
+
+GROUNDWORK="${GROUNDWORK_DIR:-$HOME/src/groundwork}"
+STATE_ROOT="${GROUNDWORK_SYNC_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/groundwork-sync}"
+TARGETS=("$HOME/.claude/skills" "$HOME/.agents/skills")
+
+die() { printf '%s\n' "$1" >&2; exit 1; }
+
+[[ -d "$GROUNDWORK" ]] || die "groundwork not found: $GROUNDWORK"
+
+declare -A sources
+declare -A kinds
+
+for d in "$GROUNDWORK"/skills/*/; do
+    [[ -f "$d/SKILL.md" ]] || continue
+    name=$(basename "$d")
+    sources["$name"]="$d"
+    kinds["$name"]="skill"
+done
+
+for d in "$GROUNDWORK"/protocols/*/; do
+    [[ -f "$d/PROTOCOL.md" ]] || continue
+    name=$(basename "$d")
+    sources["$name"]="$d"
+    kinds["$name"]="protocol"
+done
+
+[[ ${#sources[@]} -gt 0 ]] || die "no skills or protocols found in $GROUNDWORK"
+
+protocol_wrapper_dir() {
+    printf '%s\n' "$STATE_ROOT/protocols/$1"
+}
+
+is_managed_target() {
+    local resolved=$1
+    [[ "$resolved" == "$GROUNDWORK"/skills/* || "$resolved" == "$STATE_ROOT"/protocols/* ]]
+}
+
+is_legacy_groundwork_dir() {
+    local dir=$1
+    local entry resolved
+    for entry in "$dir"/*; do
+        [[ -L "$entry" ]] || continue
+        resolved=$(readlink -f "$entry" 2>/dev/null || true)
+        [[ "$resolved" == "$GROUNDWORK"/skills/* || "$resolved" == "$GROUNDWORK"/protocols/* ]] && return 0
+    done
+    return 1
+}
+
+build_protocol_wrapper() {
+    local name=$1 src=$2 wrapper tmp item base
+    wrapper=$(protocol_wrapper_dir "$name")
+    mkdir -p "$STATE_ROOT/protocols" "$STATE_ROOT/.tmp"
+    tmp=$(mktemp -d "$STATE_ROOT/.tmp/${name}.XXXXXX")
+
+    cp "$src/PROTOCOL.md" "$tmp/SKILL.md"
+    for item in "$src"/*; do
+        [[ -e "$item" ]] || continue
+        base=$(basename "$item")
+        [[ "$base" == "PROTOCOL.md" ]] && continue
+        ln -sfn "$item" "$tmp/$base"
+    done
+
+    rm -rf "$wrapper"
+    mv "$tmp" "$wrapper"
+}
+
+desired_target_for() {
+    local name=$1 src=$2 kind=$3
+    if [[ "$kind" == "protocol" ]]; then
+        build_protocol_wrapper "$name" "$src"
+        protocol_wrapper_dir "$name"
+    else
+        printf '%s\n' "$src"
+    fi
+}
+
+sync_entry() {
+    local name=$1 src=$2 kind=$3 target=$4 dest desired
+    dest="$target/$name"
+    desired=$(desired_target_for "$name" "$src" "$kind")
+
+    if [[ -d "$dest" && ! -L "$dest" ]]; then
+        rm -rf "$dest"
+    fi
+    ln -sfn "$desired" "$dest"
+}
+
+cleanup_target() {
+    local target=$1 entry name resolved
+    for entry in "$target"/*; do
+        [[ -e "$entry" || -L "$entry" ]] || continue
+        name=$(basename "$entry")
+
+        if [[ -n "${sources[$name]+x}" ]]; then
+            continue
+        fi
+
+        if [[ -L "$entry" ]]; then
+            resolved=$(readlink -f "$entry" 2>/dev/null || true)
+            if [[ -n "$resolved" ]] && is_managed_target "$resolved"; then
+                rm -f "$entry"
+                printf 'removed stale: %s\n' "$entry"
+            fi
+            continue
+        fi
+
+        if [[ -d "$entry" ]] && is_legacy_groundwork_dir "$entry"; then
+            rm -rf "$entry"
+            printf 'removed legacy: %s\n' "$entry"
+        fi
+    done
+}
+
+cleanup_protocol_wrappers() {
+    local wrapper name
+    for wrapper in "$STATE_ROOT"/protocols/*; do
+        [[ -d "$wrapper" ]] || continue
+        name=$(basename "$wrapper")
+        if [[ -z "${sources[$name]+x}" || "${kinds[$name]}" != "protocol" ]]; then
+            rm -rf "$wrapper"
+            printf 'removed stale wrapper: %s\n' "$wrapper"
+        fi
+    done
+}
+
+for target in "${TARGETS[@]}"; do
+    mkdir -p "$target"
+    for name in "${!sources[@]}"; do
+        sync_entry "$name" "${sources[$name]}" "${kinds[$name]}" "$target"
+    done
+    cleanup_target "$target"
+done
+
+cleanup_protocol_wrappers
+
+printf 'synced %d entries → %s\n' "${#sources[@]}" "${TARGETS[*]}"
