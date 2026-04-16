@@ -30,6 +30,7 @@ window#waybar {
 #pulseaudio,
 #custom-weather,
 #custom-vpn,
+#custom-tor,
 #clock {
     padding: 0 8px;
     margin: 0;
@@ -187,6 +188,14 @@ window#waybar.empty #window {
 /* VPN - Blue (secure connectivity) - integrates visually with network */
 #custom-vpn {
     color: {{ template "color-hex.tmpl" $c.blue }};
+    padding-left: 0;
+    padding-right: 8px;
+    margin-left: -6px;
+}
+
+/* Tor - Magenta (anonymity) - visually distinct from VPN blue */
+#custom-tor {
+    color: {{ template "color-hex.tmpl" $c.magenta }};
     padding-left: 0;
     padding-right: 8px;
     margin-left: -6px;

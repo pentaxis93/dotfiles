@@ -1,0 +1,55 @@
+{{- /* On-demand Tor connection with topology awareness */ -}}
+function tor-connect --description "Start Tor anonymity proxy"
+    # Semantic: Establish onion-routed circuit for anonymous connectivity
+
+    # Check if already running
+    if systemctl --user is-active --quiet tor
+        echo "✓ Tor already running"
+        tor-status
+        return 0
+    end
+
+    echo "🧅 Starting Tor..."
+
+    # Start user service
+    systemctl --user start tor
+
+    if test $status -ne 0
+        echo "✗ Failed to start Tor service"
+        return 1
+    end
+
+    # Wait for bootstrap (up to 60 seconds)
+    set -l timeout 60
+    set -l elapsed 0
+    set -l log_file "$HOME/.local/share/tor/tor.log"
+
+    while test $elapsed -lt $timeout
+        if test -f "$log_file"; and grep -q "Bootstrapped 100%" "$log_file" 2>/dev/null
+            break
+        end
+        sleep 2
+        set elapsed (math $elapsed + 2)
+    end
+
+    if test $elapsed -ge $timeout
+        echo "⚠ Tor started but bootstrap timed out after "$timeout"s"
+        echo "  Check: journalctl --user -u tor -n 20"
+        return 1
+    end
+
+    # Report topology
+    if sudo systemctl is-active --quiet goosevpn.service 2>/dev/null
+        echo "✓ Tor connected (Tor over VPN)"
+    else
+        echo "✓ Tor connected (standalone)"
+    end
+
+    # Show exit node IP
+    if command -q torsocks; and command -q curl
+        set -l exit_ip (torsocks curl -s https://check.torproject.org/api/ip 2>/dev/null | string match -r '"IP":"([^"]+)"' | tail -1)
+        if test -n "$exit_ip"
+            echo "  Exit IP: $exit_ip"
+        end
+    end
+end

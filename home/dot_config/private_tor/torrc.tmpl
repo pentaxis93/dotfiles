@@ -1,0 +1,19 @@
+{{- /* Tor client-only configuration - User-space SOCKS proxy */ -}}
+# Tor Configuration - On-demand anonymity proxy
+# Managed by chezmoi - do not edit directly
+#
+# Client-only: no relay, no exit node, no hidden services
+# Start/stop via: torc / tord (fish functions)
+
+# SOCKS proxy on localhost (standard port)
+SocksPort 9050
+
+# Control port for nyx circuit monitoring
+ControlPort 9051
+CookieAuthentication 1
+
+# User-space data directory (not system /var/lib/tor)
+DataDirectory {{ .chezmoi.homeDir }}/.local/share/tor
+
+# Logging
+Log notice file {{ .chezmoi.homeDir }}/.local/share/tor/tor.log

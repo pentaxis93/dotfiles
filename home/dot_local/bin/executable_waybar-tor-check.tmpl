@@ -1,0 +1,9 @@
+#!/usr/bin/env fish
+# Tor Status Indicator for Waybar
+# Semantic: Observe the onion circuit's presence
+
+if systemctl --user is-active --quiet tor
+    echo "⧫"    # Onion routing active
+else
+    echo ""     # Invisible when inactive
+end
