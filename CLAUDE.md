@@ -296,6 +296,7 @@ claude
 - @docs/ai-context/apps/transmission.md - BitTorrent with VPN killswitch
 - @docs/ai-context/apps/lf.md - Terminal file manager
 - @docs/ai-context/apps/lazygit.md - Git TUI with reverse video
+- @docs/ai-context/apps/tmux.md - Terminal multiplexer with vi copy-mode routing to Wayland clipboard
 
 ### System Tools
 - @docs/ai-context/apps/automation.md - System automation (ydotool, wev, socat, slurp, grim)
