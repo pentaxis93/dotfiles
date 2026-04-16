@@ -1,0 +1,53 @@
+{{- /* Tor status with topology awareness */ -}}
+function tor-status --description "Check Tor status, topology, and exit node"
+    # Semantic: Observe the state of our anonymity circuits
+
+    if systemctl --user is-active --quiet tor
+        # Determine topology
+        set -l vpn_active false
+        if sudo systemctl is-active --quiet goosevpn.service 2>/dev/null
+            set vpn_active true
+        end
+
+        if test "$vpn_active" = true
+            echo "🧅 Tor Status: Connected (Tor over VPN)"
+        else
+            echo "🧅 Tor Status: Connected (standalone)"
+        end
+
+        # Service uptime
+        set -l uptime (systemctl --user show -p ActiveEnterTimestamp --value tor 2>/dev/null)
+        if test -n "$uptime"
+            echo "   Since: $uptime"
+        end
+
+        # Exit node IP
+        if command -q torsocks; and command -q curl
+            set -l exit_ip (torsocks curl -s https://check.torproject.org/api/ip 2>/dev/null | string match -r '"IP":"([^"]+)"' | tail -1)
+            if test -n "$exit_ip"
+                echo "   Exit IP: $exit_ip"
+            end
+        end
+
+        # VPN overlay info
+        if test "$vpn_active" = true
+            set -l tun_ip (ip addr show tun0 2>/dev/null | string match -r 'inet (\d+\.\d+\.\d+\.\d+)' | tail -1)
+            if test -n "$tun_ip"
+                echo "   VPN Tunnel: $tun_ip"
+            end
+        end
+
+        echo "   SOCKS: 127.0.0.1:9050"
+        echo "   Control: 127.0.0.1:9051"
+    else
+        echo "🔴 Tor Status: Offline"
+
+        if systemctl --user list-unit-files tor.service >/dev/null 2>&1
+            echo "   Service: installed but inactive"
+        else
+            echo "   Service: not installed (run 'chezmoi apply')"
+        end
+
+        echo "   Start with: torc"
+    end
+end

@@ -1,0 +1,27 @@
+{{- /* Tor SOCKS proxy - On-demand user service */ -}}
+[Unit]
+Description=Tor Anonymity Proxy (SOCKS5 on 9050)
+Documentation=man:tor(1)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/tor -f {{ .chezmoi.homeDir }}/.config/tor/torrc
+ExecReload=/bin/kill -s HUP $MAINPID
+
+# Restart on failure
+Restart=on-failure
+RestartSec=10
+
+# Security hardening (matches transmission-daemon pattern)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths={{ .chezmoi.homeDir }}/.local/share/tor
+
+# On-demand only - do not auto-start
+# User controls via: torc / tord
+[Install]
+WantedBy=default.target

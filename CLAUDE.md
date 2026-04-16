@@ -300,6 +300,7 @@ claude
 ### System Tools
 - @docs/ai-context/apps/automation.md - System automation (ydotool, wev, socat, slurp, grim)
 - @docs/ai-context/apps/vpn.md - OpenVPN with Bitwarden secrets
+- @docs/ai-context/apps/tor.md - Tor anonymity with .onion browsing and CLI wrapping
 - @docs/ai-context/apps/wiremix.md - PipeWire audio mixer TUI
 - @docs/ai-context/apps/bluetui.md - Bluetooth device manager TUI
 - @docs/ai-context/apps/shell-enhancements.md - lsd, zoxide, Fish shell

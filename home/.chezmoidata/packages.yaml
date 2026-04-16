@@ -156,6 +156,11 @@ packages:
       # Power Management - Idle and screen control
       - swayidle  # Wayland idle daemon for automatic screen off and suspend
 
+      # Anonymity - On-demand Tor circuit proxy for .onion access
+      - tor        # SOCKS5 proxy daemon for anonymous routing (127.0.0.1:9050)
+      - torsocks   # Transparent Tor wrapper for CLI commands
+      - nyx        # Tor circuit monitor TUI with bandwidth and connection visualization
+
       # Contemplation & Wisdom - Daily doses of zen philosophy
       - fortune-mod  # Displays random quotations for contemplative terminal sessions
 
@@ -174,6 +179,9 @@ packages:
 
       # Design & Prototyping - Wireframing and app design
       - frame0  # Hand-drawn wireframing tool for sketching app ideas and interactive prototypes
+
+      # Anonymity - Dedicated anti-fingerprint browser for .onion services
+      - tor-browser-bin  # Hardened Firefox with Tor integration for anonymous .onion browsing
 
       # Development - AI-assisted coding tools
       - claude-desktop-appimage  # Claude Desktop app for conversational AI with MCP server support

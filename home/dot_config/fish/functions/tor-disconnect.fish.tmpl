@@ -1,0 +1,20 @@
+{{- /* Tor disconnection */ -}}
+function tor-disconnect --description "Stop Tor anonymity proxy"
+    # Semantic: Terminate onion circuits and close SOCKS proxy
+
+    if not systemctl --user is-active --quiet tor
+        echo "ℹ️  Tor is not running"
+        return 0
+    end
+
+    echo "🧅 Stopping Tor..."
+
+    systemctl --user stop tor
+
+    if test $status -eq 0
+        echo "✓ Tor disconnected"
+    else
+        echo "✗ Failed to stop Tor"
+        return 1
+    end
+end

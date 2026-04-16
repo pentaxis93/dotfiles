@@ -107,6 +107,17 @@ run_after_claude-code.sh
 # Fortune files (not on VPS)
 .local/share/fortune
 
+# Tor (desktop-only anonymity tools)
+.config/tor
+.config/systemd/user/tor.service
+.config/fish/functions/torc.fish
+.config/fish/functions/tord.fish
+.config/fish/functions/tors.fish
+.config/fish/functions/tor-connect.fish
+.config/fish/functions/tor-disconnect.fish
+.config/fish/functions/tor-status.fish
+.local/bin/waybar-tor-check
+
 # Desktop-only secrets/configs
 .local/state/secrets/env/vpn-config
 .local/state/secrets/openvpn
@@ -125,6 +136,7 @@ setup-input-group.sh
 setup-keyd.sh
 setup-syncthing.sh
 setup-ydotool.sh
+setup-tor.sh
 setup-zen-browser.sh
 setup-zfs-automation.sh
 claude-code.sh

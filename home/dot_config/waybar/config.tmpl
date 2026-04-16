@@ -28,6 +28,7 @@
         "bluetooth",
         "network",
         "custom/vpn",
+        "custom/tor",
         "custom/weather",
         {{- if .is_laptop }}
         "battery",
@@ -141,6 +142,13 @@
     "custom/vpn": {
         "format": "{}",
         "exec": "~/.local/bin/waybar-vpn-check",
+        "interval": 5,
+        "tooltip": false
+    },
+
+    "custom/tor": {
+        "format": "{}",
+        "exec": "~/.local/bin/waybar-tor-check",
         "interval": 5,
         "tooltip": false
     },

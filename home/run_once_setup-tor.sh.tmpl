@@ -1,0 +1,27 @@
+{{- if not .is_vps -}}
+#!/bin/bash
+# Setup Tor user-space data directory and register service
+# This runs once on chezmoi apply
+
+set -euo pipefail
+
+echo "🧅 Setting up Tor user-space configuration..."
+
+# Create data directory for Tor state, logs, and auth cookie
+mkdir -p "${HOME}/.local/share/tor"
+chmod 700 "${HOME}/.local/share/tor"
+
+# Reload systemd to pick up tor.service
+systemctl --user daemon-reload
+
+echo "✓ Tor setup complete"
+echo ""
+echo "  Usage:"
+echo "    torc    Start Tor (on-demand)"
+echo "    tord    Stop Tor"
+echo "    tors    Check status and topology"
+echo "    nyx     Monitor circuits"
+echo ""
+echo "  For .onion browsing: torc → tor-browser"
+echo "  Recommended: vpc first, then torc (Tor over VPN)"
+{{- end }}

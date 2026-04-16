@@ -31,9 +31,11 @@ Located in `home/.chezmoitemplates/`:
 - `home/dot_config/fish/functions/vpd.fish.tmpl` - VPN disconnect wrapper
 - `home/dot_config/fish/functions/vps.fish.tmpl` - VPN status wrapper
 
-## Security & VPN
+## Security, VPN & Anonymity
 - `home/dot_config/private_openvpn/` - OpenVPN configuration files
 - `home/dot_config/systemd/user/goosevpn.service.tmpl` - VPN systemd service
+- `home/dot_config/private_tor/torrc.tmpl` - Tor client-only SOCKS proxy config
+- `home/dot_config/systemd/user/tor.service.tmpl` - Tor on-demand user service
 - `home/dot_local/state/private_secrets/` - Isolated secrets directory
 - `home/dot_local/state/private_secrets/openvpn/goosevpn-auth.tmpl` - VPN credentials from Bitwarden
 
