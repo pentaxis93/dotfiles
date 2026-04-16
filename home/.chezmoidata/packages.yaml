@@ -87,6 +87,9 @@ packages:
       # Media - Video playback with resuming and history
       - mpv  # Media player with position save, file browser, and subtitle support
 
+      # Terminal Sessions - Persistent multiplexed shells with clipboard integration
+      - tmux  # Terminal multiplexer; vi copy-mode routes to wl-copy via Kanagawa-themed config
+
       # File Management - Terminal file browser with rich previews
       - lf  # Terminal file manager with vi navigation and semantic keybindings
       # LF preview dependencies (cohesive block)

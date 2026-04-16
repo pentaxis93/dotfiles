@@ -1,0 +1,95 @@
+{{- $theme := .themes.kanagawa.dragon -}}
+{{- $s := .semantic -}}
+# Tmux Terminal Multiplexer Configuration
+# "Text in a pane flows to the clipboard through vi selection and OSC 52"
+#
+# Deployed by chezmoi; edit the .tmpl, not ~/.config/tmux/tmux.conf.
+# Reload in a running session with:  tmux source ~/.config/tmux/tmux.conf
+
+# ============================================================================
+# Terminal Capabilities — true color in Alacritty and friends
+# ============================================================================
+set -g default-terminal "tmux-256color"
+set -as terminal-features ",alacritty*:RGB"
+set -as terminal-features ",xterm-256color:RGB"
+
+# ============================================================================
+# Ergonomics
+# ============================================================================
+set -g mouse on                  # Required for MouseDragEnd1Pane copy binding
+set -g base-index 1              # Windows indexed from 1 to match keyboard row
+setw -g pane-base-index 1        # Panes too
+set -g history-limit 50000       # Scrollback worth copying from
+set -sg escape-time 10           # Fast ESC so Helix/vim feel native
+set -g focus-events on           # Let inner apps react to terminal focus
+
+# ============================================================================
+# Copy-Mode: vi keys + Helix-native navigation
+# ============================================================================
+setw -g mode-keys vi
+
+# Selection (vim/helix tradition)
+bind -T copy-mode-vi v     send-keys -X begin-selection
+bind -T copy-mode-vi V     send-keys -X select-line
+bind -T copy-mode-vi C-v   send-keys -X rectangle-toggle
+
+# Helix-native g-prefix navigation (mirrors keybindings.yaml: gg/ge/gh/gl)
+# Implemented via a custom key-table so 'g' becomes a prefix inside copy-mode.
+unbind -T copy-mode-vi g
+bind -T copy-mode-vi   g   switch-client -T copy-mode-vi-g
+bind -T copy-mode-vi-g g   send-keys -X history-top
+bind -T copy-mode-vi-g e   send-keys -X history-bottom      # Helix-native end
+bind -T copy-mode-vi-g h   send-keys -X start-of-line       # Helix-native line start
+bind -T copy-mode-vi-g l   send-keys -X end-of-line         # Helix-native line end
+
+# Vim compatibility fallback (muscle memory)
+bind -T copy-mode-vi G     send-keys -X history-bottom
+
+# Dismissal (semantic)
+bind -T copy-mode-vi q       send-keys -X cancel
+bind -T copy-mode-vi Escape  send-keys -X cancel
+
+# ============================================================================
+# Clipboard Integration — the load-bearing part
+# ============================================================================
+# OSC 52 passthrough lets tmux-inside-SSH (e.g. on babbie) write to the
+# local terminal's clipboard. Alacritty accepts OSC 52 by default.
+set -g set-clipboard on
+
+{{ if .has_gui -}}
+# Wayland clipboard via wl-copy. copy-pipe-and-cancel exits copy-mode on yank.
+bind -T copy-mode-vi y                  send-keys -X copy-pipe-and-cancel "wl-copy"
+bind -T copy-mode-vi Enter              send-keys -X copy-pipe-and-cancel "wl-copy"
+bind -T copy-mode-vi MouseDragEnd1Pane  send-keys -X copy-pipe-and-cancel "wl-copy"
+{{ else -}}
+# VPS / headless: no Wayland. Rely on OSC 52 (set-clipboard on) and tmux buffer.
+bind -T copy-mode-vi y                  send-keys -X copy-pipe-and-cancel
+bind -T copy-mode-vi Enter              send-keys -X copy-pipe-and-cancel
+bind -T copy-mode-vi MouseDragEnd1Pane  send-keys -X copy-pipe-and-cancel
+{{ end }}
+# ============================================================================
+# Theme — Kanagawa Dragon via semantic colors (no hardcoded hex)
+# ============================================================================
+
+# Status bar: surface.primary background, text.primary foreground
+set -g status-style "fg={{ template "color-hex.tmpl" (index $theme $s.text.primary) }},bg={{ template "color-hex.tmpl" (index $theme $s.surface.primary) }}"
+set -g status-left-length 40
+set -g status-left  "#[fg={{ template "color-hex.tmpl" (index $theme $s.text.inverted) }},bg={{ template "color-hex.tmpl" (index $theme $s.mode.normal) }},bold] #S #[default] "
+set -g status-right "#[fg={{ template "color-hex.tmpl" (index $theme $s.text.secondary) }}] %Y-%m-%d %H:%M "
+
+# Windows: inactive muted, active in mode.normal green (Fish/Helix normal-mode convention)
+setw -g window-status-style         "fg={{ template "color-hex.tmpl" (index $theme $s.text.secondary) }},bg={{ template "color-hex.tmpl" (index $theme $s.surface.primary) }}"
+setw -g window-status-current-style "fg={{ template "color-hex.tmpl" (index $theme $s.text.inverted) }},bg={{ template "color-hex.tmpl" (index $theme $s.mode.normal) }},bold"
+setw -g window-status-format         " #I:#W "
+setw -g window-status-current-format " #I:#W "
+
+# Pane borders: subtle when idle, focus-colored when active
+set -g pane-border-style        "fg={{ template "color-hex.tmpl" (index $theme $s.border.subtle) }}"
+set -g pane-active-border-style "fg={{ template "color-hex.tmpl" (index $theme $s.border.focus) }}"
+
+# Copy-mode / selection indicator: mode.visual yellow — same language as Fish vi visual
+setw -g mode-style "fg={{ template "color-hex.tmpl" (index $theme $s.text.inverted) }},bg={{ template "color-hex.tmpl" (index $theme $s.mode.visual) }},bold"
+
+# Message line: state.info blue on elevated surface
+set -g message-style         "fg={{ template "color-hex.tmpl" (index $theme $s.state.info) }},bg={{ template "color-hex.tmpl" (index $theme $s.surface.elevated) }}"
+set -g message-command-style "fg={{ template "color-hex.tmpl" (index $theme $s.state.info) }},bg={{ template "color-hex.tmpl" (index $theme $s.surface.elevated) }}"
