@@ -23,6 +23,12 @@ set -g history-limit 50000       # Scrollback worth copying from
 set -sg escape-time 10           # Fast ESC so Helix/vim feel native
 set -g focus-events on           # Let inner apps react to terminal focus
 
+# Wheel events forward to the inner program instead of hijacking tmux into
+# copy-mode. Fullscreen apps (helix, less, vim) scroll; shell prompts ignore.
+# Without this, 'mouse on' makes the scroll wheel unpredictable in a shell pane.
+bind -T root WheelUpPane   send-keys -M
+bind -T root WheelDownPane send-keys -M
+
 # ============================================================================
 # Copy-Mode: vi keys + Helix-native navigation
 # ============================================================================
