@@ -13,11 +13,38 @@
 ## Current Pool Structure
 ```
 zpcachyos (236G pool)
-├── ROOT/cos/home (11.2G) - User files with snapshot protection
-├── ROOT/cos/root (4.69G) - System files with rollback capability
-├── ROOT/cos/varcache (2.90G) - Package cache with separate lifecycle
-└── ROOT/cos/varlog (204K) - System logs isolated for management
+├── ROOT/cos/home              - User files with snapshot protection
+│   ├── videos                 - Transient: snapshots disabled
+│   ├── downloads              - Transient: snapshots disabled
+│   ├── cache                  - Transient: XDG cache (~/.cache)
+│   ├── gradle                 - Transient: Gradle build cache (~/.gradle)
+│   ├── bun                    - Transient: Bun runtime + cache (~/.bun)
+│   ├── npm                    - Transient: npm package cache (~/.npm)
+│   └── rustup                 - Transient: Rust toolchains (~/.rustup)
+├── ROOT/cos/root              - System files with rollback capability
+├── ROOT/cos/varcache          - Package cache (snapshots disabled)
+└── ROOT/cos/varlog            - System logs (snapshots disabled)
 ```
+
+## Snapshot Inclusion Policy
+
+Not all data deserves the time machine. Two categories of dataset exist:
+
+**Snapshotted (the witnesses):**
+- `home`, `root` — Configs, code, documents. Irreplaceable. Worth preserving every 15 minutes.
+
+**Excluded (the unwitnessed):**
+- `varcache`, `varlog` — System ephemera, regenerable from sources.
+- `home/videos`, `home/downloads` — Transient flow. Large files in transit.
+- `home/cache`, `home/gradle`, `home/bun`, `home/npm`, `home/rustup` — Toolchain caches and regenerable installations. Recreated on demand by `cargo`, `bun`, `npm`, `gradle`, `rustup`.
+
+The exclusion is enforced via `com.sun:auto-snapshot=false`. The `zfs-auto-snapshot` daemon honours this property and skips the dataset entirely.
+
+### Why Transient Paths Need Their Own Datasets
+
+Snapshots are copy-on-write: deletion in the live filesystem does not free blocks if any snapshot still references them. A file downloaded at 09:00, snapshotted at 09:15, deleted at 09:16 — the blocks remain pinned by the 09:15 snapshot until that snapshot is destroyed or ages out per retention policy.
+
+For directories like `~/Videos` and `~/Downloads`, where 10–100GB of files routinely pass through, this turns the time machine into a leak. A separate dataset with `auto-snapshot=false` lets these directories live on the same pool with the same fragmentation/compression benefits, but without the snapshot witness — deletion frees space immediately.
 
 ## Automated Snapshot Schedule
 
@@ -241,8 +268,39 @@ zfs send -i @last-backup zpcachyos/ROOT/cos/home@new-backup | zfs receive backup
 
 ## Configuration Files
 - **Package**: `home/.chezmoidata/packages.yaml` - zfs-auto-snapshot
-- **Setup Script**: `home/run_once_setup-zfs-automation.sh.tmpl` - Timer configuration
+- **Timer Setup**: `home/run_once_setup-zfs-automation.sh.tmpl` - Snapshot timer + monthly scrub
+- **Snapshot Exclusions**: `home/run_once_configure-zfs-snapshots.sh.tmpl` - Disables snapshots on `varcache`, `varlog`
+- **Transient Datasets**: `home/run_once_setup-zfs-transient-datasets.sh.tmpl` - Creates dedicated snapshot-free datasets for `~/Videos` and `~/Downloads`
 - **Functions**: `home/dot_config/fish/functions/z*.fish.tmpl` - Management commands
+
+### Adding More Transient Paths
+
+Additional candidates for future transient datasets:
+- `~/.pub-cache` — Dart/Flutter package cache (~573M)
+- `~/.dartServer` — Dart analysis server cache (~568M)
+- `~/Android` / `~/fvm` — Android SDK and Flutter version manager (only if you don't mind redownloading SDKs)
+
+To extend the architecture, add a line to `run_once_setup-zfs-transient-datasets.sh.tmpl`:
+```bash
+ensure_transient_dataset ".pub-cache" "pub-cache"
+```
+The function is idempotent and refuses to migrate existing content automatically — manual migration steps are emitted when a target directory has data. For systems with existing content, follow the procedure printed by the script.
+
+### Migration of Existing Content
+
+When the script encounters a target with content (Case 3), it prints exact commands to migrate. The general shape is:
+
+```bash
+mv ~/X ~/X.migrate                    # metadata-only within parent dataset
+sudo zfs create -o mountpoint=~/X \
+                -o com.sun:auto-snapshot=false \
+                zpcachyos/ROOT/cos/home/x
+sudo chown $(id -un):$(id -gn) ~/X
+mv ~/X.migrate/* ~/X.migrate/.[!.]* ~/X/    # cross-dataset copy
+rmdir ~/X.migrate
+```
+
+The cross-dataset move is the only step that consumes pool space (transiently up to the size of the migrated content). Reclaim snapshot space first via `zclean` if the pool is tight.
 
 ## ZFS Properties (Current)
 - **Compression**: zstd (intelligent space savings)

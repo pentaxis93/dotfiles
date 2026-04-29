@@ -1,0 +1,141 @@
+#!/bin/bash
+# Ultra-Zen ZFS Transient Dataset Setup
+# "The river preserves what matters; the dwelling refuses to remember the visitor"
+#
+# Some paths hold valuable, irreplaceable data — Documents, code, configs.
+# Others hold transient flow — videos in transit, downloads in progress, caches.
+# Snapshotting transient flow turns deletion into illusion: blocks freed in the
+# live filesystem remain pinned by the time machine, sometimes for months.
+#
+# This script gives transient paths their own ZFS datasets with auto-snapshot
+# disabled. The time machine continues to protect what matters; ephemeral
+# content flows freely without leaving witnesses.
+
+set -e
+
+# Skip on machines without ZFS (e.g., babbie VPS on Debian)
+if ! command -v zfs &> /dev/null; then
+    exit 0
+fi
+
+# Skip if our pool doesn't exist
+if ! zpool list zpcachyos &> /dev/null; then
+    exit 0
+fi
+
+USER_HOME="${HOME:-/home/$(whoami)}"
+USER_NAME="$(id -un)"
+GROUP_NAME="$(id -gn)"
+
+echo "╭─────────────────────────────────────────────╮"
+echo "│ ZFS Transient Dataset Configuration         │"
+echo "├─────────────────────────────────────────────┤"
+echo "│ Snapshots avoid ephemeral content           │"
+echo "│ Videos & Downloads exempt from witness      │"
+echo "╰─────────────────────────────────────────────╯"
+echo
+
+# ensure_transient_dataset <SubdirName> <dataset_name>
+#
+# Creates a child dataset under zpcachyos/ROOT/cos/home with auto-snapshot
+# disabled, mounted at $USER_HOME/<SubdirName>. The function is idempotent
+# and refuses to act when the target directory contains data — migration
+# of existing content must be deliberate, never automatic.
+#
+# Three cases are handled cleanly:
+#   1. Dataset already exists  → enforce snapshot exclusion, return
+#   2. Target empty/absent     → create dataset, mount, fix ownership
+#   3. Target has content      → emit migration instructions, do nothing
+ensure_transient_dataset() {
+    local subdir="$1"
+    local dataset_name="$2"
+    local dataset="zpcachyos/ROOT/cos/home/${dataset_name}"
+    local target="${USER_HOME}/${subdir}"
+
+    # Case 1: dataset already exists — verify exclusion property is set
+    if zfs list "$dataset" &> /dev/null; then
+        local current
+        current=$(zfs get -H -o value com.sun:auto-snapshot "$dataset" 2>/dev/null || echo "-")
+        if [ "$current" != "false" ]; then
+            sudo zfs set com.sun:auto-snapshot=false "$dataset"
+            echo "  ✓ ${subdir}: snapshot exclusion enforced"
+        else
+            echo "  ✓ ${subdir}: dataset configured (no changes)"
+        fi
+        return 0
+    fi
+
+    # Case 3: dataset doesn't exist, but target has content — refuse to act
+    if [ -d "$target" ] && [ -n "$(ls -A "$target" 2>/dev/null)" ]; then
+        cat <<EOF
+
+  ⚠ ${subdir} contains data — manual migration required.
+
+    The target directory holds content that must be moved deliberately.
+    This script will not automatically migrate data to avoid surprise.
+
+    To migrate safely (run these commands as your user):
+
+      1. Reclaim snapshot space first so the migration has headroom:
+           zclean 1                  # interactive prune of recent auto-snapshots
+
+      2. Move existing content aside (this is metadata-only within the same dataset):
+           mv "$target" "${target}.migrate"
+
+      3. Create the new dataset (run_once will handle this on next chezmoi apply,
+         OR run directly):
+           sudo zfs create -o mountpoint="$target" \\
+                           -o com.sun:auto-snapshot=false \\
+                           "$dataset"
+           sudo chown ${USER_NAME}:${GROUP_NAME} "$target"
+
+      4. Move content into the new (snapshot-free) dataset:
+           mv "${target}.migrate"/* "$target"/ 2>/dev/null || true
+           mv "${target}.migrate"/.[!.]* "$target"/ 2>/dev/null || true
+           rmdir "${target}.migrate"
+
+      5. Verify:
+           zfs list ${dataset}
+           ls "$target"
+
+EOF
+        return 0
+    fi
+
+    # Case 2: safe to create — target is empty or absent
+    if [ -d "$target" ]; then
+        rmdir "$target"
+    fi
+
+    sudo zfs create -o mountpoint="$target" \
+                    -o com.sun:auto-snapshot=false \
+                    "$dataset"
+    sudo chown "${USER_NAME}:${GROUP_NAME}" "$target"
+    echo "  ✓ ${subdir}: dataset created with snapshot exclusion"
+}
+
+# Transient paths — content that flows through but should not be remembered.
+# Add new paths here as the architecture extends.
+# Convention: dataset names are lowercase to match existing pattern (varcache, varlog).
+#
+# Media flow:
+ensure_transient_dataset "Videos"    "videos"
+ensure_transient_dataset "Downloads" "downloads"
+#
+# Toolchain caches & regenerable installations:
+#   .cache    — XDG cache directory (universal app caches)
+#   .gradle   — Gradle build cache and dependencies
+#   .bun      — Bun runtime, binary cache, and global packages
+#   .npm      — npm package cache
+#   .rustup   — Rust toolchain installations (regenerable via rustup)
+ensure_transient_dataset ".cache"  "cache"
+ensure_transient_dataset ".gradle" "gradle"
+ensure_transient_dataset ".bun"    "bun"
+ensure_transient_dataset ".npm"    "npm"
+ensure_transient_dataset ".rustup" "rustup"
+
+echo
+echo "Verify the architecture with:"
+echo "  zfs list -o name,used,available,mountpoint | grep -E '(home/videos|home/downloads)'"
+echo "  zfs get com.sun:auto-snapshot zpcachyos/ROOT/cos/home/videos"
+echo
