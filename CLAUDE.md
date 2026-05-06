@@ -304,6 +304,7 @@ claude
 - @docs/ai-context/apps/tor.md - Tor anonymity with .onion browsing and CLI wrapping
 - @docs/ai-context/apps/wiremix.md - PipeWire audio mixer TUI
 - @docs/ai-context/apps/bluetui.md - Bluetooth device manager TUI
+- @docs/ai-context/apps/ratbagctl.md - Gaming peripheral configuration (RGB silenced via libratbag)
 - @docs/ai-context/apps/shell-enhancements.md - lsd, zoxide, Fish shell
 - @docs/ai-context/apps/flutter.md - Flutter/Dart development with fvm version manager
 - @docs/ai-context/apps/opencode.md - Remote OpenCode client/server on babbie VPS

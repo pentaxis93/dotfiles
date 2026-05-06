@@ -1,0 +1,46 @@
+{{- if not .is_vps -}}
+#!/usr/bin/env bash
+# Silence RGB lighting on every ratbagctl-known peripheral.
+# Settings are written to each device's onboard NVRAM, so they persist
+# across reboots, replugs, and even other machines until something else
+# rewrites the LED mode. Hash-tracked: re-runs only if this script changes.
+
+set -euo pipefail
+
+echo "🖱  Configuring peripheral RGB state via ratbagctl..."
+
+if ! command -v ratbagctl >/dev/null 2>&1; then
+    echo "⚠ ratbagctl not found — expected from libratbag (see packages.yaml). Skipping."
+    exit 0
+fi
+
+# Enumerate every device the daemon recognizes. Output format is:
+#   warbling-mara:       Logitech G203 Prodigy Gaming Mouse
+mapfile -t devices < <(ratbagctl list 2>/dev/null | awk -F: 'NF>=2 {print $1}')
+
+if [[ ${#devices[@]} -eq 0 ]]; then
+    echo "  (no peripherals detected — nothing to configure)"
+    exit 0
+fi
+
+for device in "${devices[@]}"; do
+    led_count=$(ratbagctl "$device" info 2>/dev/null \
+        | awk -F: '/Number of Leds/ {gsub(/[[:space:]]/,"",$2); print $2}')
+
+    if [[ -z "${led_count:-}" || "$led_count" -eq 0 ]]; then
+        echo "  ${device}: no LEDs to configure"
+        continue
+    fi
+
+    echo "  ${device}: silencing ${led_count} LED(s)"
+    for ((i=0; i<led_count; i++)); do
+        if ratbagctl "$device" led "$i" set mode off >/dev/null 2>&1; then
+            echo "    ✓ LED ${i} → off"
+        else
+            echo "    ⚠ LED ${i} did not accept mode=off (non-RGB or read-only)"
+        fi
+    done
+done
+
+echo "✓ Peripheral RGB configuration complete"
+{{- end }}
