@@ -21,6 +21,15 @@ Complete semantic color system architecture and reference.
 - **Template Fragments**: Format converters for different syntaxes
 - **Comprehensive Coverage**: 38 semantic colors across 8 categories
 
+### [operator-credentials.md](./operator-credentials.md)
+Reference for the credential and secrets infrastructure underlying tesserine operator workflows.
+
+- **Storage Architecture**: Three-layer model (personal vault, operator vault, Secrets Manager)
+- **Naming Convention**: Service-identifier entry names with account suffixes; no folders
+- **Operator Infrastructure**: babbie host components and per-restart secret flow
+- **Recovery Procedures**: Master password, YubiKey, phone, host, and token compromise scenarios
+- **Disciplines**: Migrate-on-touch, new-credentials-to-Bitwarden-first, scope decision rules
+
 ## For AI Assistants
 
 If you need AI-specific context and instructions, see `../ai-context/` instead. This directory is for **human users**.
@@ -30,3 +39,4 @@ If you need AI-specific context and instructions, see `../ai-context/` instead. 
 For implementation details:
 - **Implementation**: See `../../home/.chezmoidata/*.yaml` (colors.yaml, keybindings.yaml)
 - **AI Context**: See `../ai-context/systems/` for technical system documentation
+
