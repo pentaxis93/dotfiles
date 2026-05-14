@@ -47,17 +47,28 @@ Manager vault (different product within the same Bitwarden org).
 
 ## Naming convention
 
-One principle: human-readable entry names. Storage layer encodes scope.
+Friction-aligned: accept Bitwarden's auto-save defaults; minimal
+disambiguation only where needed.
 
-- **Entry name** = service identifier. Multi-account services use account
-  suffix qualifier:
-  - `Google - Primary`, `Google - Honey`, `Google - Mom`, `Google - Ruth`
-  - `GitHub - Operator`, `GitHub - Personal` (if multiple)
+- **Entry name** = whatever Bitwarden's auto-save proposes when saving a
+  new credential. No manual cleanup, no Title-Casing, no subdomain
+  stripping. The names will be domain-style (e.g. `comerica.com`,
+  `accounts.hioscar.com`) — that's fine. URI auto-matching is the actual
+  lookup mechanism; entry names are purely organizational.
+- **Multi-account services**: default name + ` - {Label}` suffix to
+  disambiguate. Minimal transformation:
+  - `google.com - Primary`, `google.com - Honey`, `google.com - Mom`,
+    `google.com - Ruth`
+  - `github.com - Operator`, `github.com - Personal` (if multiple)
 - **Custom fields (Hidden type)** for related secondary secrets within an
   entry: backup codes, recovery codes, secondary credentials
 - **URIs** do URL auto-matching for browser/app fill
 - **No folders.** Bitwarden's URI auto-matching is the actual lookup
   mechanism; folders not load-bearing
+- **Existing Title-Case entries** (`Comerica`, `Facebook`, etc.) from
+  prior reorganization persist where they are. Migrate-on-touch: rename
+  to default style if you happen to be editing an entry for other
+  reasons. No dedicated bulk migration.
 - **Canonical reference form** (documentation only, never appears in
   Bitwarden itself): `<scope>/<subject>/<purpose>`
   - Examples: `operator/babbie/ssh-core`, `personal/google/primary/login`
