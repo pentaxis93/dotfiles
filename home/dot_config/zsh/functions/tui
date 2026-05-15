@@ -1,0 +1,8 @@
+# Launch transmission TUI (tremc)
+if ! systemctl --user is-active --quiet transmission-daemon; then
+    echo "⚠ Transmission daemon not running. Starting..."
+    tstart
+    sleep 2
+fi
+
+tremc --netrc

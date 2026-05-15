@@ -1,0 +1,8 @@
+# Play media with mpv (semantic: media-play)
+if [ $# -eq 0 ]; then
+    # No arguments - use wrapper for lf browsing
+    ~/.local/bin/mpv
+else
+    # Arguments provided - play directly
+    /usr/bin/mpv "$@"
+fi

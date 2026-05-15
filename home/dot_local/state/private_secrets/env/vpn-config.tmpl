@@ -1,12 +1,12 @@
 {{- /* VPN Configuration Environment Variables */ -}}
 # VPN Server Configuration
-# These variables are loaded automatically when Fish starts
+# These variables are loaded automatically when Zsh starts (via conf.d/00-secrets.zsh)
 
 # Goose VPN Server Details
-set -gx VPN_SERVER "nl-7.goosevpn.com"
-set -gx VPN_PORT "443"
-set -gx VPN_PROTOCOL "tcp-client"
+export VPN_SERVER="nl-7.goosevpn.com"
+export VPN_PORT="443"
+export VPN_PROTOCOL="tcp-client"
 
 # VPN Configuration Paths
-set -gx VPN_CONFIG_FILE "$HOME/.config/openvpn/goosevpn.conf"
-set -gx VPN_AUTH_FILE "$HOME/.local/state/secrets/openvpn/goosevpn-auth"
+export VPN_CONFIG_FILE="$HOME/.config/openvpn/goosevpn.conf"
+export VPN_AUTH_FILE="$HOME/.local/state/secrets/openvpn/goosevpn-auth"

@@ -1,0 +1,38 @@
+# Show WeeChat and IRC status (semantic: weechat-status)
+
+if pgrep -x weechat >/dev/null; then
+    echo "✓ WeeChat is running"
+    local pid mem
+    pid=$(pgrep -x weechat)
+    mem=$(ps -o rss= -p "$pid" | awk '{print $1/1024 "MB"}')
+    echo "  PID: $pid"
+    echo "  Memory: $mem"
+else
+    echo "✗ WeeChat is not running"
+fi
+
+echo ""
+
+if [ -d ~/Downloads ]; then
+    local download_count
+    download_count=$(find ~/Downloads -type f -mtime -7 2>/dev/null | wc -l)
+    if [ "$download_count" -gt 0 ]; then
+        echo "Recent downloads (last 7 days): $download_count files"
+    else
+        echo "No recent downloads"
+    fi
+fi
+
+echo ""
+
+if [ -d ~/.local/share/weechat/logs ]; then
+    local today log_files log
+    today=$(date +%Y-%m-%d)
+    log_files=$(find ~/.local/share/weechat/logs -name "*${today}*.weechatlog" 2>/dev/null)
+    if [ -n "$log_files" ]; then
+        echo "Active IRC logs for today:"
+        while IFS= read -r log; do
+            echo "  • $(basename "$log" .weechatlog)"
+        done <<< "$log_files"
+    fi
+fi

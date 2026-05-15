@@ -25,11 +25,15 @@ Located in `home/.chezmoitemplates/`:
 - `bitwarden-note.tmpl` - Extract secure note content
 
 ## Shell Configuration
-- `home/dot_config/fish/config.fish.tmpl` - Templated Fish shell configuration
-- `home/dot_config/fish/functions/bw-*.fish.tmpl` - Bitwarden wrapper functions
-- `home/dot_config/fish/functions/vpc.fish.tmpl` - VPN connect wrapper (works in scripts)
-- `home/dot_config/fish/functions/vpd.fish.tmpl` - VPN disconnect wrapper
-- `home/dot_config/fish/functions/vps.fish.tmpl` - VPN status wrapper
+- `home/dot_zshrc.tmpl` - Templated zsh configuration (oh-my-zsh + robbyrussell + universal trio)
+- `home/dot_config/zsh/aliases.zsh.tmpl` - Aliases (port of fish abbreviations)
+- `home/dot_config/zsh/functions/*` - 57 autoload functions (ls, mp, vpc, tstart, zsnap, ...)
+- `home/dot_config/zsh/conf.d/*.zsh.tmpl` - Auto-loaded hooks (secrets, VPN killswitch, transmission aliases)
+- `home/dot_config/zsh/functions/bw-*` - Bitwarden wrapper functions
+- `home/dot_config/zsh/functions/{vpc,vpd,vps,vpn-connect,vpn-disconnect,vpn-status}` - VPN functions
+- `home/dot_config/systemd/user/ssh-agent.service.tmpl` - User-level ssh-agent service
+- `home/run_once_install-oh-my-zsh.sh.tmpl` - Installs oh-my-zsh + universal trio
+- `home/run_once_setup-ssh-agent.sh.tmpl` - Enables ssh-agent.service
 
 ## Security, VPN & Anonymity
 - `home/dot_config/private_openvpn/` - OpenVPN configuration files

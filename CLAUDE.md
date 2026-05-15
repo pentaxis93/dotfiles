@@ -305,7 +305,8 @@ claude
 - @docs/ai-context/apps/wiremix.md - PipeWire audio mixer TUI
 - @docs/ai-context/apps/bluetui.md - Bluetooth device manager TUI
 - @docs/ai-context/apps/ratbagctl.md - Gaming peripheral configuration (RGB silenced via libratbag)
-- @docs/ai-context/apps/shell-enhancements.md - lsd, zoxide, Fish shell
+- @docs/ai-context/apps/zsh.md - Zsh + oh-my-zsh (robbyrussell) + universal trio extensions + ssh-agent
+- @docs/ai-context/apps/shell-enhancements.md - lsd, zoxide
 - @docs/ai-context/apps/flutter.md - Flutter/Dart development with fvm version manager
 - @docs/ai-context/apps/opencode.md - Remote OpenCode client/server on babbie VPS
 - @docs/ai-context/apps/fortune.md - Fortune with Zen quotes for contemplative terminal sessions
@@ -354,7 +355,7 @@ claude
 
 | Component | Desktop/Laptop | VPS |
 |-----------|----------------|-----|
-| **CLI Tools** (helix, lf, lazygit, fish) | Yes | Yes |
+| **CLI Tools** (helix, lf, lazygit, zsh) | Yes | Yes |
 | **Semantic Colors/Keybindings** | Yes | Yes |
 | **Git/SSH Config** | Yes | Yes |
 | **Wayland/Niri/Waybar** | Yes | No |
@@ -378,7 +379,7 @@ claude
 - All GUI configs (niri, waybar, mpv, qutebrowser, etc.)
 - Wayland-specific tools (wl-clipboard, wofi, handlr)
 - Desktop systemd services (ydotool, transmission, goosevpn)
-- Fish functions for GUI apps (volume, bluetooth, vpn)
+- Zsh functions for GUI apps (volume, bluetooth, vpn) — VPS keeps only the universal subset
 
 ### Desktop/Laptop Differences
 
@@ -397,7 +398,7 @@ claude
 
 - **CLI Tools**: Helix, lf, lazygit work identically everywhere
 - **Semantic Systems**: Colors and keybindings are machine-agnostic
-- **Fish Config**: Adapts automatically (sources CachyOS config on Arch, minimal on VPS)
+- **Zsh Config**: oh-my-zsh + robbyrussell + universal trio (autosuggestions, syntax-highlighting, completions) on all machines
 - **Git Configuration**: Identical across all machines
 
 ### Troubleshooting Multi-Machine Setup

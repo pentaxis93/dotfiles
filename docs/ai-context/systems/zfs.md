@@ -7,7 +7,7 @@
 - **ZFS Pool** - `zpcachyos` with automatic snapshots and integrity checking
 - **Automated Snapshots** - Layered time retention from 15-minute to monthly intervals
 - **Automated Scrubbing** - Monthly integrity verification with checksum validation
-- **Fish Functions** - Semantic snapshot management commands
+- **Zsh Functions** - Semantic snapshot management commands
 - **Copy-on-Write** - Snapshots consume zero space initially, growing only with changes
 
 ## Current Pool Structure
@@ -271,7 +271,7 @@ zfs send -i @last-backup zpcachyos/ROOT/cos/home@new-backup | zfs receive backup
 - **Timer Setup**: `home/run_once_setup-zfs-automation.sh.tmpl` - Snapshot timer + monthly scrub
 - **Snapshot Exclusions**: `home/run_once_configure-zfs-snapshots.sh.tmpl` - Disables snapshots on `varcache`, `varlog`
 - **Transient Datasets**: `home/run_once_setup-zfs-transient-datasets.sh.tmpl` - Creates dedicated snapshot-free datasets for `~/Videos` and `~/Downloads`
-- **Functions**: `home/dot_config/fish/functions/z*.fish.tmpl` - Management commands
+- **Functions**: `home/dot_config/zsh/functions/z*` - Management commands
 
 ### Adding More Transient Paths
 

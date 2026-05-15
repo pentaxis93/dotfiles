@@ -1,0 +1,11 @@
+# Toggle mute (semantic: volume-mute)
+if ! command -v pamixer >/dev/null 2>&1; then
+    echo "pamixer not found. Install it or use 'vol' for TUI control."
+    return 1
+fi
+pamixer -t
+if [ "$(pamixer --get-mute)" = "true" ]; then
+    echo "Volume: Muted"
+else
+    echo "Volume: $(pamixer --get-volume)%"
+fi

@@ -1,0 +1,50 @@
+{{- /*
+  Zsh aliases — port of fish abbreviations to silent zsh aliases.
+  Aliases expand at execution time (no inline visibility, per migration choice).
+*/ -}}
+
+# ---------------------------------------------------------------------------
+# Universal aliases (all machines)
+# ---------------------------------------------------------------------------
+alias h='helix'                     # Modal editor (semantic: invoke.editor)
+alias hx='helix'                    # Alternative helix alias
+alias lg='lazygit'                  # Lazygit TUI (semantic: git-visual)
+alias lc='lfcd'                     # lf with cd-on-exit (semantic: navigate)
+
+{{ if .has_gui -}}
+# ---------------------------------------------------------------------------
+# Bitwarden — semantic vault management (GUI machines)
+# ---------------------------------------------------------------------------
+alias bwu='bw-unlock'               # Unlock vault (semantic: prepare)
+alias bwl='bw-lock'                 # Lock vault (semantic: secure)
+alias bwc='bw-copy'                 # Copy password (semantic: retrieve)
+alias bwg='bw-generate'             # Generate password (semantic: create)
+alias bws='bw sync'                 # Sync vault (semantic: synchronize)
+alias bwlist='bw list items'        # List vault items (semantic: discover)
+alias bwh='bw-help'                 # Bitwarden help (semantic: learn)
+
+# ---------------------------------------------------------------------------
+# Remote hosts
+# ---------------------------------------------------------------------------
+alias babbie='ssh babbie'           # SSH to VPS (semantic: connect)
+
+# ---------------------------------------------------------------------------
+# IRC semantic aliases
+# Note: these target commands (irc, irc-status, irc-downloads) that do not
+# currently exist as scripts/functions. Preserved from fish for behavioral
+# parity; fix targets separately if/when needed.
+# ---------------------------------------------------------------------------
+alias i='irc'                       # Launch IRC (semantic: communicate)
+alias is='irc-status'               # IRC status (semantic: observe)
+alias id='irc-downloads'            # Manage downloads (semantic: organize)
+alias idl='irc-downloads list'      # List downloads (semantic: discover)
+alias idc='irc-downloads clean'     # Clean old files (semantic: maintain)
+
+{{ else -}}
+# ---------------------------------------------------------------------------
+# VPS-only aliases — GNU Pass (no Bitwarden CLI on babbie)
+# ---------------------------------------------------------------------------
+alias p='pass'                      # Password manager
+alias ps='pass show'                # Show password
+alias pc='pass -c'                  # Copy password to clipboard
+{{- end }}

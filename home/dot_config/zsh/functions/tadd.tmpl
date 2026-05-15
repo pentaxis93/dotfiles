@@ -1,0 +1,22 @@
+{{- /* Add torrent to transmission */ -}}
+# Add torrent file or magnet link
+if [ $# -eq 0 ]; then
+    echo "Usage: tadd <torrent-file-or-magnet-link>"
+    return 1
+fi
+
+if ! systemctl --user is-active --quiet transmission-daemon; then
+    echo "⚠ Transmission daemon not running. Starting..."
+    tstart
+fi
+
+transmission-remote {{ .transmission.rpc_host }}:{{ .transmission.rpc_port }} -n "$(transmission-auth)" -a "$1"
+
+if [ $? -eq 0 ]; then
+    printf '\033[32m✓ Torrent added successfully\033[0m\n'
+    sleep 1
+    tlist
+else
+    printf '\033[31m✗ Failed to add torrent\033[0m\n'
+    return 1
+fi

@@ -1,0 +1,80 @@
+# Manage WeeChat downloads (semantic: weechat-downloads)
+
+case "${1:-}" in
+    list|l)
+        echo "Recent downloads (last 7 days):"
+        echo "================================"
+        if [ -d ~/Downloads ]; then
+            local files
+            files=$(find ~/Downloads -type f -mtime -7 2>/dev/null | sort -r)
+            if [ -n "$files" ]; then
+                local file size date
+                while IFS= read -r file; do
+                    size=$(du -h "$file" 2>/dev/null | cut -f1)
+                    date=$(date -r "$file" "+%Y-%m-%d %H:%M" 2>/dev/null)
+                    echo "$date  $size  $(basename "$file")"
+                done <<< "$files"
+            else
+                echo "No recent downloads found"
+            fi
+        else
+            echo "Downloads directory does not exist"
+        fi
+        ;;
+
+    clean|c)
+        echo "Cleaning downloads older than 30 days..."
+        if [ -d ~/Downloads ]; then
+            local old_files count confirm file
+            old_files=$(find ~/Downloads -type f -mtime +30 2>/dev/null)
+            if [ -n "$old_files" ]; then
+                count=$(echo "$old_files" | wc -l)
+                echo "Found $count old files:"
+                while IFS= read -r file; do
+                    echo "  • $(basename "$file")"
+                done <<< "$old_files"
+                echo ""
+                read -r "confirm?Remove these files? [y/N] "
+                if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
+                    while IFS= read -r file; do
+                        rm -f "$file"
+                    done <<< "$old_files"
+                    echo "✓ Removed $count old files"
+                else
+                    echo "✗ Cleanup cancelled"
+                fi
+            else
+                echo "No old files to clean"
+            fi
+        fi
+        ;;
+
+    open|o)
+        if [ -d ~/Downloads ]; then
+            if command -v xdg-open >/dev/null 2>&1; then
+                xdg-open ~/Downloads
+            elif command -v open >/dev/null 2>&1; then
+                open ~/Downloads
+            else
+                echo "Opening ~/Downloads in file manager..."
+                cd ~/Downloads || return 1
+            fi
+        else
+            echo "Downloads directory does not exist"
+        fi
+        ;;
+
+    *)
+        echo "WeeChat downloads management"
+        echo ""
+        echo "Usage: wcd [command]"
+        echo ""
+        echo "Commands:"
+        echo "  list, l    - List recent downloads (last 7 days)"
+        echo "  clean, c   - Clean old downloads (>30 days)"
+        echo "  open, o    - Open downloads directory"
+        echo ""
+        echo "Downloads directory: ~/Downloads"
+        echo "DCC auto-accept limit: 10MB"
+        ;;
+esac

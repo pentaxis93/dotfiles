@@ -9,7 +9,7 @@
 - **DCC Auto-Accept** - Enhanced file acceptance (10MB limit) to ~/Downloads
 - **Kanagawa Theme** - Full Kanagawa Dragon colors from centralized palette
 - **Vi-Mode Navigation** - Comprehensive vi and Helix-native keybindings
-- **Fish Integration** - Semantic functions for WeeChat management (wc, wcs, wcd)
+- **Zsh Integration** - Semantic functions for WeeChat management (wcc, wcs, wcd)
 
 ## Configuration Files
 - **Main Config**: `home/dot_config/private_weechat/weechat.conf.tmpl` - Core settings and DCC configuration
@@ -17,7 +17,7 @@
 - **Xfer Config**: `home/dot_config/private_weechat/xfer.conf.tmpl` - File transfer and auto-accept settings
 - **Alias Config**: `home/dot_config/private_weechat/alias.conf.tmpl` - Trust management aliases (/t, /tlist, etc.)
 - **Keybindings**: `home/dot_config/private_weechat/keys.conf.tmpl` - Vi-style and Helix-native keys
-- **Fish Functions**: `home/dot_config/fish/functions/wc*.fish.tmpl` - Management commands (wcc, wcs, wcd)
+- **Zsh Functions**: `home/dot_config/zsh/functions/wc*` - Management commands (wcc, wcs, wcd)
 - **Script Installer**: `home/run_once_install-weechat-scripts.sh.tmpl` - Auto-installs xdccq.py
 
 ## Usage

@@ -1,0 +1,61 @@
+# Unlock Bitwarden vault with semantic session management
+# "The vault opens when intention aligns with authentication"
+
+# Already unlocked?
+if [ -n "$BW_SESSION" ]; then
+    if bw status --raw | jq -r '.status' | grep -q "unlocked"; then
+        printf '\033[32m✓\033[0m Vault already unlocked\n'
+        return 0
+    else
+        unset BW_SESSION
+    fi
+fi
+
+local vault_status
+vault_status=$(bw status --raw | jq -r '.status')
+
+case "$vault_status" in
+    unauthenticated)
+        printf '\033[34m→\033[0m Logging in to Bitwarden...\n'
+        local email
+        read -r "email?Email: "
+        email="${email## }"
+        email="${email%% }"
+
+        if [ -z "$email" ]; then
+            printf '\033[31m✗\033[0m Login cancelled\n'
+            return 1
+        fi
+
+        local session
+        session=$(bw login "$email" --raw)
+        if [ $? -eq 0 ]; then
+            export BW_SESSION="$session"
+            printf '\033[32m✓\033[0m Successfully logged in and unlocked\n'
+        else
+            printf '\033[31m✗\033[0m Login failed\n'
+            return 1
+        fi
+        ;;
+
+    locked)
+        printf '\033[34m→\033[0m Unlocking vault...\n'
+        local session
+        session=$(bw unlock --raw)
+        if [ $? -eq 0 ]; then
+            export BW_SESSION="$session"
+            printf '\033[32m✓\033[0m Vault unlocked\n'
+        else
+            printf '\033[31m✗\033[0m Failed to unlock vault\n'
+            return 1
+        fi
+        ;;
+
+    unlocked)
+        export BW_SESSION="$(bw unlock --raw)"
+        printf '\033[32m✓\033[0m Vault unlocked\n'
+        ;;
+esac
+
+printf '\033[34m↻\033[0m Syncing vault...\n'
+bw sync

@@ -1,0 +1,27 @@
+#!/bin/bash
+# Enable and start the ssh-agent user service.
+# The socket is exposed at $XDG_RUNTIME_DIR/ssh-agent.socket and consumed
+# via the SSH_AUTH_SOCK export in ~/.zshrc.
+
+set -euo pipefail
+
+echo "🔑 Setting up ssh-agent user service..."
+
+# Reload systemd to pick up the new unit
+systemctl --user daemon-reload
+
+# Enable and start the agent
+systemctl --user enable --now ssh-agent.service
+
+# Verify
+if systemctl --user is-active --quiet ssh-agent.service; then
+    echo "✓ ssh-agent.service is active"
+    echo "  Socket: ${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/ssh-agent.socket"
+    echo ""
+    echo "  Add keys with: ssh-add ~/.ssh/id_ed25519"
+    echo "  List keys:     ssh-add -l"
+else
+    echo "✗ ssh-agent.service failed to start"
+    echo "  Check: journalctl --user -u ssh-agent -n 20"
+    exit 1
+fi

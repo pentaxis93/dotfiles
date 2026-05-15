@@ -7,7 +7,7 @@
 - **FVM (Flutter Version Manager)** - Version manager for Flutter SDK
 - **Global Default** - Makes `dart` and `flutter` commands available everywhere
 - **Per-Project Override** - Projects specify their own Flutter versions via `.fvm/fvm_config.json`
-- **Fish PATH Integration** - Automatic shell integration for seamless command access
+- **Zsh PATH Integration** - Automatic shell integration for seamless command access
 - **Dotfiles Foundation** - Language toolchain managed in dotfiles, not per-project
 
 ## Philosophy: Foundation vs Project Tooling
@@ -34,7 +34,7 @@ What stays in individual Flutter projects:
 
 ## Configuration Files
 - **Installation Script**: `home/run_once_install-fvm.sh.tmpl` - Automated fvm setup
-- **Fish PATH**: `home/dot_config/fish/config.fish.tmpl` - Shell integration
+- **Zsh PATH**: `home/dot_zshrc.tmpl` - Shell integration
 - **Documentation**: `docs/ai-context/apps/flutter.md` - This file
 
 ## Installation Flow
@@ -44,7 +44,7 @@ What stays in individual Flutter projects:
 2. **FVM Installation**: Downloads and installs fvm to `~/.fvm/bin/`
 3. **Flutter Download**: Installs stable Flutter version to `~/.fvm/versions/`
 4. **Global Default**: Sets `~/.fvm/default` symlink to stable version
-5. **PATH Setup**: Fish config adds fvm paths to shell environment
+5. **PATH Setup**: Zsh config adds fvm paths to shell environment
 
 ### Manual Installation (if needed)
 ```bash
@@ -149,7 +149,7 @@ echo $PATH | grep -o '[^:]*fvm[^:]*'
 # Should show: ~/.fvm/default/bin
 
 # Restart shell to reload PATH
-exec fish
+exec zsh
 
 # Verify fvm installation
 which fvm

@@ -1,0 +1,7 @@
+# Launch qutebrowser in private browsing mode
+if ! command -v qutebrowser >/dev/null 2>&1; then
+    echo "qutebrowser is not installed. Run 'chezmoi apply' to install."
+    return 1
+fi
+qutebrowser --target private-window "$@" &>/dev/null &
+disown

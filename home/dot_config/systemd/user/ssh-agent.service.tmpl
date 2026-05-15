@@ -1,0 +1,23 @@
+{{- /*
+  SSH Agent — User-level systemd unit
+  Provides a persistent agent socket at $XDG_RUNTIME_DIR/ssh-agent.socket,
+  consumed via the SSH_AUTH_SOCK export in ~/.zshrc.
+*/ -}}
+[Unit]
+Description=SSH key agent
+Documentation=man:ssh-agent(1)
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ssh-agent -D -a %t/ssh-agent.socket
+
+# Restart on failure (e.g., transient socket errors)
+Restart=on-failure
+RestartSec=5
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

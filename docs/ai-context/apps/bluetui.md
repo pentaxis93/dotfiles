@@ -12,7 +12,7 @@
 
 ## Configuration
 - **Package**: `home/.chezmoidata/packages.yaml` - Declaratively managed
-- **Fish Function**: `bt` - Launch bluetui TUI manager
+- **Zsh Function**: `bt` - Launch bluetui TUI manager
 - **Waybar Integration**: Click bluetooth widget to launch bluetui in Alacritty
 
 ## Usage

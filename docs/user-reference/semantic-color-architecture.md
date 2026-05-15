@@ -274,7 +274,7 @@ mode:
 **Usage**: Modal editor states, application mode indicators.
 
 **Examples**:
-- Fish vi mode indicator → `mode.normal`, `mode.insert`, `mode.visual`
+- Helix mode indicator → `mode.normal`, `mode.insert`, `mode.visual`
 - Qutebrowser mode indicator → `mode.insert`, `mode.passthrough`, `mode.private`
 
 ---
@@ -376,7 +376,7 @@ Returns: Array of N hex colors
 4. niri → semantic (~5 references)
 5. wiremix → semantic (~30 references)
 6. wofi → semantic (~8 references)
-7. fish → semantic (~4 references)
+7. zsh → semantic (handled by oh-my-zsh + terminal palette)
 
 **Per-File Process**:
 1. Add `{{- $semantic := .kanagawa.semantic_colors -}}` at top
@@ -436,7 +436,7 @@ color: {{ index $spectrum 0 }};
 **Minor** (<10 references):
 - wofi/style.css.tmpl: ~8 references
 - niri/config.kdl.tmpl: ~5 references
-- fish/config.fish.tmpl: ~4 references
+- (zsh: no direct color references — robbyrussell uses terminal ANSI palette)
 
 ### Estimated Effort
 - Spectrum system: 2-3 hours (complex algorithm)

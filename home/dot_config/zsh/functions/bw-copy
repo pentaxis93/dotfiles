@@ -1,0 +1,44 @@
+# Copy password to clipboard with fuzzy search
+# "Secrets flow from intention to clipboard"
+
+bw-unlock || return 1
+
+local items
+items=$(bw list items --raw 2>/dev/null)
+if [ -z "$items" ]; then
+    printf '\033[31m✗\033[0m No items found in vault\n'
+    return 1
+fi
+
+local selected
+selected=$(echo "$items" | \
+    jq -r '.[] | select(.login.password != null) | "\(.name) | \(.login.username // "no username") | \(.id)"' | \
+    fzf --prompt="Select password: " \
+        --height=20 \
+        --layout=reverse \
+        --border \
+        --preview-window=hidden)
+
+if [ -z "$selected" ]; then
+    printf '\033[90m○\033[0m No selection made\n'
+    return 1
+fi
+
+local item_id item_name password
+item_id=$(echo "$selected" | awk -F' \\| ' '{print $NF}')
+
+password=$(bw get password "$item_id" 2>/dev/null)
+if [ -n "$password" ]; then
+    if command -v wl-copy >/dev/null 2>&1; then
+        printf '%s' "$password" | wl-copy
+    else
+        printf '\033[31m✗\033[0m No clipboard manager found (install wl-clipboard)\n'
+        return 1
+    fi
+
+    item_name=$(echo "$selected" | awk -F' \\| ' '{print $1}')
+    printf '\033[32m✓\033[0m Password for "%s" copied to clipboard\n' "$item_name"
+else
+    printf '\033[31m✗\033[0m Failed to retrieve password\n'
+    return 1
+fi

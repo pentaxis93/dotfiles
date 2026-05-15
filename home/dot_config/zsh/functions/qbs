@@ -1,0 +1,46 @@
+# Show qutebrowser session and status information
+if ! command -v qutebrowser >/dev/null 2>&1; then
+    echo "qutebrowser is not installed. Run 'chezmoi apply' to install."
+    return 1
+fi
+
+local config_dir=~/.config/qutebrowser
+local data_dir=~/.local/share/qutebrowser
+local session_file="$data_dir/sessions/_autosave.yml"
+
+echo "🌐 Qutebrowser Status"
+echo "===================="
+echo
+
+if pgrep -x qutebrowser >/dev/null; then
+    printf '\033[32m✓ Qutebrowser is running\033[0m\n'
+    echo "  PID: $(pgrep -x qutebrowser | tr '\n' ' ')"
+else
+    printf '\033[33m○ Qutebrowser is not running\033[0m\n'
+fi
+echo
+
+if [ -f "$session_file" ]; then
+    echo "📚 Auto-saved session:"
+    local tab_count
+    tab_count=$(grep -c "^- " "$session_file" 2>/dev/null || echo "0")
+    echo "  Tabs: $tab_count"
+    echo "  Last saved: $(stat -c %y "$session_file" 2>/dev/null | cut -d. -f1)"
+else
+    echo "📚 No saved session found"
+fi
+echo
+
+echo "📁 Configuration:"
+echo "  Config: $config_dir/config.py"
+echo "  Data: $data_dir"
+echo
+
+if [ -d "$data_dir" ]; then
+    echo "💾 Data:"
+    local history_size cache_size
+    history_size=$(du -sh "$data_dir/history.sqlite" 2>/dev/null | cut -f1)
+    [ -n "$history_size" ] && echo "  History: $history_size"
+    cache_size=$(du -sh ~/.cache/qutebrowser 2>/dev/null | cut -f1)
+    [ -n "$cache_size" ] && echo "  Cache: $cache_size"
+fi

@@ -1,0 +1,12 @@
+# Start transmission daemon (VPN-bound)
+if ! ip addr show tun0 2>/dev/null | grep -q 'inet '; then
+    echo "⚠ VPN not connected. Starting VPN first..."
+    vpc
+    sleep 3
+fi
+
+transmission-vpn-bind
+systemctl --user start transmission-daemon
+
+sleep 1
+tstatus

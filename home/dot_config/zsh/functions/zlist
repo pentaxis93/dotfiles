@@ -1,0 +1,17 @@
+# List ZFS snapshots with details
+# "Behold the layers of time, preserved in perfect stillness"
+
+local dataset="${1:-}"
+
+if [ -z "$dataset" ]; then
+    printf '\033[34m═══ All Snapshots ═══\033[0m\n\n'
+    zfs list -t snapshot -o name,used,refer,creation -s creation
+else
+    if ! zfs list "$dataset" &>/dev/null; then
+        printf '\033[31m✗\033[0m Dataset does not exist: %s\n' "$dataset"
+        return 1
+    fi
+
+    printf '\033[34m═══ Snapshots for %s ═══\033[0m\n\n' "$dataset"
+    zfs list -t snapshot -o name,used,refer,creation -s creation -r "$dataset"
+fi

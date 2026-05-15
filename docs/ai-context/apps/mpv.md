@@ -14,7 +14,7 @@
   - 80+ bindings with semantic comments categorized by intent
   - Helix-inspired navigation: 0/$ for start/end, HOME/END for file start/end, w/b for chapters
   - All 100+ bindings organized by semantic categories
-- **Fish Integration** - Semantic functions for media management (mp, mpb, mps, mpc)
+- **Zsh Integration** - Semantic functions for media management (mp, mpb, mps, mpc)
 
 ## Configuration Files
 - **Main Config**: `home/dot_config/mpv/mpv.conf.tmpl` - Core settings and theming
@@ -22,7 +22,7 @@
 - **Auto-Save Script**: `home/dot_config/mpv/scripts/auto-save-position.lua.tmpl` - Periodic position saving
 - **LF Browser Script**: `home/dot_config/mpv/scripts/lf-browser.lua.tmpl` - LF integration script
 - **LF Wrapper**: `home/dot_local/bin/executable_mpv.tmpl` - Terminal browser for pre-selection
-- **Fish Functions**: `home/dot_config/fish/functions/mp*.fish.tmpl` - Semantic commands
+- **Zsh Functions**: `home/dot_config/zsh/functions/mp*` - Semantic commands
 - **Setup Script**: `home/run_once_install-mpv-scripts.sh.tmpl` - Directory setup script
 
 ## Usage

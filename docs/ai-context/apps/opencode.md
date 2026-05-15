@@ -7,11 +7,11 @@
 - **OpenCode Server** - Runs on babbie VPS via systemd user service
 - **OpenCode Client** - Connects from mani via Tailscale network
 - **Remote Directory Control** - `--dir` flag specifies working directory on babbie
-- **Fish Functions** - Semantic wrappers for server control and client attachment
+- **Zsh Functions** - Semantic wrappers for server control and client attachment
 - **Auto-Start** - Systemd service with user lingering for persistent availability
 
 ## Configuration Files
-- **Fish Functions (mani)**: `home/dot_config/fish/functions/oc*.fish.tmpl` - Client attachment and remote control
+- **Zsh Functions (mani)**: `home/dot_config/zsh/functions/oc*` - Client attachment and remote control
 - **Package**: `home/.chezmoidata/packages.yaml` - OpenCode declaratively managed
 
 ## Server Setup (Babbie VPS)
@@ -35,7 +35,7 @@ Located in `~/.local/bin/` on babbie:
 
 ## Client Usage (Mani)
 
-### Fish Functions
+### Zsh Functions
 
 **`occ [directory]`** - Quick connect (recommended)
 ```bash
@@ -107,7 +107,7 @@ ocr restart ~/docs   # Change server directory remotely
 
 **On mani** (managed by chezmoi):
 1. `chezmoi apply` installs opencode package from CachyOS repos
-2. Fish functions deployed: `oca`, `occ`, `ocr`
+2. Zsh functions deployed: `oca`, `occ`, `ocr`
 3. Ready to connect via `occ`
 
 ### Upgrade Path

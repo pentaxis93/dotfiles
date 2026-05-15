@@ -316,7 +316,7 @@ semantic:
   # Purpose: Indicate current application or editor mode
   #
   # Examples:
-  #   - Fish vi normal mode → mode.normal
+  #   - Helix normal mode → mode.normal
   #   - Helix insert mode → mode.insert
   #   - Qutebrowser private mode → mode.private
   mode:

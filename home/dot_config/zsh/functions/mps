@@ -1,0 +1,36 @@
+# Show mpv watch history status (semantic: media-play-status)
+local history_file=~/.local/state/mpv/watch_history.jsonl
+local watch_later=~/.local/state/mpv/watch_later
+
+echo "MPV Status:"
+echo "==========="
+
+if [ -f "$history_file" ]; then
+    local count
+    count=$(wc -l < "$history_file")
+    echo "Watch history: $count entries"
+    echo ""
+    echo "Recent plays (last 5):"
+    tail -5 "$history_file" | jq -r '.["file-local-options"].title // .path' 2>/dev/null || tail -5 "$history_file"
+else
+    echo "No watch history found"
+fi
+
+echo ""
+
+if [ -d "$watch_later" ]; then
+    local saved
+    saved=$(find "$watch_later" -mindepth 1 -maxdepth 1 2>/dev/null | wc -l)
+    if [ "$saved" -gt 0 ]; then
+        echo "Saved positions: $saved files"
+        echo ""
+        echo "Files with saved positions:"
+        for file in "$watch_later"/*; do
+            [ -e "$file" ] && echo "  - $(basename "$file")"
+        done
+    else
+        echo "No saved positions"
+    fi
+else
+    echo "No saved positions directory"
+fi

@@ -1,0 +1,19 @@
+# Enhanced NetworkManager TUI with quick keybinding reference
+# Wraps the system nmtui with a contextual help banner.
+
+echo "╭─────────────────────────────────────────────╮"
+echo "│ NetworkManager TUI - Zen Configuration     │"
+echo "├─────────────────────────────────────────────┤"
+echo "│ Navigation:                                 │"
+echo "│  ↑↓←→  Navigate           Tab    Next      │"
+echo "│  Space  Toggle            Enter  Select    │"
+echo "│  Esc    Back/Cancel                        │"
+echo "├─────────────────────────────────────────────┤"
+echo "│ Commands:                                   │"
+echo "│  nmtui-edit     Connection editor           │"
+echo "│  nmtui-connect  Activate connections        │"
+echo "│  nmtui-hostname Set system hostname         │"
+echo "╰─────────────────────────────────────────────╯"
+echo ""
+
+command nmtui "$@"

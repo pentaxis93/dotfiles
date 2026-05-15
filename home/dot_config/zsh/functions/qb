@@ -1,0 +1,7 @@
+# Launch qutebrowser web browser
+if ! command -v qutebrowser >/dev/null 2>&1; then
+    echo "qutebrowser is not installed. Run 'chezmoi apply' to install."
+    return 1
+fi
+qutebrowser "$@" &>/dev/null &
+disown

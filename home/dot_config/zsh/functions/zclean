@@ -1,0 +1,51 @@
+# Clean old automatic snapshots (interactive)
+# "Let go of distant echoes; preserve the recent song"
+
+local days="${1:-90}"
+
+printf '\033[34m═══ Finding automatic snapshots older than %s days ═══\033[0m\n\n' "$days"
+
+local cutoff_date
+cutoff_date=$(date -d "$days days ago" +%s)
+
+local -a old_snapshots
+local snap snap_name snap_date_str snap_date
+
+while IFS= read -r snap; do
+    snap_name=$(echo "$snap" | awk '{print $1}')
+    snap_date_str=$(echo "$snap" | cut -f2- -d' ' | sed 's/^ *//;s/ *$//')
+    snap_date=$(date -d "$snap_date_str" +%s 2>/dev/null)
+    if [ -n "$snap_date" ] && [ "$snap_date" -lt "$cutoff_date" ]; then
+        old_snapshots+=("$snap_name")
+    fi
+done < <(zfs list -t snapshot -o name,creation -H | grep '@auto-')
+
+if [ "${#old_snapshots[@]}" -eq 0 ]; then
+    printf '\033[32m✓\033[0m No old automatic snapshots to clean\n'
+    return 0
+fi
+
+printf '\033[33mThe following snapshots will be DESTROYED:\033[0m\n\n'
+local used
+for snap in "${old_snapshots[@]}"; do
+    used=$(zfs list -t snapshot -o used -H "$snap")
+    printf '  \033[31m•\033[0m %s \033[90m(%s)\033[0m\n' "$snap" "$used"
+done
+echo
+printf '\033[90mThis will free the space they occupy (changes since snapshot)\033[0m\n\n'
+
+local confirm
+read -r "confirm?$(printf '\033[33mType "yes" to destroy these snapshots: \033[0m')"
+
+if [ "$confirm" = "yes" ]; then
+    echo
+    for snap in "${old_snapshots[@]}"; do
+        printf '\033[34mDestroying:\033[0m %s\n' "$snap"
+        zfs destroy "$snap"
+    done
+    echo
+    printf '\033[32m✓\033[0m Cleanup complete\n'
+else
+    echo
+    printf '\033[90m○\033[0m Cancelled. No snapshots destroyed.\n'
+fi

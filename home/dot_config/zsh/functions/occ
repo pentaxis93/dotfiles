@@ -1,0 +1,12 @@
+# OpenCode connect - check status and attach to babbie
+echo "Checking babbie server status..."
+ssh babbie "~/.local/bin/ocstatus" | grep -E "(Status|Working Directory|Version|Tailscale)"
+echo ""
+echo "Connecting..."
+
+if [ $# -gt 0 ]; then
+    echo "Requesting working directory: $1"
+    oca "$1"
+else
+    oca
+fi

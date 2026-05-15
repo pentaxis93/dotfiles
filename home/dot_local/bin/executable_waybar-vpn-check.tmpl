@@ -1,9 +1,9 @@
-#!/usr/bin/env fish
-# Ultra-Zen VPN Status Indicator for Waybar
+#!/usr/bin/env bash
+# VPN Status Indicator for Waybar
 # Semantic: Observe the tunnel's presence and manifest its truth
 
-if pgrep -x openvpn >/dev/null
+if pgrep -x openvpn >/dev/null; then
     echo "∴"    # VPN connected - therefore secure (three dots)
 else
     echo ""     # VPN disconnected - invisible in simplicity
-end
+fi

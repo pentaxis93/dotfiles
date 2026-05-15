@@ -1,25 +1,28 @@
-#!/usr/bin/env fish
+#!/usr/bin/env bash
 # Example: Present options to user and execute based on selection
 
-# Define options
-set options "Open Browser\nCheck VPN\nLaunch Terminal\nTake Screenshot"
+options="Open Browser
+Check VPN
+Launch Terminal
+Take Screenshot"
 
-# Show selection menu
-set choice (printf "$options" | wofi --show dmenu --prompt "Quick Action:")
+choice=$(printf '%s' "$options" | wofi --show dmenu --prompt "Quick Action:")
 
-# Exit if cancelled
-if test -z "$choice"
+if [ -z "$choice" ]; then
     exit 0
-end
+fi
 
-# Execute based on choice
-switch "$choice"
-    case "Open Browser"
+case "$choice" in
+    "Open Browser")
         zen-browser &
-    case "Check VPN"
-        vps
-    case "Launch Terminal"
+        ;;
+    "Check VPN")
+        zsh -i -c "vps"
+        ;;
+    "Launch Terminal")
         alacritty &
-    case "Take Screenshot"
-        grim -g (slurp) ~/Pictures/screenshot-(date +%Y%m%d-%H%M%S).png
-end
+        ;;
+    "Take Screenshot")
+        grim -g "$(slurp)" "$HOME/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"
+        ;;
+esac

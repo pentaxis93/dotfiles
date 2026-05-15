@@ -1,0 +1,7 @@
+# Increase volume by 5% (semantic: volume-up)
+if ! command -v pamixer >/dev/null 2>&1; then
+    echo "pamixer not found. Install it or use 'vol' for TUI control."
+    return 1
+fi
+pamixer -i 5
+echo "Volume: $(pamixer --get-volume)%"

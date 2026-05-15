@@ -1,0 +1,122 @@
+{{- /*
+  Zsh configuration with oh-my-zsh, robbyrussell theme, and the universal trio
+  of essential extensions (autosuggestions, syntax-highlighting, completions).
+  Templated for machine-type branching, semantic colors, and PATH composition.
+*/ -}}
+
+# ---------------------------------------------------------------------------
+# Oh-My-Zsh
+# ---------------------------------------------------------------------------
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME="robbyrussell"
+
+# Plugin set: the "universal trio" + git (required by robbyrussell prompt).
+# - git:                    drives the git_prompt_info segment in robbyrussell
+# - zsh-autosuggestions:    fish-style history suggestions
+# - zsh-syntax-highlighting: valid/invalid command coloring (load LAST)
+# - zsh-completions:        additional completion definitions
+plugins=(git zsh-autosuggestions zsh-completions zsh-syntax-highlighting)
+
+# Plugins are git-cloned under $ZSH/custom/plugins/ by run_once_install-oh-my-zsh.sh
+[ -f "$ZSH/oh-my-zsh.sh" ] && source "$ZSH/oh-my-zsh.sh"
+
+# ---------------------------------------------------------------------------
+# PATH composition
+# ---------------------------------------------------------------------------
+export PATH="$HOME/.local/bin:$PATH"
+
+{{ if .has_gui -}}
+# Flutter Version Manager (desktop/laptop only)
+# Provides global dart and flutter commands
+export PATH="$HOME/fvm/default/bin:$PATH"
+export PATH="$HOME/.pub-cache/bin:$PATH"
+
+# Android SDK - user-owned, overrides system AUR SDK at /opt/android-sdk
+# Self-hosted: sdkmanager, platform-tools, build-tools, platforms, ndk all under ~/Android/Sdk
+if [ -d "$HOME/Android/Sdk" ]; then
+    export ANDROID_HOME="$HOME/Android/Sdk"
+    export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
+    export PATH="$HOME/Android/Sdk/cmdline-tools/latest/bin:$PATH"
+    export PATH="$HOME/Android/Sdk/platform-tools:$PATH"
+fi
+{{- end }}
+
+# Go binaries
+export PATH="$HOME/go/bin:$PATH"
+
+# Rust/Cargo binaries (common on VPS where tools are cargo-installed)
+export PATH="$HOME/.cargo/bin:$PATH"
+
+# Bun runtime (if installed)
+[ -d "$HOME/.bun/bin" ] && export PATH="$HOME/.bun/bin:$PATH"
+
+# ---------------------------------------------------------------------------
+# Editor
+# ---------------------------------------------------------------------------
+export EDITOR=helix
+export VISUAL=helix
+
+# ---------------------------------------------------------------------------
+# SSH agent (systemd user service)
+# The ssh-agent.service unit opens a socket at $XDG_RUNTIME_DIR/ssh-agent.socket.
+# ---------------------------------------------------------------------------
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/ssh-agent.socket"
+
+# ---------------------------------------------------------------------------
+# Autoloaded functions
+# Each file in ~/.config/zsh/functions/ becomes a callable function.
+# ---------------------------------------------------------------------------
+fpath=("$HOME/.config/zsh/functions" $fpath)
+if [ -d "$HOME/.config/zsh/functions" ]; then
+    for _fn in "$HOME/.config/zsh/functions"/*(N); do
+        autoload -Uz "${_fn:t}"
+    done
+    unset _fn
+fi
+
+# ---------------------------------------------------------------------------
+# Aliases
+# ---------------------------------------------------------------------------
+[ -f "$HOME/.config/zsh/aliases.zsh" ] && source "$HOME/.config/zsh/aliases.zsh"
+
+# ---------------------------------------------------------------------------
+# conf.d hooks (loaded in lexicographic order, fish-style)
+# ---------------------------------------------------------------------------
+if [ -d "$HOME/.config/zsh/conf.d" ]; then
+    for _f in "$HOME/.config/zsh/conf.d"/*.zsh(N); do
+        source "$_f"
+    done
+    unset _f
+fi
+
+# ---------------------------------------------------------------------------
+# nmtui semantic theming - Kanagawa Dragon from colors.yaml
+# ---------------------------------------------------------------------------
+export NEWT_COLORS='{{ template "newt-colors-dynamic.tmpl" . }}'
+
+{{ if .has_gui -}}
+# ---------------------------------------------------------------------------
+# Dark mode preferences (GUI only)
+# Using Adwaita:dark for GTK4 apps (cachyos-nord lacks GTK4 support)
+# ---------------------------------------------------------------------------
+export GTK_THEME="Adwaita:dark"
+export QT_STYLE_OVERRIDE="adwaita-dark"
+{{- end }}
+
+# ---------------------------------------------------------------------------
+# zoxide - frecency-based directory jumping
+# ---------------------------------------------------------------------------
+command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+
+{{ if .has_gui -}}
+# ---------------------------------------------------------------------------
+# Auto-lock Bitwarden on shell exit
+# ---------------------------------------------------------------------------
+__bw_auto_lock_on_exit() {
+    if [ -n "$BW_SESSION" ]; then
+        bw lock 2>/dev/null
+        unset BW_SESSION
+    fi
+}
+trap __bw_auto_lock_on_exit EXIT
+{{- end }}

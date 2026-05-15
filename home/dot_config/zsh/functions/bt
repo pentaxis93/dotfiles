@@ -1,0 +1,2 @@
+# Launch bluetui TUI bluetooth manager (semantic: invoke.bluetooth)
+bluetui "$@"

@@ -1,0 +1,29 @@
+# Control OpenCode server on babbie remotely
+local cmd="$1"
+shift 2>/dev/null
+
+case "$cmd" in
+    start)
+        ssh babbie "~/.local/bin/ocstart $*"
+        ;;
+    stop)
+        ssh babbie "~/.local/bin/ocstop"
+        ;;
+    restart)
+        ssh babbie "~/.local/bin/ocrestart $*"
+        ;;
+    status)
+        ssh babbie "~/.local/bin/ocstatus"
+        ;;
+    *)
+        echo "Usage: ocr {start|stop|restart|status} [directory]"
+        echo ""
+        echo "Examples:"
+        echo "  ocr status                    - Show server status"
+        echo "  ocr start                     - Start server (default dir: ~/src)"
+        echo "  ocr start ~/docs              - Start server in ~/docs"
+        echo "  ocr restart ~/go              - Restart server in ~/go"
+        echo "  ocr stop                      - Stop server"
+        return 1
+        ;;
+esac

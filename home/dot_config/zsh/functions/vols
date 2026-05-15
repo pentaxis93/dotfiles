@@ -1,0 +1,19 @@
+# Show volume status (semantic: volume-status)
+if ! command -v pamixer >/dev/null 2>&1; then
+    echo "pamixer not found. Install it or use 'vol' for TUI control."
+    return 1
+fi
+
+local volume muted
+volume=$(pamixer --get-volume)
+muted=$(pamixer --get-mute)
+
+if [ "$muted" = "true" ]; then
+    echo "Volume: Muted (was ${volume}%)"
+else
+    echo "Volume: ${volume}%"
+fi
+
+echo ""
+echo "Default Output:"
+pactl get-default-sink | xargs -I {} pactl list sinks short | grep {}

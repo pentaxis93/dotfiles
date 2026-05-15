@@ -1,0 +1,2 @@
+# Stop Tor anonymity proxy (semantic wrapper)
+tor-disconnect "$@"

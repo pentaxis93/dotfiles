@@ -1,0 +1,32 @@
+# Check VPN connection status via systemd service
+# Semantic: Observe the state of our secure tunnel
+
+if sudo systemctl is-active --quiet goosevpn.service; then
+    echo "🟢 VPN Status: Connected (systemd managed)"
+
+    local service_state tun_ip public_ip
+    service_state=$(sudo systemctl show -p ActiveState --value goosevpn.service)
+    echo "   Service: $service_state"
+
+    tun_ip=$(ip addr show tun0 2>/dev/null | grep -oP 'inet \K[\d.]+')
+    [ -n "$tun_ip" ] && echo "   Tunnel IP: $tun_ip"
+
+    if command -v curl >/dev/null 2>&1; then
+        public_ip=$(curl -s https://ipinfo.io/ip 2>/dev/null)
+        [ -n "$public_ip" ] && echo "   Public IP: $public_ip"
+    fi
+else
+    echo "🔴 VPN Status: Disconnected"
+
+    if sudo systemctl list-unit-files goosevpn.service >/dev/null 2>&1; then
+        echo "   Service: installed but inactive"
+    else
+        echo "   Service: not installed (run 'chezmoi apply')"
+    fi
+
+    if command -v curl >/dev/null 2>&1; then
+        local public_ip
+        public_ip=$(curl -s https://ipinfo.io/ip 2>/dev/null)
+        [ -n "$public_ip" ] && echo "   Current IP: $public_ip"
+    fi
+fi

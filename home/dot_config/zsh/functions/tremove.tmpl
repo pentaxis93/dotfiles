@@ -1,0 +1,21 @@
+{{- /* Remove torrent from transmission */ -}}
+# Remove torrent by ID (and delete local data)
+if [ $# -eq 0 ]; then
+    echo "Usage: tremove <torrent-id>"
+    echo "Use 'tlist' to see torrent IDs"
+    return 1
+fi
+
+if ! systemctl --user is-active --quiet transmission-daemon; then
+    echo "⚠ Transmission daemon not running"
+    return 1
+fi
+
+transmission-remote {{ .transmission.rpc_host }}:{{ .transmission.rpc_port }} -n "$(transmission-auth)" -t "$1" --remove-and-delete
+
+if [ $? -eq 0 ]; then
+    printf '\033[32m✓ Torrent %s removed\033[0m\n' "$1"
+else
+    printf '\033[31m✗ Failed to remove torrent %s\033[0m\n' "$1"
+    return 1
+fi

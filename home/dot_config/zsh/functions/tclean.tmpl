@@ -1,0 +1,24 @@
+{{- /* Remove completed torrents from transmission */ -}}
+# Remove completed torrents
+if ! systemctl --user is-active --quiet transmission-daemon; then
+    echo "⚠ Transmission daemon not running"
+    return 1
+fi
+
+local completed_ids
+completed_ids=$(transmission-remote {{ .transmission.rpc_host }}:{{ .transmission.rpc_port }} -n "$(transmission-auth)" -l | grep "100%" | awk '{print $1}' | grep -v "\*")
+
+if [ -z "$completed_ids" ]; then
+    echo "No completed torrents to remove"
+    return 0
+fi
+
+local count
+count=$(echo "$completed_ids" | wc -l)
+
+local id
+for id in ${=completed_ids}; do
+    transmission-remote {{ .transmission.rpc_host }}:{{ .transmission.rpc_port }} -n "$(transmission-auth)" -t "$id" --remove >/dev/null 2>&1
+done
+
+printf '\033[32m✓ Removed %s completed torrent(s)\033[0m\n' "$count"

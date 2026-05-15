@@ -6,7 +6,7 @@
 
 Our keybinding system is **semantic**, not physical. You learn **intentions** once, and they manifest appropriately in each context:
 - **Navigate** in niri → focus windows
-- **Navigate** in fish → move cursor
+- **Navigate** in zsh → move cursor (emacs-mode bindings: Ctrl-A/E, etc.)
 - **Navigate** in qutebrowser → scroll page
 - **Navigate** in mpv → seek through video
 
@@ -45,7 +45,7 @@ MOD Keys:             Super (left hand), PrtSc (right hand)
 - `b` - **Back word** ("**b**ack")
 - `e` - **End of word** ("**e**nd")
 
-| Intention | Universal Key | Niri (WM) | Helix (Editor) | Fish (Shell) | Qutebrowser | MPV |
+| Intention | Universal Key | Niri (WM) | Helix (Editor) | Zsh (Shell) | Qutebrowser | MPV |
 |-----------|---------------|-----------|----------------|--------------|-------------|-----|
 | `navigate.prev` | `h` | Focus left window | Move cursor left | Move cursor left | Scroll left | Seek -5s |
 | `navigate.next` | `l` | Focus right window | Move cursor right | Move cursor right | Scroll right | Seek +5s |
@@ -131,7 +131,7 @@ MOD Keys:             Super (left hand), PrtSc (right hand)
 
 | Intention | Key | Context | Selects |
 |-----------|-----|---------|---------|
-| `select.toggle` | `x` | Helix, Fish | Extend selection |
+| `select.toggle` | `x` | Helix | Extend selection |
 | `select.toggle` | `x` | LF | Toggle file selection |
 | `select.toggle` | `SPACE` | MPV | Play/pause |
 | `select.toggle` | `SPACE` | Lazygit | Stage/unstage |
@@ -336,34 +336,36 @@ MOD Keys:             Super (left hand), PrtSc (right hand)
 ╰─────────────────────────────────────╯
 ```
 
-### Fish Shell (Vi Mode)
-**Mode Indicators**: `[N]` Normal (green), `[I]` Insert (blue), `[V]` Visual (yellow)
+### Zsh Shell (Emacs Mode — stock robbyrussell)
+Zsh runs with default emacs-mode bindings. No vi mode, no `[N]`/`[I]`/`[V]` indicators,
+by deliberate design.
 
 ```
-╭─────────────── NAVIGATION ─────────╮
-│ h/j/k/l     Cursor left/prev/next/right│
-│ w/b/e       Word next/prev/end     │
-│ gh/gl       Line start/end (Helix!)│
-│ /           Search history         │
-│ ?           Reverse search history │
-│ k/j         Previous/next in search│
+╭─────────────── EDITING ────────────╮
+│ Ctrl+A      Beginning of line      │
+│ Ctrl+E      End of line            │
+│ Ctrl+W      Delete word backward   │
+│ Ctrl+U      Clear line             │
+│ Ctrl+R      Reverse history search │
 ╰─────────────────────────────────────╯
 
 ╭─────────────── COMPLETION ─────────╮
-│ Tab         Accept suggestion      │
-│ Ctrl+F      Accept full (Fish way) │
+│ Tab         Cycle completions      │
+│ → (right)   Accept autosuggestion  │
+│ Ctrl+→      Accept next word       │
 ╰─────────────────────────────────────╯
 
-╭─────────────── MODES ──────────────╮
-│ ESC         Enter normal mode      │
-│ i           Enter insert mode      │
-│ v or x      Enter visual mode      │
-╰─────────────────────────────────────╯
-
-╭─────────────── FILE BROWSER ───────╮
-│ Ctrl+O      Launch lf (cd on exit) │
+╭─────────────── PROMPT ─────────────╮
+│ robbyrussell theme:                 │
+│   ➜ dir git:(branch) ✗             │
+│ Arrow turns red on last-cmd failure │
 ╰─────────────────────────────────────╯
 ```
+
+Extensions active:
+- **zsh-autosuggestions** — gray suggestion from history
+- **zsh-syntax-highlighting** — valid (green) / invalid (red) command coloring
+- **zsh-completions** — additional completion definitions
 
 ### Alacritty Terminal (Vi Mode)
 **Toggle Vi Mode**: `Ctrl+Shift+Space`
@@ -459,13 +461,13 @@ MOD Keys:             Super (left hand), PrtSc (right hand)
 | Niri (WM) | `MOD` | `MOD+CTRL` | `CTRL+ALT` |
 | Helix | `SPACE` (leader) | `g` (goto) | `z` (view) |
 | Alacritty | `CTRL` | `CTRL+SHIFT` | `ALT` |
-| Fish | None (normal mode) | `CTRL` | `ALT` |
+| Zsh | None (emacs mode) | `CTRL` | `ALT` |
 
 ## Vi Mode Everywhere
 
 ### Enabled Vi Modes
 
-- **Fish Shell**: Vi mode with Helix-native keybindings
+- **Zsh Shell**: Emacs-mode bindings (stock robbyrussell + universal trio extensions)
   - Mode indicator: `[N]` (green), `[I]` (blue), `[V]` (yellow)
   - Cursor changes: Block (normal), Line (insert), Underscore (visual)
 
@@ -504,7 +506,7 @@ These keys have different meanings in different contexts **by design**:
 
 #### 'h' Key
 - **Navigate Prev**: Window/column left (niri), cursor left (helix), scroll left (qutebrowser), seek back (mpv), parent dir (lf)
-- **Invoke Editor**: Alias for helix (fish: `h="helix"`)
+- **Invoke Editor**: Alias for helix (zsh: `alias h='helix'`)
 - **Resolution**: Context makes meaning clear - no actual conflict
 
 #### 'l' Key
@@ -518,7 +520,7 @@ These keys have different meanings in different contexts **by design**:
 - **Resolution**: Context-appropriate - all valid semantic uses
 
 #### 'x' Key
-- **Transform Extend**: Helix, Fish (extend selection)
+- **Transform Extend**: Helix (extend selection)
 - **Select Toggle**: LF (toggle file selection)
 - **Resolution**: Both are selection-related - semantic alignment
 
@@ -574,11 +576,11 @@ We use Helix's semantic `ge` (go end). G is inconsistent across contexts. Train 
 ### "Why MOD+TAB for workspaces, not MOD+W?"
 Convention wins here - MOD+TAB is universal across window managers. MOD+W is our width toggle.
 
-### "Why remove gg/ge from Fish?"
+### "Why no vi mode in Zsh?"
 Buffer navigation (jumping to first/last command) isn't useful in shells. We keep what matters.
 
-### "Why Ctrl+F for Fish completion?"
-Respects Fish's native convention while Tab remains the primary method. Native sovereignty principle.
+### "Why pure robbyrussell?"
+The robbyrussell theme is delivered as-is — no vi mode, no mode indicators, no custom keymaps. The universal trio of extensions provides editing affordances (autosuggestions, syntax highlighting, completions) without modifying the theme's design.
 
 ## 🧘 The Way Forward
 

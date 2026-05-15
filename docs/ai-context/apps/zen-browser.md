@@ -214,7 +214,7 @@ After finalizing changes in live editor:
 
 ### Potential Additions
 - **zen-keyboard-shortcuts.json.tmpl** - Generate shortcuts from keybindings.yaml
-- **Fish Functions** - Optional `zb` wrapper if user wants shell integration
+- **Zsh Functions** - Optional `zb` wrapper if user wants shell integration
 - **Search Engines** - Optional template for default search engines
 - **Extensions** - Document recommended privacy extensions (uBlock Origin, etc.)
 - **Betterfox Updates** - Track upstream Betterfox changes

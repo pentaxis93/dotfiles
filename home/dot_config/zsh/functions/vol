@@ -1,0 +1,2 @@
+# Launch wiremix TUI audio mixer (semantic: invoke.volume)
+wiremix "$@"

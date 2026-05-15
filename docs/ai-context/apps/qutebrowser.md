@@ -11,12 +11,12 @@
   - Helix-native: ge for end, gh/gl for line start/end, d/u for half-page
   - All core bindings generated from semantic definitions
 - **Privacy-Focused** - Ad blocking, tracking protection, dark mode preference
-- **Fish Integration** - Semantic functions for browser management (qb, qbp, qbs)
+- **Zsh Integration** - Semantic functions for browser management (qb, qbp, qbs)
 - **MPV Integration** - Seamless video playback with external player
 
 ## Configuration Files
 - **Main Config**: `home/dot_config/qutebrowser/config.py.tmpl` - Complete browser configuration
-- **Fish Functions**: `home/dot_config/fish/functions/qb*.fish.tmpl` - Management commands (qb, qbp, qbs)
+- **Zsh Functions**: `home/dot_config/zsh/functions/qb*` - Management commands (qb, qbp, qbs)
 - **Niri Integration**: Browser launch via semantic keybinding (Mod+B from keybindings.yaml)
 
 ## Key Features

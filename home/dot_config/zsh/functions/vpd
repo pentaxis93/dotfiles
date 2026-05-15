@@ -1,0 +1,2 @@
+# Disconnect from VPN (semantic wrapper)
+vpn-disconnect "$@"

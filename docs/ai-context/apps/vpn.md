@@ -6,7 +6,7 @@
 ## Architecture
 - **OpenVPN Client** - Secure tunneling daemon for VPN connections
 - **Bitwarden Integration** - Credentials retrieved from vault via templates
-- **Fish Functions** - Semantic wrappers for connection management (`vpc`, `vpd`, `vps`)
+- **Zsh Functions** - Semantic wrappers for connection management (`vpc`, `vpd`, `vps`)
   - Work both as abbreviations (interactive) and functions (scripts)
   - Abbreviations expand: `vpc` → `vpn-connect`
   - Functions call: `vpc` → `vpn-connect` directly
@@ -16,7 +16,7 @@
 - **VPN Config**: `home/dot_config/private_openvpn/goosevpn.conf.tmpl` - Main OpenVPN configuration
 - **Auth File**: `home/dot_local/state/private_secrets/openvpn/goosevpn-auth.tmpl` - Credentials from Bitwarden
 - **Service Installer**: `home/run_once_install-goosevpn-system-service.sh.tmpl` - Creates /etc/systemd/system/goosevpn.service
-- **Auto-loading**: `home/dot_config/fish/conf.d/00-secrets.fish.tmpl` - Loads secrets into environment
+- **Auto-loading**: `home/dot_config/zsh/conf.d/00-secrets.zsh.tmpl` - Loads secrets into environment
 
 ## Usage
 ```bash
@@ -36,4 +36,4 @@ sudo systemctl status goosevpn     # Check detailed status
 - `auth-nocache` prevents password caching in memory
 - Credentials only exist when Bitwarden is unlocked
 - Secrets stored in `~/.local/state/secrets/` outside project directories
-- Environment variables auto-loaded by Fish for script access
+- Environment variables auto-loaded by Zsh for script access

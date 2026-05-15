@@ -1,0 +1,32 @@
+# Show ZFS pool health and recent scrub status
+# "The mirror reflects truth; the checksum reveals integrity"
+
+printf '\033[34m╭─────────────────────────────────────────────╮\033[0m\n'
+printf '\033[34m│\033[0m ZFS Pool Health Status                      \033[34m│\033[0m\n'
+printf '\033[34m╰─────────────────────────────────────────────╯\033[0m\n\n'
+
+printf '\033[34m═══ Pool Status ═══\033[0m\n'
+zpool status
+echo
+
+printf '\033[34m═══ Pool Summary ═══\033[0m\n'
+zpool list
+echo
+
+local snap_count
+snap_count=$(zfs list -t snapshot -o name -H | wc -l)
+printf '\033[34m═══ Snapshot Timeline ═══\033[0m\n'
+printf '\033[32m✓\033[0m Total snapshots: %s\n\n' "$snap_count"
+printf '\033[90mRecent snapshots (last 5):\033[0m\n'
+zfs list -t snapshot -o name,used,creation -s creation -H | tail -5
+echo
+
+printf '\033[34m═══ Scrub Status ═══\033[0m\n'
+local scrub_status
+scrub_status=$(zpool status | grep -A 2 "scan:")
+if [ -n "$scrub_status" ]; then
+    echo "$scrub_status"
+else
+    printf '\033[90mNo scrub has been run\033[0m\n'
+fi
+echo

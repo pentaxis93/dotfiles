@@ -14,8 +14,8 @@
 - `home/dot_config/lf/executable_preview.tmpl` - File preview script
 - `home/dot_config/lf/executable_cleaner.tmpl` - Preview cleanup script
 - `home/dot_config/lf/icons.tmpl` - File type icons mapping
-- `home/dot_config/fish/functions/lf.fish.tmpl` - Shell wrapper for cd-on-exit (default behavior)
-- `home/dot_config/fish/functions/lfcd.fish.tmpl` - Legacy alias for lf wrapper
+- `home/dot_config/zsh/functions/lf.tmpl` - Shell wrapper for cd-on-exit (default behavior)
+- `home/dot_config/zsh/functions/lfcd.tmpl` - Legacy alias for lf wrapper
 - `home/dot_config/handlr/handlr.toml.tmpl` - Handlr config with wofi selector
 - `home/run_once_setup-handlr-defaults.sh.tmpl` - Handlr default associations setup
 
@@ -46,7 +46,7 @@ Two-key system for maximum simplicity:
 ## Shell Integration
 - **Automatic cd-on-exit** - Default behavior: shell changes to lf's last directory when you quit
 - **Shell wrapper** - `lf` command automatically uses `-last-dir-path` functionality
-- **Ctrl+O keybinding** - Quick lf launch from Fish command line
+- **Quick launch** - `lf` command (or `lc` alias) launches from zsh command line
 - **Legacy support** - `lfcd` function and `lc` abbreviation still available
 
 ## Features

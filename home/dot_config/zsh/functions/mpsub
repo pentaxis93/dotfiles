@@ -1,0 +1,123 @@
+# Manage subtitles for videos (semantic: media-play-subtitles)
+local cmd="${1:-}"
+
+case "$cmd" in
+    find|search)
+        echo "Searching for subtitle files..."
+        find . -type f \( \
+            -iname "*.srt" -o \
+            -iname "*.ass" -o \
+            -iname "*.ssa" -o \
+            -iname "*.sub" -o \
+            -iname "*.vtt" -o \
+            -iname "*.idx" \
+            \) 2>/dev/null | sort
+        ;;
+
+    org|organize)
+        echo "Organizing subtitle files..."
+        local sub_count=0
+        local video sub basename
+        setopt local_options null_glob
+        for video in *.mp4 *.mkv *.avi *.webm *.mov *.wmv *.flv *.mpg *.mpeg; do
+            [ -f "$video" ] || continue
+            basename="${video%.*}"
+            for sub in "$basename"*.srt "$basename"*.ass "$basename"*.ssa "$basename"*.sub "$basename"*.vtt; do
+                [ -f "$sub" ] || continue
+                [ -d subs ] || mkdir -p subs
+                mv -v "$sub" "subs/"
+                sub_count=$((sub_count + 1))
+            done
+        done
+        if [ "$sub_count" -gt 0 ]; then
+            echo "Organized $sub_count subtitle file(s) into subs/"
+        else
+            echo "No subtitle files to organize"
+        fi
+        ;;
+
+    rename)
+        echo "Renaming subtitle files to match videos..."
+        local rename_count=0
+        local video video_base sub sub_base sub_ext dir new_name
+        setopt local_options null_glob nocasematch
+        for video in *.mp4 *.mkv *.avi *.webm *.mov *.wmv *.flv *.mpg *.mpeg; do
+            [ -f "$video" ] || continue
+            video_base="${video%.*}"
+            for sub in *.srt *.ass *.ssa *.sub *.vtt subs/*.srt subs/*.ass subs/*.ssa subs/*.sub subs/*.vtt; do
+                [ -f "$sub" ] || continue
+                sub_base="$(basename "$sub")"
+                sub_base="${sub_base%.*}"
+                sub_ext="${sub##*.}"
+                # Fuzzy match: video_base appears in sub_base, or first 10 chars match
+                if [[ "$sub_base" == *"$video_base"* ]] || [[ "$sub_base" == *"${video_base:0:10}"* ]]; then
+                    if [ "$sub_base" != "$video_base" ]; then
+                        dir="$(dirname "$sub")"
+                        new_name="$dir/$video_base.$sub_ext"
+                        if [ ! -f "$new_name" ]; then
+                            mv -v "$sub" "$new_name"
+                            rename_count=$((rename_count + 1))
+                        fi
+                    fi
+                fi
+            done
+        done
+        if [ "$rename_count" -gt 0 ]; then
+            echo "Renamed $rename_count subtitle file(s)"
+        else
+            echo "No subtitle files needed renaming"
+        fi
+        ;;
+
+    check)
+        echo "Checking subtitle coverage..."
+        local with_subs=0 without_subs=0
+        local video basename has_sub sub
+        setopt local_options null_glob
+        for video in *.mp4 *.mkv *.avi *.webm *.mov *.wmv *.flv *.mpg *.mpeg; do
+            [ -f "$video" ] || continue
+            basename="${video%.*}"
+            has_sub=0
+            for sub in "$basename"*.srt "$basename"*.ass "$basename"*.ssa "$basename"*.sub "$basename"*.vtt \
+                       "subs/$basename"*.srt "subs/$basename"*.ass "subs/$basename"*.ssa "subs/$basename"*.sub "subs/$basename"*.vtt; do
+                if [ -f "$sub" ]; then
+                    has_sub=1
+                    break
+                fi
+            done
+            if [ "$has_sub" -eq 1 ]; then
+                echo "✓ $video"
+                with_subs=$((with_subs + 1))
+            else
+                echo "✗ $video"
+                without_subs=$((without_subs + 1))
+            fi
+        done
+        echo ""
+        echo "Summary: $with_subs with subtitles, $without_subs without"
+        ;;
+
+    help|*)
+        echo "MPV Subtitle Management Tool"
+        echo ""
+        echo "Usage: mpsub <command>"
+        echo ""
+        echo "Commands:"
+        echo "  find/search  - Find all subtitle files in directory tree"
+        echo "  organize/org - Move subtitles to subs/ directory"
+        echo "  rename       - Rename subtitles to match video filenames"
+        echo "  check        - Check which videos have subtitles"
+        echo "  help         - Show this help message"
+        echo ""
+        echo "MPV will automatically find subtitles in:"
+        echo "  - Same directory as video"
+        echo "  - subs/ subdirectory"
+        echo "  - Parent directory"
+        echo ""
+        echo "Subtitle keybindings in MPV:"
+        echo "  v       - Toggle subtitle visibility"
+        echo "  s/S     - Cycle through subtitles"
+        echo "  z/x     - Adjust subtitle timing"
+        echo "  Alt+j/k - Move subtitles up/down"
+        ;;
+esac

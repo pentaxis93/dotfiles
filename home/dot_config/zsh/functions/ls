@@ -1,0 +1,2 @@
+# Enhanced ls using lsd with icons and colors
+lsd --group-directories-first "$@"

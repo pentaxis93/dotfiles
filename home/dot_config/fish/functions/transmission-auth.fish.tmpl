@@ -1,5 +1,0 @@
-{{- /* Helper function for transmission authentication */ -}}
-function transmission-auth --description "Get transmission authentication string"
-    # Default credentials - change "changeme" to your actual password
-    echo -n "{{ .chezmoi.username }}:changeme"
-end

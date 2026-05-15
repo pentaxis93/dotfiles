@@ -59,7 +59,7 @@ chezmoi diff
 chezmoi apply -v
 ```
 
-**Note**: All other packages (Helix, Fish, MPV, Qutebrowser, etc.) are installed automatically during `chezmoi apply` via the package management system. Only the template-time dependencies above need manual pre-installation.
+**Note**: All other packages (Helix, Zsh, MPV, Qutebrowser, etc.) are installed automatically during `chezmoi apply` via the package management system. Only the template-time dependencies above need manual pre-installation.
 
 ### Updates
 
@@ -70,7 +70,7 @@ chezmoi update -v
 
 ## What's Included
 
-- **Fish Shell** — Configuration and aliases with vi mode
+- **Zsh Shell** — Oh-my-zsh + robbyrussell theme + universal trio extensions (autosuggestions, syntax-highlighting, completions)
 - **Git** — Global configuration with user templates
 - **Bitwarden CLI** — Secure password management integration
 - **Claude Code** — Development environment settings
@@ -93,7 +93,7 @@ chezmoi add --autotemplate ~/.config/app/config.toml
 
 ```bash
 # Edit in source directory
-chezmoi edit ~/.config/fish/config.fish
+chezmoi edit ~/.zshrc
 
 # Preview changes
 chezmoi diff
@@ -208,10 +208,14 @@ diff ~/.bashrc /home/.zfs/snapshot/before-upgrade/pentaxis93/.bashrc
 ├── dot_config/                        # XDG configs
 │   ├── chezmoi/
 │   │   └── chezmoi.toml.tmpl          # Chezmoi configuration
-│   └── fish/
-│       ├── config.fish.tmpl           # Shell configuration
-│       └── functions/
-│           └── bw-*.fish.tmpl         # Bitwarden utilities
+│   └── zsh/
+│       ├── aliases.zsh.tmpl           # Aliases (fish abbreviation port)
+│       ├── conf.d/*.zsh.tmpl          # Auto-loaded hooks (secrets, VPN, ...)
+│       └── functions/                 # 57 autoload functions
+│           ├── bw-*                   # Bitwarden utilities
+│           ├── tstart, tstatus, ...   # Transmission management
+│           ├── vpc, vpn-connect, ...  # VPN wrappers
+│           └── zsnap, zlist, ...      # ZFS time travel
 ├── dot_gitconfig.tmpl                 # Templated git config
 ├── private_dot_ssh/                   # SSH keys (examples)
 ├── private_dot_aws/                   # AWS credentials (examples)

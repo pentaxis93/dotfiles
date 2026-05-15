@@ -1,0 +1,23 @@
+{{- /* Remove all torrents and clean incomplete directory */ -}}
+# Remove ALL torrents and clean incomplete files
+if ! systemctl --user is-active --quiet transmission-daemon; then
+    echo "⚠ Transmission daemon not running"
+    return 1
+fi
+
+local confirm
+printf 'This will remove ALL torrents and incomplete files. Continue? [y/N] '
+read -r confirm
+
+if [ "$confirm" != "y" ]; then
+    echo "Cancelled"
+    return 0
+fi
+
+transmission-remote {{ .transmission.rpc_host }}:{{ .transmission.rpc_port }} -n "$(transmission-auth)" -t all --remove-and-delete >/dev/null 2>&1
+
+if [ -d "{{ .chezmoi.homeDir }}/Videos/.incomplete" ]; then
+    rm -rf "{{ .chezmoi.homeDir }}/Videos/.incomplete/"* 2>/dev/null
+fi
+
+printf '\033[32m✓ All torrents removed and incomplete files cleaned\033[0m\n'

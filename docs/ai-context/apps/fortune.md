@@ -8,14 +8,14 @@
 - **Zen Database** - Hand-crafted high-quality collection of Zen and Buddhist wisdom quotes
 - **Git-Managed** - Fortune databases tracked in dotfiles repository
 - **User-Local** - Installed to `~/.local/share/fortune/` (no system-wide changes)
-- **Optional Greeting** - Can display wisdom on terminal startup via fish_greeting
+- **Optional Greeting** - Can display wisdom on terminal startup via zsh prompt hook
 
 ## Configuration Files
 - **Package**: `home/.chezmoidata/packages.yaml` - Declaratively managed fortune-mod
 - **Database**: `home/dot_local/share/fortune/Zen_en` - Zen quotes fortune database (271 quotes)
 - **Index Generator**: `home/run_once_generate-fortune-index.sh.tmpl` - Creates .dat indexes locally
 - **PATH Wrapper**: `home/dot_local/bin/executable_fortune` - Universal wrapper script (works everywhere)
-- **Fish Greeting** (optional): `home/dot_config/fish/config.fish.tmpl` - Terminal startup integration
+- **Zsh Greeting** (optional): `home/dot_zshrc.tmpl` - Terminal startup integration
 - **Ignore Rule**: `.chezmoiignore` - Excludes generated .dat files from chezmoi management
 
 ## Usage
@@ -37,7 +37,7 @@ Since `~/.local/bin` precedes `/usr/bin` in PATH, the wrapper script intercepts 
 
 **No arguments** → Defaults to `Zen_en` for contemplative wisdom
 **Any arguments** → Passes through to `/usr/bin/fortune` unchanged
-**Works everywhere** → Fish, bash, scripts, systemd, cron
+**Works everywhere** → Zsh, bash, scripts, systemd, cron
 
 This universal approach means:
 - Interactive shells get Zen by default
@@ -104,16 +104,16 @@ Quote text here, potentially multi-line.
 Next quote...
 ```
 
-## Optional Fish Greeting Integration
+## Optional Zsh Greeting Integration
 
-To display zen wisdom on every new terminal session, uncomment and modify the `fish_greeting` function in `config.fish.tmpl`:
+To display zen wisdom on every new terminal session, add the following to `dot_zshrc.tmpl`:
 
-```fish
-function fish_greeting
-    # Display zen wisdom on terminal startup
+```zsh
+# Display zen wisdom on shell startup
+if [[ -o interactive ]]; then
     fortune Zen_en
     echo ""  # Add spacing after quote
-end
+fi
 ```
 
 This follows the philosophy: **"Each shell begins with wisdom"**
@@ -130,9 +130,9 @@ This follows the philosophy: **"Each shell begins with wisdom"**
 ## Alternative Usage Patterns
 
 ### Random Zen Alias
-Create a simple alias in `config.fish.tmpl` for convenience:
-```fish
-alias zen="fortune Zen_en"
+Create a simple alias in `aliases.zsh.tmpl` for convenience:
+```zsh
+alias zen='fortune Zen_en'
 ```
 
 ### Multiple Databases

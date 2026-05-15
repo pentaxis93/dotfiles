@@ -1,0 +1,26 @@
+# Clear mpv watch history and saved positions (semantic: media-play-clear)
+local history_file=~/.local/state/mpv/watch_history.jsonl
+local watch_later=~/.local/state/mpv/watch_later
+
+echo "This will clear:"
+[ -f "$history_file" ] && echo "  - Watch history"
+[ -d "$watch_later" ] && echo "  - Saved playback positions"
+
+read -k 1 "confirm?Continue? [y/N] "
+echo
+if [ "$confirm" != "y" ]; then
+    echo "Cancelled"
+    return 1
+fi
+
+if [ -f "$history_file" ]; then
+    rm "$history_file"
+    echo "Watch history cleared"
+fi
+
+if [ -d "$watch_later" ]; then
+    rm -rf "$watch_later"/*
+    echo "Saved positions cleared"
+fi
+
+echo "MPV data cleared"

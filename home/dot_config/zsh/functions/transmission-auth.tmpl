@@ -1,0 +1,5 @@
+{{- /* Helper function for transmission authentication */ -}}
+# Get transmission authentication string (semantic: retrieve.credentials)
+# NOTE: "changeme" is a placeholder — replace with the real RPC password.
+# Pre-existing security issue, not introduced by the zsh migration.
+printf '%s' "{{ .chezmoi.username }}:changeme"

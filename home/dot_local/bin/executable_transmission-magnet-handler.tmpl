@@ -1,31 +1,34 @@
-#!/usr/bin/env fish
-# Ultra-Zen Philosophy: "A click becomes an intention; intention becomes action"
+#!/usr/bin/env bash
+# "A click becomes an intention; intention becomes action"
 #
 # Magnet Link Handler for Transmission
-# Called by desktop environment when magnet:// URLs are clicked
-# Leverages existing tadd function for consistency
+# Called by desktop environment when magnet:// URLs are clicked.
+# Invokes the `tadd` zsh function for VPN-aware torrent addition.
 
-set -l magnet_url "$argv[1]"
+magnet_url="$1"
 
-if test -z "$magnet_url"
+if [ -z "$magnet_url" ]; then
     echo "Usage: transmission-magnet-handler <magnet-url>"
     exit 1
-end
+fi
 
 # Validate magnet URL format
-if not string match -q "magnet:?*" -- "$magnet_url"
-    echo "Error: Invalid magnet URL format"
-    exit 1
-end
+case "$magnet_url" in
+    magnet:\?*) ;;
+    *)
+        echo "Error: Invalid magnet URL format"
+        exit 1
+        ;;
+esac
 
-# Use existing tadd function for all the beautiful VPN checking and daemon management
-tadd "$magnet_url"
+# Call tadd via zsh -i -c so the function is loaded from $fpath
+zsh -i -c "tadd '$magnet_url'"
+status=$?
 
-# Show notification if notify-send is available
-if command -q notify-send
-    if test $status -eq 0
+if command -v notify-send >/dev/null 2>&1; then
+    if [ "$status" -eq 0 ]; then
         notify-send "Transmission" "Magnet link added to queue" -i transmission
     else
         notify-send "Transmission" "Failed to add magnet link" -i dialog-error
-    end
-end
+    fi
+fi

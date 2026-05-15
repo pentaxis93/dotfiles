@@ -1,0 +1,3 @@
+# Stop transmission daemon
+systemctl --user stop transmission-daemon
+echo "✓ Transmission daemon stopped"

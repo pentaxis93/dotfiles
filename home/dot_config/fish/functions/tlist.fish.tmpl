@@ -1,9 +1,0 @@
-{{- /* List active torrents */ -}}
-function tlist --description "List active torrents"
-    if not systemctl --user is-active --quiet transmission-daemon
-        echo "⚠ Transmission daemon not running"
-        return 1
-    end
-
-    transmission-remote {{ .transmission.rpc_host }}:{{ .transmission.rpc_port }} -n (transmission-auth) -l
-end

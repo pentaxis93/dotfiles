@@ -1,0 +1,35 @@
+{{- /* Show transmission and VPN status */ -}}
+# Show transmission daemon and VPN status
+if systemctl --user is-active --quiet transmission-daemon; then
+    printf '\033[32m✓ Transmission daemon: Running\033[0m\n'
+
+    local bind_ip vpn_ip
+    bind_ip=$(grep '"bind-address-ipv4"' ~/.config/transmission-daemon/settings.json | cut -d'"' -f4)
+    echo "  Bound to: $bind_ip"
+
+    vpn_ip=$(ip addr show tun0 2>/dev/null | grep 'inet ' | awk '{print $2}' | cut -d'/' -f1)
+    if [ -n "$vpn_ip" ]; then
+        if [ "$bind_ip" = "$vpn_ip" ]; then
+            printf '\033[32m  VPN: Connected (%s)\033[0m\n' "$vpn_ip"
+        else
+            printf '\033[33m  ⚠ VPN IP mismatch (current: %s, bound: %s)\033[0m\n' "$vpn_ip" "$bind_ip"
+            echo "  Run 'transmission-vpn-bind' to update"
+        fi
+    else
+        printf '\033[31m  ⚠ VPN: Not connected (killswitch active)\033[0m\n'
+    fi
+
+    local active_count
+    active_count=$(transmission-remote {{ .transmission.rpc_host }}:{{ .transmission.rpc_port }} -n "$(transmission-auth)" -l 2>/dev/null | grep -v "^ID" | grep -v "^Sum:" | command wc -l)
+    echo "  Active torrents: $active_count"
+else
+    printf '\033[31m✗ Transmission daemon: Not running\033[0m\n'
+
+    if ip addr show tun0 2>/dev/null | grep -q 'inet '; then
+        printf '\033[32m  VPN: Connected\033[0m\n'
+        echo "  Run 'tstart' to start transmission"
+    else
+        printf '\033[33m  VPN: Not connected\033[0m\n'
+        echo "  Run 'vpc' to connect VPN, then 'tstart'"
+    fi
+fi

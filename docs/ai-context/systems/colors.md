@@ -63,4 +63,4 @@ Located in `home/.chezmoitemplates/`:
 - **Waybar** (`style.css.tmpl`) - Full spectrum color usage for module theming
 - **Alacritty** (`alacritty.toml.tmpl`) - Terminal base colors (0-15 + extended)
 - **Niri** (`config.kdl.tmpl`) - Focus ring and selection colors
-- **nmtui** (via `fish/config.fish.tmpl`) - NEWT UI components with semantic mappings
+- **nmtui** (via `dot_zshrc.tmpl`) - NEWT UI components with semantic mappings

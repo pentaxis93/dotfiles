@@ -16,7 +16,7 @@ Just as colors became semantic purposes, keybindings are semantic **intentions**
 - **Template System**: Format-specific templates in `home/.chezmoitemplates/keybind-*.tmpl` transform semantic definitions to app-specific syntax
 - **Helix-Native**: Follow Helix's thoughtful semantic improvements as our foundation
 - **Context Manifestation**: Same intention manifests appropriately per application
-- **Vi Mode Everywhere**: Fish shell, Alacritty terminal, Helix editor, LF, and MPV all use vi-style navigation
+- **Vi Mode Selectively**: Alacritty terminal, Helix editor, LF, and MPV use vi-style navigation. Zsh shell uses stock robbyrussell with emacs-mode bindings (no vi mode by design).
 
 ## Core Semantic Categories
 - **Navigate**: Move focus without changing state (hjkl universally)
@@ -80,13 +80,16 @@ The following applications now use semantic keybinding templates:
   - All 100+ bindings categorized by semantic intent
 
 ## Vi-Mode Enabled Applications
-- **Fish Shell** (`config.fish.tmpl`) - Vi mode with Helix-native keybindings
-  - Mode indicators: `[N]` green, `[I]` blue, `[V]` yellow
-  - Cursor changes per mode: block/line/underscore
-  - Custom bindings: `ge` for end, `gh/gl` for line navigation
 - **Helix Editor** (`config.toml`) - Native modal editing
   - SPACE leader for commands
   - Full Helix semantic navigation
+- **Alacritty Terminal** (`alacritty.toml.tmpl`) - Vi mode with semantic templates
+
+## Zsh Shell (no vi mode)
+The shell uses **robbyrussell** with stock emacs-mode bindings, by deliberate design.
+Mode indicators (`[N]`/`[I]`/`[V]`) and Helix-native vi bindings are not preserved —
+the universal trio of zsh extensions (autosuggestions, syntax-highlighting, completions)
+provides the editing affordances. See `docs/ai-context/apps/zsh.md`.
 
 ## Documentation
 - **User Reference**: See `docs/user-reference/KEYBINDINGS.md` for complete semantic mappings and quick reference cards

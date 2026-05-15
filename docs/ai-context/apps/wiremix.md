@@ -9,7 +9,7 @@
 
 ## Configuration
 - **File**: `home/dot_config/wiremix/wiremix.toml.tmpl` - Extensive customization
-- **Fish Functions**: `vol` (launch mixer), `volu/vold` (volume up/down), `volm` (mute toggle), `vols` (status)
+- **Zsh Functions**: `vol` (launch mixer), `volu/vold` (volume up/down), `volm` (mute toggle), `vols` (status)
 - **Waybar Integration**: Click volume widget to launch wiremix in Alacritty
 
 ## Features

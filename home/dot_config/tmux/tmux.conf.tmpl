@@ -83,7 +83,7 @@ set -g status-left-length 40
 set -g status-left  "#[fg={{ template "color-hex.tmpl" (index $theme $s.text.inverted) }},bg={{ template "color-hex.tmpl" (index $theme $s.mode.normal) }},bold] #S #[default] "
 set -g status-right "#[fg={{ template "color-hex.tmpl" (index $theme $s.text.secondary) }}] %Y-%m-%d %H:%M "
 
-# Windows: inactive muted, active in mode.normal green (Fish/Helix normal-mode convention)
+# Windows: inactive muted, active in mode.normal green (Helix normal-mode convention)
 setw -g window-status-style         "fg={{ template "color-hex.tmpl" (index $theme $s.text.secondary) }},bg={{ template "color-hex.tmpl" (index $theme $s.surface.primary) }}"
 setw -g window-status-current-style "fg={{ template "color-hex.tmpl" (index $theme $s.text.inverted) }},bg={{ template "color-hex.tmpl" (index $theme $s.mode.normal) }},bold"
 setw -g window-status-format         " #I:#W "
@@ -93,7 +93,7 @@ setw -g window-status-current-format " #I:#W "
 set -g pane-border-style        "fg={{ template "color-hex.tmpl" (index $theme $s.border.subtle) }}"
 set -g pane-active-border-style "fg={{ template "color-hex.tmpl" (index $theme $s.border.focus) }}"
 
-# Copy-mode / selection indicator: mode.visual yellow — same language as Fish vi visual
+# Copy-mode / selection indicator: mode.visual yellow — Helix visual-mode convention
 setw -g mode-style "fg={{ template "color-hex.tmpl" (index $theme $s.text.inverted) }},bg={{ template "color-hex.tmpl" (index $theme $s.mode.visual) }},bold"
 
 # Message line: state.info blue on elevated surface

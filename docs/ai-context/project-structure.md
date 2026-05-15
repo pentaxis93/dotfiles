@@ -24,7 +24,7 @@ Reusable template fragments:
 
 ### `home/dot_config/`
 Application configurations (→ `~/.config/`)
-- `fish/` - Fish shell with vi-mode
+- `zsh/` - Zsh shell (oh-my-zsh + robbyrussell + universal trio extensions)
 - `helix/` - Helix editor
 - `mpv/` - Media player
 - `qutebrowser/` - Web browser

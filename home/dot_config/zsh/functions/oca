@@ -1,0 +1,9 @@
+# Attach to OpenCode server on babbie
+local babbie_ip="100.125.136.73"
+local port="4096"
+
+if [ $# -gt 0 ]; then
+    opencode attach "http://${babbie_ip}:${port}" --dir "$1"
+else
+    opencode attach "http://${babbie_ip}:${port}"
+fi

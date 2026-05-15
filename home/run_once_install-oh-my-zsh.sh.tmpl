@@ -1,0 +1,60 @@
+#!/bin/bash
+# Install oh-my-zsh and the universal trio of essential extensions.
+# Idempotent: skips components that already exist.
+#
+# Components:
+#   - ohmyzsh/ohmyzsh                    → ~/.oh-my-zsh
+#   - zsh-users/zsh-autosuggestions      → ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+#   - zsh-users/zsh-syntax-highlighting  → ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+#   - zsh-users/zsh-completions          → ~/.oh-my-zsh/custom/plugins/zsh-completions
+#
+# All three external plugins are also available via OS package managers,
+# but git-cloning gives uniform paths across CachyOS and Debian.
+
+set -euo pipefail
+
+ZSH_DIR="${HOME}/.oh-my-zsh"
+CUSTOM_PLUGINS="${ZSH_DIR}/custom/plugins"
+
+echo "🐚 Setting up oh-my-zsh and the essential extensions..."
+
+# Ensure git is available
+if ! command -v git >/dev/null 2>&1; then
+    echo "✗ git is required but not installed"
+    exit 1
+fi
+
+# Oh-my-zsh
+if [ ! -d "$ZSH_DIR" ]; then
+    echo "  Cloning oh-my-zsh..."
+    git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$ZSH_DIR"
+else
+    echo "  ✓ oh-my-zsh already installed"
+fi
+
+mkdir -p "$CUSTOM_PLUGINS"
+
+# Universal trio
+clone_plugin() {
+    local name="$1"
+    local repo="$2"
+    local target="${CUSTOM_PLUGINS}/${name}"
+    if [ ! -d "$target" ]; then
+        echo "  Cloning ${name}..."
+        git clone --depth=1 "$repo" "$target"
+    else
+        echo "  ✓ ${name} already installed"
+    fi
+}
+
+clone_plugin zsh-autosuggestions     https://github.com/zsh-users/zsh-autosuggestions.git
+clone_plugin zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting.git
+clone_plugin zsh-completions         https://github.com/zsh-users/zsh-completions.git
+
+echo ""
+echo "✓ Oh-my-zsh ready"
+echo ""
+echo "  To use zsh as your login shell, run (interactively):"
+echo "    chsh -s \$(which zsh)"
+echo ""
+echo "  Then start a new terminal session."

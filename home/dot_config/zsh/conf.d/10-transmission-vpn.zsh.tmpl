@@ -1,0 +1,34 @@
+{{- /*
+  VPN killswitch hook for transmission.
+  Stops the transmission daemon if the VPN tunnel is down; rebinds if the
+  VPN's IP has changed. Port of the fish conf.d/10-transmission-vpn hook.
+*/ -}}
+
+# Transmission VPN Integration
+# Ensures transmission only runs when VPN is connected.
+
+__check_vpn_and_transmission() {
+    if ip addr show tun0 2>/dev/null | grep -q 'inet '; then
+        # VPN is connected
+        if systemctl --user is-active --quiet transmission-daemon; then
+            local current_vpn_ip bound_ip
+            current_vpn_ip=$(ip addr show tun0 | grep 'inet ' | awk '{print $2}' | cut -d'/' -f1)
+            bound_ip=$(grep '"bind-address-ipv4"' ~/.config/transmission-daemon/settings.json 2>/dev/null | cut -d'"' -f4)
+
+            if [ "$current_vpn_ip" != "$bound_ip" ]; then
+                echo "🔄 VPN IP changed, updating transmission binding..."
+                transmission-vpn-bind
+            fi
+        fi
+        # else: VPN up, transmission not running — leave as-is (no auto-start)
+    else
+        # VPN is not connected
+        if systemctl --user is-active --quiet transmission-daemon; then
+            echo "⚠️  VPN disconnected, stopping transmission (killswitch)..."
+            systemctl --user stop transmission-daemon
+        fi
+    fi
+}
+
+# Check on shell startup
+__check_vpn_and_transmission

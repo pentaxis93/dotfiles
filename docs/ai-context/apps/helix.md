@@ -9,13 +9,13 @@
 - **Helix-Native Keybindings** - Preserves excellent defaults (ge, gh/gl, etc.)
 - **LSP Integration** - Advanced language server support with inlay hints
 - **Soft Line Wrapping** - Enhanced readability for long lines with visual indicators
-- **Fish Integration** - `h` abbreviation for quick editor invocation
+- **Zsh Integration** - `h` alias for quick editor invocation
 
 ## Configuration Files
 - **Main Config**: `home/dot_config/helix/config.toml.tmpl` - Editor settings and keybindings
 - **Languages**: `home/dot_config/helix/languages.toml.tmpl` - File-type specific settings
 - **Theme**: `home/dot_config/helix/themes/kanagawa-dragon.toml.tmpl` - Semantic color theme
-- **Fish Integration**: `h` abbreviation in `config.fish.tmpl`
+- **Zsh Integration**: `h` alias in `aliases.zsh.tmpl`
 - **Package**: `home/.chezmoidata/packages.yaml` - Declaratively managed
 
 ## Key Features

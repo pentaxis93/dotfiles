@@ -8,7 +8,7 @@
 
 ## Configuration
 - **File**: `home/dot_config/lazygit/config.yml` - Custom theme following our philosophy
-- **Fish Integration**: `lg` abbreviation launches lazygit
+- **Zsh Integration**: `lg` alias launches lazygit
 
 ## Semantic Colors
 - Active borders: Green (focus/ready)

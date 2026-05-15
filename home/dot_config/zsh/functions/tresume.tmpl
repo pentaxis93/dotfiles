@@ -1,0 +1,17 @@
+{{- /* Resume paused torrents */ -}}
+# Resume torrents (all or by ID)
+if ! systemctl --user is-active --quiet transmission-daemon; then
+    echo "⚠ Transmission daemon not running"
+    return 1
+fi
+
+if [ $# -eq 0 ]; then
+    transmission-remote {{ .transmission.rpc_host }}:{{ .transmission.rpc_port }} -n "$(transmission-auth)" -t all --start
+    printf '\033[32m✓ All torrents resumed\033[0m\n'
+else
+    local id
+    for id in "$@"; do
+        transmission-remote {{ .transmission.rpc_host }}:{{ .transmission.rpc_port }} -n "$(transmission-auth)" -t "$id" --start
+    done
+    printf '\033[32m✓ Resumed torrent(s): %s\033[0m\n' "$*"
+fi

@@ -6,13 +6,13 @@
 ## Architecture
 - **Bitwarden CLI** (`bw`) - Password manager for secure secret storage
 - **Chezmoi Templates** - Reference secrets without storing plaintext
-- **Fish Functions** - Semantic wrapper functions for vault operations
+- **Zsh Functions** - Semantic wrapper functions for vault operations
 - **Auto-lock Security** - Vault locks automatically on terminal exit
 
 ## Configuration
 - **Vault Config**: `home/dot_config/chezmoi/chezmoi.toml.tmpl` - Enables auto-unlock
 - **Template Helpers**: `home/.chezmoitemplates/bitwarden-*.tmpl` - Reusable secret retrieval
-- **Fish Integration**: Custom functions with semantic abbreviations (`bwu`, `bwc`, `bwg`)
+- **Zsh Integration**: Custom autoload functions with semantic aliases (`bwu`, `bwc`, `bwg`)
 
 ## Usage Patterns
 ```go-template
@@ -43,7 +43,7 @@
 **"Secrets dwell in their own realm, beyond the reach of wandering eyes"**
 
 - **Secrets Directory**: `~/.local/state/secrets/` - All secrets outside project paths
-- **Auto-loading**: Fish conf.d loads secrets into environment on shell startup
+- **Auto-loading**: Zsh conf.d loads secrets into environment on shell startup
 - **Environment Variables**: Secrets available as `GOOSE_VPN_USER`, `GOOSE_VPN_PASS`, etc.
 
 ### Directory Structure

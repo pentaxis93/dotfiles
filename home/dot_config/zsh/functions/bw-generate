@@ -1,0 +1,66 @@
+# Generate secure password with semantic options
+# "From chaos emerges cryptographic harmony"
+
+local length=32
+local uppercase=true lowercase=true numbers=true special=true copy=false
+
+local arg
+for arg in "$@"; do
+    case "$arg" in
+        --simple)
+            special=false
+            length=20
+            ;;
+        --strong)
+            length=32
+            ;;
+        --pin)
+            uppercase=false
+            lowercase=false
+            special=false
+            length=6
+            ;;
+        --passphrase)
+            bw generate --passphrase --words 4 --separator "-"
+            return
+            ;;
+        --copy|-c)
+            copy=true
+            ;;
+        --length=*)
+            length="${arg#--length=}"
+            ;;
+        *)
+            if [[ "$arg" =~ ^[0-9]+$ ]]; then
+                length="$arg"
+            fi
+            ;;
+    esac
+done
+
+local gen_args=()
+[ "$uppercase" = "false" ] && gen_args+=(--uppercase false)
+[ "$lowercase" = "false" ] && gen_args+=(--lowercase false)
+[ "$numbers" = "false" ] && gen_args+=(--number false)
+[ "$special" = "false" ] && gen_args+=(--special false)
+
+local password
+password=$(bw generate --length "$length" "${gen_args[@]}" 2>/dev/null)
+
+if [ -n "$password" ]; then
+    if [ "$copy" = "true" ]; then
+        if command -v wl-copy >/dev/null 2>&1; then
+            printf '%s' "$password" | wl-copy
+            printf '\033[32m✓\033[0m Generated password copied to clipboard\n'
+        else
+            printf '\033[31m✗\033[0m No clipboard manager found (install wl-clipboard)\n'
+            return 1
+        fi
+    else
+        printf '\033[32m✓\033[0m Generated password:\n'
+        printf '\033[36m%s\033[0m\n' "$password"
+    fi
+else
+    printf '\033[31m✗\033[0m Failed to generate password\n'
+    return 1
+fi

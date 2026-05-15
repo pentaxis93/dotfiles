@@ -1,0 +1,26 @@
+# Launch WeeChat IRC client (semantic: weechat-connect)
+
+if ! command -v weechat >/dev/null 2>&1; then
+    echo "WeeChat is not installed. Run 'chezmoi apply' to install it."
+    return 1
+fi
+
+mkdir -p ~/Downloads
+
+export TERM="xterm-256color"
+
+if [ ! -d ~/.config/weechat ]; then
+    echo "Welcome to WeeChat! Quick reference:"
+    echo "  Alt+h/l     - Previous/next buffer"
+    echo "  Alt+1-9     - Switch to buffer 1-9"
+    echo "  Alt+d       - DCC transfers window"
+    echo "  /help       - Show help"
+    echo "  /quit       - Exit WeeChat"
+    echo ""
+    echo "DCC auto-accept is enabled for files up to 10MB"
+    echo "Downloads will be saved to ~/Downloads"
+    echo ""
+    sleep 2
+fi
+
+weechat "$@"

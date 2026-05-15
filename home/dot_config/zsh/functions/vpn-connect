@@ -1,0 +1,27 @@
+# Connect to Goose VPN via systemd service
+# Semantic: Establish secure tunnel through vault-authenticated gateway
+
+local vpn_name="GooseVPN"
+
+if sudo systemctl is-active --quiet goosevpn.service; then
+    echo "✓ Already connected to VPN"
+    return 0
+fi
+
+echo "🔐 Connecting to $vpn_name..."
+
+sudo systemctl start goosevpn.service
+
+if [ $? -eq 0 ]; then
+    sleep 2
+    if sudo systemctl is-active --quiet goosevpn.service; then
+        echo "✓ Connected to $vpn_name"
+    else
+        echo "✗ Service started but connection failed"
+        sudo systemctl status goosevpn.service
+        return 1
+    fi
+else
+    echo "✗ Failed to start $vpn_name service"
+    return 1
+fi

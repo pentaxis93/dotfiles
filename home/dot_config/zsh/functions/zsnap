@@ -1,0 +1,27 @@
+# Create ZFS snapshot with semantic name
+# "Capture this moment; let time flow from here"
+
+if [ $# -ne 2 ]; then
+    printf '\033[34mUsage:\033[0m zsnap <dataset> <name>\n'
+    printf '\033[34mExample:\033[0m zsnap zpcachyos/ROOT/cos/home before-cleanup\n'
+    return 1
+fi
+
+local dataset="$1"
+local name="$2"
+local snapshot="${dataset}@${name}"
+
+if ! zfs list "$dataset" &>/dev/null; then
+    printf '\033[31m✗\033[0m Dataset does not exist: %s\n' "$dataset"
+    return 1
+fi
+
+printf '\033[34mCreating snapshot:\033[0m %s\n' "$snapshot"
+
+if zfs snapshot "$snapshot"; then
+    printf '\033[32m✓\033[0m Snapshot created: %s\n' "$snapshot"
+    printf '\033[90m  Access via: /.zfs/snapshot/%s/\033[0m\n' "$name"
+else
+    printf '\033[31m✗\033[0m Failed to create snapshot\n'
+    return 1
+fi

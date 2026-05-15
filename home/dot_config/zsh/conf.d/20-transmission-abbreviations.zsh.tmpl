@@ -1,0 +1,18 @@
+{{- /*
+  Transmission rapid-command aliases.
+  Port of the fish conf.d/20-transmission-abbreviations hook.
+*/ -}}
+
+# Transmission aliases for rapid torrenting.
+
+# Add torrent from clipboard (magnet link or URL)
+alias taa='wl-paste | xargs tadd'
+
+# Quick shortcuts for common commands
+alias tc='tclean'
+alias tp='tpause'
+alias tr='tresume'
+
+# Quick status and list
+alias tl='tlist'
+alias ts='tstatus'

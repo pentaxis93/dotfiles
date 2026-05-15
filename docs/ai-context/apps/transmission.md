@@ -17,7 +17,7 @@
 - **Magnet Handler**: `home/dot_local/bin/executable_transmission-magnet-handler.tmpl` - Browser magnet link handler
 - **Desktop Entry**: `home/dot_local/share/applications/transmission-magnet.desktop.tmpl` - System handler registration
 - **Systemd Service**: `home/dot_config/systemd/user/transmission-daemon.service.tmpl` - VPN-dependent service
-- **Fish Functions**: `home/dot_config/fish/functions/t*.fish.tmpl` - Semantic management commands
+- **Zsh Functions**: `home/dot_config/zsh/functions/t*` - Semantic management commands
 - **Tremc Config**: `home/dot_config/tremc/settings.cfg.tmpl` - Kanagawa theme and vi navigation
 
 ## Usage
@@ -43,12 +43,12 @@ tui      # Launch tremc interface
 ## VPN Integration
 - Transmission service depends on goosevpn.service
 - VPN IP dynamically detected and bound on startup
-- Fish conf.d hook monitors VPN status
+- Zsh conf.d hook monitors VPN status
 - Manual `tstart` includes automatic VPN check
 
 ## Browser Magnet Link Integration
 - **Click-to-Add** - Clicking magnet links in browser automatically adds to Transmission
-- **Handler Flow** - Browser → x-scheme-handler/magnet → Desktop Entry → Fish Script → tadd
+- **Handler Flow** - Browser → x-scheme-handler/magnet → Desktop Entry → Bash Handler → `zsh -i -c "tadd"`
 - **Handlr Registration** - Magnet links registered with handlr in setup script
 - **Automatic Daemon Start** - Handler auto-starts daemon if not running (via tadd)
 - **VPN Checking** - All magnet additions check VPN status before adding

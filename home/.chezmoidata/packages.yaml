@@ -19,7 +19,7 @@ packages:
   debian:
     apt:
       # Core CLI Tools - Foundation for server operations
-      - fish  # Modern shell with better defaults than bash
+      - zsh  # Interactive shell (oh-my-zsh + robbyrussell + universal trio extensions)
       - git  # Version control (usually pre-installed)
       - git-lfs  # Large file storage for git
       - tmux  # Terminal multiplexer for persistent sessions
@@ -70,6 +70,9 @@ packages:
   # =============================================================================
   cachyos:
     pacman:
+      # Shell - Interactive shell + universal trio extensions
+      - zsh  # Interactive shell (oh-my-zsh + robbyrussell + universal trio extensions)
+
       # System & Security - Foundation for secure operations
       - bitwarden-cli  # Password manager CLI for secure secret management
       - openvpn  # Secure tunneling daemon for VPN connections

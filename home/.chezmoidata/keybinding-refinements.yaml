@@ -13,11 +13,16 @@ native_sovereignty:
       we_import: ["gh/gl for line nav", "ge for end", "x for extend selection"]
       we_honor: "The art of semantic modal editing"
 
-    fish:
-      sovereignty: "Shell completions and command construction"
-      we_import: ["vi modes", "/ for search", "hjkl + w/b/e for ALL navigation"]
-      we_honor: ["Tab for completion", "Ctrl+F tradition"]
-      we_reject: ["Alt+arrows - Helix navigation is superior"]
+    zsh:
+      sovereignty: "Shell history, completion, and command construction"
+      we_import: []   # No semantic keybindings imported; stock robbyrussell
+      we_honor:
+        - "Emacs-mode line editing (default)"
+        - "Tab completion"
+        - "Universal trio of extensions: autosuggestions, syntax-highlighting, completions"
+      we_reject:
+        - "Vi mode in the shell prompt (deliberately omitted; pure robbyrussell)"
+        - "Mode indicators [N]/[I]/[V] (not part of robbyrussell)"
 
     niri:
       sovereignty: "Window management and spatial organization"
@@ -29,33 +34,10 @@ native_sovereignty:
       we_import: ["vi mode", "Helix navigation"]
       we_honor: ["Ctrl+Shift+C/V for clipboard", "terminal conventions"]
 
-refinements_from_testing:
-  fish_shell:
-    # Buffer navigation (gg/ge) removed - not useful in shell context
-    removed:
-      - action: file_start
-        reason: "Jumping to first ever command not useful in shell"
-      - action: file_end
-        reason: "Jumping to last command not useful in shell"
-
-    # Selection modes kept for Helix consistency
-    preserved:
-      - action: extend_selection (x)
-        reason: "Maintain Helix muscle memory even if similar to v"
-      - action: visual_mode (v)
-        reason: "Standard vi visual mode"
-
-    # Native Fish autosuggestions honored
-    native_keys:
-      Tab: "Primary completion - universal"
-      Ctrl+F: "Fish tradition - respect existing muscle memory"
-      Alt+Right: "Accept next word - Fish innovation"
-      Alt+Left: "Move back word - natural pairing"
-      # Note: We don't override these with semantic templates
-
 wisdom_gained:
-  - "Not all editor navigation makes sense in a shell"
+  - "Not all editor semantics belong in every tool"
   - "Honor the local language while maintaining your accent"
   - "Native tools know their domain best"
   - "Consistency matters where it helps, not where it hinders"
   - "The Middle Way: universal semantics + native sovereignty"
+  - "Robbyrussell is delivered as-is; preserving its design honors its restraint"

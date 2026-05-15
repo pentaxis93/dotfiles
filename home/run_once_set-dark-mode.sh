@@ -16,8 +16,8 @@ else
     echo "  gsettings not available, skipping GNOME configuration"
 fi
 
-# Set GTK environment variables (will be sourced by fish config)
-# These are also set in fish config but we ensure they're exported
+# Set GTK environment variables (will be sourced by zsh config)
+# These are also set in zsh config but we ensure they're exported
 export GTK_THEME=Adwaita:dark
 export QT_STYLE_OVERRIDE=adwaita-dark
 

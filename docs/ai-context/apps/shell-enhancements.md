@@ -6,7 +6,7 @@
 - **Transparent Integration**: `ls` command transparently replaced with lsd
 - **Enhanced Features**: Icons, colors, tree view support
 - **Zero Learning Curve**: All standard ls options pass through unchanged
-- **Implementation**: Fish function wrapper at `home/dot_config/fish/functions/ls.fish.tmpl`
+- **Implementation**: Zsh autoload function at `home/dot_config/zsh/functions/ls`
 
 ### Benefits
 - Nerd Font icons for file types
@@ -21,8 +21,8 @@
 - **Commands**:
   - `z <keyword>` - Jump to best match for keyword
   - `zi <keyword>` - Interactive selection with fzf
-- **Integration**: Initialized in Fish config, works alongside lfcd
-- **Configuration**: Auto-initialized in `home/dot_config/fish/config.fish.tmpl`
+- **Integration**: Initialized in zsh config, works alongside lfcd
+- **Configuration**: Auto-initialized in `home/dot_zshrc.tmpl`
 
 ### Philosophy
 Complements visual navigation (lfcd/Ctrl+O) with quick frecency-based jumps

@@ -1,0 +1,18 @@
+# Stop Tor anonymity proxy
+# Semantic: Terminate onion circuits and close SOCKS proxy
+
+if ! systemctl --user is-active --quiet tor; then
+    echo "ℹ️  Tor is not running"
+    return 0
+fi
+
+echo "🧅 Stopping Tor..."
+
+systemctl --user stop tor
+
+if [ $? -eq 0 ]; then
+    echo "✓ Tor disconnected"
+else
+    echo "✗ Failed to stop Tor"
+    return 1
+fi

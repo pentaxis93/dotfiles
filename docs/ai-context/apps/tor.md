@@ -16,7 +16,7 @@
 - **Tor Config**: `home/dot_config/private_tor/torrc.tmpl` - Client-only SOCKS proxy with control port
 - **Systemd Service**: `home/dot_config/systemd/user/tor.service.tmpl` - On-demand user service
 - **Setup Script**: `home/run_once_setup-tor.sh.tmpl` - Creates data directory, daemon-reload
-- **Fish Functions**: `home/dot_config/fish/functions/tor-*.fish.tmpl` - Connection management
+- **Zsh Functions**: `home/dot_config/zsh/functions/tor-*` - Connection management
 - **Waybar Script**: `home/dot_local/bin/executable_waybar-tor-check.tmpl` - Status indicator
 - **Package**: `home/.chezmoidata/packages.yaml` - tor, torsocks, nyx (pacman) + tor-browser (AUR)
 

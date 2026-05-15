@@ -10,7 +10,7 @@ FVM_CACHE_DIR="$HOME/fvm"
 FVM_DEFAULT_BIN="$FVM_CACHE_DIR/default/bin"
 PUB_CACHE_DIR="$HOME/.pub-cache"
 FLUTTER_VERSION="stable"  # Or specific version like "3.24.0"
-FISH_CONFIG="$HOME/.config/fish/config.fish"
+ZSHRC="$HOME/.zshrc"
 
 # Color output helpers
 info() { echo "[INFO] $*"; }
@@ -76,13 +76,13 @@ else
     exit 1
 fi
 
-# Clean up installer-added fish config line (if present)
+# Clean up installer-added zshrc line (if present)
 # The fvm installer adds its own PATH line, but we manage PATH via chezmoi
-if [[ -f "$FISH_CONFIG" ]]; then
-    if grep -q "\.fvm_flutter/bin" "$FISH_CONFIG" 2>/dev/null; then
-        info "Removing installer-added PATH line from fish config..."
-        sed -i '/\.fvm_flutter\/bin/d' "$FISH_CONFIG"
-        success "Cleaned up fish config"
+if [[ -f "$ZSHRC" ]]; then
+    if grep -q "\.fvm_flutter/bin" "$ZSHRC" 2>/dev/null; then
+        info "Removing installer-added PATH line from .zshrc..."
+        sed -i '/\.fvm_flutter\/bin/d' "$ZSHRC"
+        success "Cleaned up .zshrc"
     fi
 fi
 
