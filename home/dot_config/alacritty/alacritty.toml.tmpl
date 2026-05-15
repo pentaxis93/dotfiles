@@ -5,6 +5,12 @@
 TERM = "xterm-256color"
 WINIT_X11_SCALE_FACTOR = "1"
 
+# Explicit shell — declare zsh as a login shell. Prevents alacritty from
+# falling back to $SHELL inherited from a stale systemd-user environment.
+[terminal.shell]
+program = "/usr/bin/zsh"
+args = ["-l"]
+
 [window]
 dynamic_padding = true
 decorations = "full"
