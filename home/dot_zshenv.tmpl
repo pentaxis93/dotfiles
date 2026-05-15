@@ -1,0 +1,5 @@
+# Read for every zsh invocation. Routes interactive config to XDG location
+# and points ssh clients at the systemd-managed agent socket.
+
+export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent.socket"

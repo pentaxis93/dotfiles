@@ -1,0 +1,13 @@
+{{- if eq .chezmoi.hostname "oreb" -}}
+#!/usr/bin/env bash
+# Enable the user-systemd ssh-agent socket (shipped by openssh).
+set -euo pipefail
+
+if systemctl --user is-enabled ssh-agent.socket >/dev/null 2>&1; then
+    echo "✓ ssh-agent.socket already enabled"
+    exit 0
+fi
+
+systemctl --user enable --now ssh-agent.socket
+echo "✓ ssh-agent.socket enabled and started"
+{{- end -}}

@@ -1,0 +1,42 @@
+# History
+HISTFILE="${ZDOTDIR}/.zsh_history"
+HISTSIZE=10000
+SAVEHIST=10000
+setopt SHARE_HISTORY HIST_IGNORE_DUPS HIST_IGNORE_SPACE INC_APPEND_HISTORY
+
+# Completion
+autoload -Uz compinit && compinit
+
+# Vi mode
+bindkey -v
+export KEYTIMEOUT=1
+
+# Prompt with git branch (vcs_info is built into zsh)
+autoload -Uz vcs_info
+precmd() { vcs_info }
+zstyle ':vcs_info:git:*' formats ' (%b)'
+setopt PROMPT_SUBST
+PROMPT='%F{cyan}%~%f%F{yellow}${vcs_info_msg_0_}%f %# '
+RPROMPT='%(?..%F{red}%?%f)'
+
+# Plugins (Arch standard paths; both shipped by their respective packages)
+[ -r /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ] \
+    && source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+[ -r /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] \
+    && source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# Minimal alias set — mirrors most-used fish abbreviations
+alias h='helix'
+alias hx='helix'
+alias lg='lazygit'
+
+# Environment (mirrors fish config.fish.tmpl PATH additions)
+export EDITOR=helix
+export VISUAL=helix
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/go/bin:$PATH"
+[ -d "$HOME/.bun/bin" ] && export PATH="$HOME/.bun/bin:$PATH"
+
+# zoxide if installed
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"

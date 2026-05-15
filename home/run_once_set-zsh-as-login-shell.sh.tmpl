@@ -1,0 +1,22 @@
+{{- if eq .chezmoi.hostname "oreb" -}}
+#!/usr/bin/env bash
+# One-time login shell change. Re-runs if hash changes; idempotent in-place.
+set -euo pipefail
+
+target_shell=/usr/bin/zsh
+current_shell=$(getent passwd "$USER" | cut -d: -f7)
+
+if [ "$current_shell" = "$target_shell" ]; then
+    echo "✓ Login shell already $target_shell"
+    exit 0
+fi
+
+if [ ! -x "$target_shell" ]; then
+    echo "❌ $target_shell not found — declare zsh in packages.yaml and apply first"
+    exit 1
+fi
+
+echo "Changing login shell: $current_shell → $target_shell"
+sudo chsh -s "$target_shell" "$USER"
+echo "✓ Open a new terminal to pick up the new shell"
+{{- end -}}

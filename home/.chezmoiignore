@@ -184,3 +184,11 @@ claude-code.sh
 # OS files
 .DS_Store
 Thumbs.db
+
+# =============================================================================
+# zsh — currently only oreb's login shell
+# =============================================================================
+{{ if ne .chezmoi.hostname "oreb" }}
+.zshenv
+.config/zsh
+{{ end }}

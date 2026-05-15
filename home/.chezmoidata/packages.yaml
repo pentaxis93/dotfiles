@@ -138,6 +138,13 @@ packages:
       # Peripheral Configuration - Gaming hardware control
       - libratbag  # DBus daemon for configuring gaming mice (provides ratbagctl CLI)
 
+      # Shell - Login shell with autosuggestions and syntax highlighting
+      # Declared explicitly even though currently transitive via
+      # cachyos-zsh-config; fresh-machine reproducibility requires this.
+      - zsh
+      - zsh-autosuggestions
+      - zsh-syntax-highlighting
+
       # Shell Navigation - Smart directory jumping
       - zoxide  # Frecency-based directory navigation
       - lsd  # Modern ls replacement with icons and colors

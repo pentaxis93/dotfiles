@@ -306,6 +306,7 @@ claude
 - @docs/ai-context/apps/bluetui.md - Bluetooth device manager TUI
 - @docs/ai-context/apps/ratbagctl.md - Gaming peripheral configuration (RGB silenced via libratbag)
 - @docs/ai-context/apps/shell-enhancements.md - lsd, zoxide, Fish shell
+- @docs/ai-context/apps/zsh.md - Bare zsh login shell on oreb (ssh-agent socket activation)
 - @docs/ai-context/apps/flutter.md - Flutter/Dart development with fvm version manager
 - @docs/ai-context/apps/opencode.md - Remote OpenCode client/server on babbie VPS
 - @docs/ai-context/apps/fortune.md - Fortune with Zen quotes for contemplative terminal sessions
