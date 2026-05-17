@@ -1,24 +1,27 @@
-# Clean old automatic snapshots (interactive)
+# Clean zfs-auto-snapshot-created snapshots older than N days (interactive)
 # "Let go of distant echoes; preserve the recent song"
+#
+# Identifies auto-snapshots by ZFS property (com.sun:auto-snapshot-desc,
+# source=local) — prefix-agnostic and safe from matching manual snapshots,
+# regardless of the --prefix the systemd units pass (CachyOS uses 'znap';
+# upstream default is 'zfs-auto-snap'). Origin survives renaming.
 
 local days="${1:-90}"
 
 printf '\033[34m═══ Finding automatic snapshots older than %s days ═══\033[0m\n\n' "$days"
 
-local cutoff_date
-cutoff_date=$(date -d "$days days ago" +%s)
+local cutoff
+cutoff=$(date -d "$days days ago" +%s)
 
 local -a old_snapshots
-local snap snap_name snap_date_str snap_date
+local snap snap_date
 
 while IFS= read -r snap; do
-    snap_name=$(echo "$snap" | awk '{print $1}')
-    snap_date_str=$(echo "$snap" | cut -f2- -d' ' | sed 's/^ *//;s/ *$//')
-    snap_date=$(date -d "$snap_date_str" +%s 2>/dev/null)
-    if [ -n "$snap_date" ] && [ "$snap_date" -lt "$cutoff_date" ]; then
-        old_snapshots+=("$snap_name")
+    snap_date=$(zfs get -H -p -o value creation "$snap" 2>/dev/null)
+    if [[ "$snap_date" =~ ^[0-9]+$ ]] && (( snap_date < cutoff )); then
+        old_snapshots+=("$snap")
     fi
-done < <(zfs list -t snapshot -o name,creation -H | grep '@auto-')
+done < <(zfs get -H -t snapshot -s local -o name com.sun:auto-snapshot-desc 2>/dev/null)
 
 if [ "${#old_snapshots[@]}" -eq 0 ]; then
     printf '\033[32m✓\033[0m No old automatic snapshots to clean\n'

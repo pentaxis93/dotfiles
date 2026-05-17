@@ -56,7 +56,9 @@ Time is layered - recent history in fine detail, distant past in broader strokes
 - **Weekly**: Every week, keep 8 (last 2 months)
 - **Monthly**: Every month, keep 12 (last year)
 
-Snapshots are named automatically: `@auto-2025-09-30-15h00`
+Snapshots are named automatically: `@znap_2026-05-17-0700_daily`
+
+The `znap_` prefix comes from the CachyOS-shipped systemd units, which pass `--prefix=znap` to `zfs-auto-snapshot` (the upstream default would be `zfs-auto-snap`). The label suffix (`frequent`/`hourly`/`daily`/`weekly`/`monthly`) records which timer created the snapshot. Identification by name is therefore distribution-dependent — see `zclean` below for the prefix-agnostic alternative.
 
 ## Data Integrity Guarantee
 
@@ -109,17 +111,19 @@ zclean 30    # More aggressive: 30 days
 ```
 
 **Safety mechanisms**:
-- Only touches `@auto-*` snapshots (manual snapshots ignored)
+- Identifies auto-snapshots by ZFS property (`com.sun:auto-snapshot-desc`, source=local), not by name prefix. The tool stamps this property on every snapshot it creates; manual snapshots from `zsnap` lack it entirely.
 - Shows complete list before acting
 - Requires typing "yes" to confirm
 - Can be cancelled at any time
 
 **What it does**:
-1. Finds snapshots matching `@auto-*` pattern
-2. Filters by age threshold
+1. Discovers candidates via `zfs get -s local com.sun:auto-snapshot-desc` — prefix-agnostic
+2. Filters by age threshold (using `zfs get -p creation` for epoch seconds, no date parsing)
 3. Shows list with space usage
 4. Requires explicit confirmation
 5. Only then runs `zfs destroy` on each
+
+**Why property-based, not prefix-based**: The systemd units in CachyOS pass `--prefix=znap`, but a Debian system or a future CachyOS update could differ. The `com.sun:auto-snapshot-desc` property is set by the tool itself, so it survives any prefix change. Origin survives renaming.
 
 ### `zfsstatus` - Pool Health Summary
 
@@ -157,10 +161,10 @@ diff ~/.config/foo.conf /home/.zfs/snapshot/before-cleanup/pentaxis93/.config/fo
 ls /home/.zfs/snapshot/
 
 # Access yesterday's files
-ls /home/.zfs/snapshot/auto-2025-09-29-15h00/pentaxis93/
+ls /home/.zfs/snapshot/znap_2026-05-16-0700_daily/pentaxis93/
 
 # Restore a single file from yesterday
-cp /home/.zfs/snapshot/auto-2025-09-29-15h00/pentaxis93/important.txt ~/
+cp /home/.zfs/snapshot/znap_2026-05-16-0700_daily/pentaxis93/important.txt ~/
 ```
 
 ### Why This Approach?
@@ -212,10 +216,10 @@ This is why hundreds of snapshots can exist with minimal space cost.
 ls /home/.zfs/snapshot/ | tail -5
 
 # Check if file exists in snapshot
-ls /home/.zfs/snapshot/auto-2025-09-30-14h00/pentaxis93/Documents/
+ls /home/.zfs/snapshot/znap_2026-05-16-1400_hourly/pentaxis93/Documents/
 
 # Restore it
-cp /home/.zfs/snapshot/auto-2025-09-30-14h00/pentaxis93/Documents/important.pdf ~/Documents/
+cp /home/.zfs/snapshot/znap_2026-05-16-1400_hourly/pentaxis93/Documents/important.pdf ~/Documents/
 ```
 
 ### Recover from Bad Config Change
@@ -226,10 +230,10 @@ cp /home/.zfs/snapshot/auto-2025-09-30-14h00/pentaxis93/Documents/important.pdf 
 zlist zpcachyos/ROOT/cos/home | grep -B5 "$(date +%Y-%m-%d)"
 
 # Access old config
-cat /home/.zfs/snapshot/auto-2025-09-30-13h00/pentaxis93/.config/helix/config.toml
+cat /home/.zfs/snapshot/znap_2026-05-16-1300_hourly/pentaxis93/.config/helix/config.toml
 
 # Restore if good
-cp /home/.zfs/snapshot/auto-2025-09-30-13h00/pentaxis93/.config/helix/config.toml ~/.config/helix/
+cp /home/.zfs/snapshot/znap_2026-05-16-1300_hourly/pentaxis93/.config/helix/config.toml ~/.config/helix/
 ```
 
 ### Recover Entire Directory
@@ -237,10 +241,10 @@ cp /home/.zfs/snapshot/auto-2025-09-30-13h00/pentaxis93/.config/helix/config.tom
 # Accidentally deleted ~/Videos/project/
 
 # Find snapshot
-ls /home/.zfs/snapshot/auto-2025-09-30-12h00/pentaxis93/Videos/
+ls /home/.zfs/snapshot/znap_2026-05-16-1200_hourly/pentaxis93/Videos/
 
 # Restore whole directory
-cp -r /home/.zfs/snapshot/auto-2025-09-30-12h00/pentaxis93/Videos/project ~/Videos/
+cp -r /home/.zfs/snapshot/znap_2026-05-16-1200_hourly/pentaxis93/Videos/project ~/Videos/
 ```
 
 ## Advanced Capabilities
