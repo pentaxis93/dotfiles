@@ -4,7 +4,8 @@ Reference for the credential and secrets infrastructure underlying
 tesserine operator workflows.
 
 **This doc does not contain secrets.** It describes the shape of the
-system and the recovery paths. Secrets themselves live in Bitwarden.
+system and the recovery paths. Secret values live in the storage layer
+for their scope: Bitwarden-backed layers or host-local `pass`.
 
 ---
 
@@ -240,7 +241,8 @@ physical paper backup in the global recovery substrate.
 
 ## What this doc is NOT
 
-- Not the secrets themselves. Secrets live in Bitwarden.
+- Not the secrets themselves. Secret values live in the storage layer
+  for their scope: Bitwarden-backed layers or host-local `pass`.
 - Not exhaustive personal hygiene. Personal hygiene has its own work.
 - Not crypto. Crypto hygiene has its own module.
 - Not email hygiene. Email is its own workshop.
