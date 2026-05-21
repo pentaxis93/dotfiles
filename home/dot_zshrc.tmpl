@@ -50,6 +50,10 @@ export PATH="$HOME/.cargo/bin:$PATH"
 # Bun runtime (if installed)
 [ -d "$HOME/.bun/bin" ] && export PATH="$HOME/.bun/bin:$PATH"
 
+# npm userspace global prefix (if configured)
+# Set via `npm config set prefix ~/.npm-global` to avoid sudo for global installs.
+[ -d "$HOME/.npm-global/bin" ] && export PATH="$HOME/.npm-global/bin:$PATH"
+
 # ---------------------------------------------------------------------------
 # Editor
 # ---------------------------------------------------------------------------
