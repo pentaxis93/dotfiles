@@ -106,6 +106,9 @@ The OMZ `ssh-agent` plugin spawns a new agent per shell. The systemd user servic
 ### Git-cloned plugins, not OS packages
 Both Arch and Debian have apt/pacman packages for the three extensions, but the installed paths differ. Git-cloning to `$ZSH/custom/plugins/` produces a single path that works identically on both systems.
 
+### `unalias ls` after oh-my-zsh
+Oh-my-zsh's `lib/theme-and-appearance.zsh` unconditionally aliases `ls='ls --color=tty'` on Linux. Our autoload `ls` function delegates to `lsd`, which only accepts `always|auto|never` for `--color`. After alias expansion zsh forwards `--color=tty` into the function, into `lsd`, into an error. `dot_zshrc.tmpl` strips the alias with `unalias ls 2>/dev/null` immediately after the autoload block, leaving the broader `LSCOLORS`/`LS_COLORS` exports from the same lib file intact (other tools still need them). `ls` is the only one of our 57 autoload functions shadowed by an oh-my-zsh alias.
+
 ---
 
 *"The shell does not give commands; it receives intentions."*

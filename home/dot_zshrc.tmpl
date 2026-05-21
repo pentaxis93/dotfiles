@@ -75,6 +75,17 @@ if [ -d "$HOME/.config/zsh/functions" ]; then
 fi
 
 # ---------------------------------------------------------------------------
+# Function precedence over oh-my-zsh defensive aliases
+# Oh-my-zsh's lib/theme-and-appearance.zsh aliases `ls='ls --color=tty'` on
+# Linux. After alias expansion, zsh re-resolves the command word and finds
+# our autoload `ls` function, which forwards `--color=tty` to `lsd` — which
+# only accepts `always|auto|never`. Strip the alias so our function is the
+# sole `ls`. `ls` is the only autoload function shadowed by an oh-my-zsh
+# alias; no other entries need this treatment.
+# ---------------------------------------------------------------------------
+unalias ls 2>/dev/null
+
+# ---------------------------------------------------------------------------
 # Aliases
 # ---------------------------------------------------------------------------
 [ -f "$HOME/.config/zsh/aliases.zsh" ] && source "$HOME/.config/zsh/aliases.zsh"
