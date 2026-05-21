@@ -75,6 +75,7 @@ packages:
 
       # System & Security - Foundation for secure operations
       - bitwarden-cli  # Password manager CLI for secure secret management
+      - libfido2  # FIDO2/U2F library and tools for hardware security key authentication (SSH -sk keys, pam-u2f)
       - openvpn  # Secure tunneling daemon for VPN connections
       - tailscale  # Mesh VPN for secure device-to-device connectivity
       - docker  # Container platform for running isolated applications
