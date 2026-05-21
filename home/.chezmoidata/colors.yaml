@@ -8,6 +8,18 @@
 # Reference: https://github.com/rebelot/kanagawa.nvim
 
 # ============================================================================
+# ACTIVE THEME: The Single Switch
+# ============================================================================
+# This is the one place that decides which palette dresses the whole
+# environment. Every templated config resolves its colors through:
+#   {{- $theme := index .themes $.active_theme.family $.active_theme.variant -}}
+# To re-theme everything, repoint these two lines — no template edits needed.
+
+active_theme:
+  family: kanagawa
+  variant: dragon
+
+# ============================================================================
 # THEMES: Actual Color Palettes
 # ============================================================================
 # Each theme defines color names → hex codes
@@ -183,7 +195,7 @@ themes:
 # Philosophy: "Colors have no inherent meaning. Intentions are universal."
 #
 # Usage in templates:
-#   {{- $theme := .themes.kanagawa.dragon -}}
+#   {{- $theme := index .themes $.active_theme.family $.active_theme.variant -}}
 #   {{- $s := .semantic -}}
 #   {{- $error := index $theme $s.state.error -}}
 #   color: {{ template "color-hex.tmpl" $error }};
@@ -332,9 +344,10 @@ semantic:
 # ============================================================================
 #
 # To add a new theme:
-# 1. Add theme to themes/ with all required color names
-# 2. Semantic layer automatically adapts (no changes needed)
-# 3. Update template references to use new theme path
+# 1. Add the palette under themes/ with all required color names
+# 2. Semantic layer adapts automatically (it references color names, not hexes)
+# 3. Repoint active_theme (top of this file) at the new family/variant —
+#    no template edits needed; every config reads active_theme
 #
 # Example:
 #   themes:
@@ -345,6 +358,8 @@ semantic:
 #         green: "98971a"
 #         # ... all other colors
 #
-# Then in templates:
-#   {{- $theme := .themes.gruvbox.dark -}}
-#   (semantic mappings remain unchanged)
+# Then switch the whole environment by editing the selector at the top:
+#   active_theme:
+#     family: gruvbox
+#     variant: dark
+#   (templates and semantic mappings remain unchanged)

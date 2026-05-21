@@ -1,9 +1,9 @@
 {{- /*
   Alternate lf wrapper preserving the legacy 'lfcd' name + 'lc' alias.
 */ -}}
-{{- $selection := .themes.kanagawa.dragon.selection -}}
-{{- $green := .themes.kanagawa.dragon.green -}}
-{{- $comment := .themes.kanagawa.dragon.bright_black -}}
+{{- $selection := index .themes $.active_theme.family $.active_theme.variant "selection" -}}
+{{- $green := index .themes $.active_theme.family $.active_theme.variant "green" -}}
+{{- $comment := index .themes $.active_theme.family $.active_theme.variant "bright_black" -}}
 {{- $sel_r := printf "0x%s" (substr 0 2 $selection) | atoi -}}
 {{- $sel_g := printf "0x%s" (substr 2 4 $selection) | atoi -}}
 {{- $sel_b := printf "0x%s" (substr 4 6 $selection) | atoi -}}

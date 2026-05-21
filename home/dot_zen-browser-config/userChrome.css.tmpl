@@ -1,4 +1,4 @@
-{{- $theme := .themes.kanagawa.dragon -}}
+{{- $theme := index .themes $.active_theme.family $.active_theme.variant -}}
 {{- $s := .semantic -}}
 /* ════════════════════════════════════════════════════════════════════════════
    Zen Browser - Kanagawa Dragon Theme (userChrome.css)

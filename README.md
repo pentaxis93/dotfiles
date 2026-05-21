@@ -102,6 +102,26 @@ chezmoi diff
 chezmoi apply -v
 ```
 
+### Switch the color theme
+
+The entire environment's color scheme is chosen by a single selector at the top of
+`.chezmoidata/colors.yaml`. Repoint it, apply, and all ~18 templated configs retune
+together — no per-app edits:
+
+```yaml
+# .chezmoidata/colors.yaml
+active_theme:
+  family: kanagawa   # change to a palette defined under `themes:`
+  variant: dragon
+```
+
+```bash
+chezmoi apply -v   # every config re-renders against the new palette
+```
+
+Adding a brand-new palette means defining its color names under `themes:`; the
+semantic layer maps onto it unchanged. See `docs/ai-context/systems/colors.md`.
+
 ### Manage packages
 
 System packages are declared in `.chezmoidata/packages.yaml`:

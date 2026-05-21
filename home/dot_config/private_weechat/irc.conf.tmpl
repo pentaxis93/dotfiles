@@ -1,6 +1,6 @@
 {{- /* WeeChat IRC configuration with IRC Highway and DCC auto-accept */ -}}
 {{- /* Ultra-Zen: Modern IRC with secure file acceptance and Kanagawa theming */ -}}
-{{- $c := .themes.kanagawa.dragon -}}
+{{- $c := index .themes $.active_theme.family $.active_theme.variant -}}
 
 #
 # weechat -- irc.conf

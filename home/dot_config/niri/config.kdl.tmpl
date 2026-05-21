@@ -1,4 +1,4 @@
-{{- $theme := .themes.kanagawa.dragon -}}
+{{- $theme := index .themes $.active_theme.family $.active_theme.variant -}}
 {{- $s := .semantic -}}
 {{- $kb := .keybindings -}}
 // Niri configuration for CachyOS

@@ -1,5 +1,5 @@
 {{- /* Tremc configuration with Kanagawa Dragon theme */ -}}
-{{- $c := .themes.kanagawa.dragon -}}
+{{- $c := index .themes $.active_theme.family $.active_theme.variant -}}
 #
 # Transmission Remote Curses Interface Configuration
 # Ultra-Zen: Kanagawa Dragon Theme

@@ -1,4 +1,4 @@
-{{- $theme := .themes.kanagawa.dragon -}}
+{{- $theme := index .themes $.active_theme.family $.active_theme.variant -}}
 {{- $s := .semantic -}}
 # Tmux Terminal Multiplexer Configuration
 # "Text in a pane flows to the clipboard through vi selection and OSC 52"

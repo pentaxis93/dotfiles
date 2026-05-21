@@ -5,17 +5,36 @@
 **"Do not define colors; define intentions. Let the intention manifest as color."**
 
 ## Architecture
-- **Single Source of Truth**: All Kanagawa Dragon colors defined in `home/.chezmoidata/colors.yaml`
+- **Single Source of Truth**: All palettes defined in `home/.chezmoidata/colors.yaml`; the live palette is chosen by the `active_theme` selector
 - **Format Converters**: Template fragments handle format conversions for different config syntaxes
 - **Templated Configs**: Waybar CSS, Alacritty TOML, and Niri KDL use centralized colors
 - **Ultra-Zen Terminal Colors**: Terminal colors (0-15) map to actual theme colors, not traditional ANSI
 
 ## Usage Pattern
 ```go-template
-{{- $c := .kanagawa.dragon -}}
-color: {{ template "color-hex.tmpl" $c.green }}     # CSS: #8a9a7b
-color = {{ template "color-quoted.tmpl" $c.red }}   # TOML: "#c4746e"
+{{- $theme := index .themes $.active_theme.family $.active_theme.variant -}}
+color: {{ template "color-hex.tmpl" $theme.green }}     # CSS: #8a9a7b
+color = {{ template "color-quoted.tmpl" $theme.red }}   # TOML: "#c4746e"
 ```
+
+Every templated config binds the active palette this way — never a hardcoded
+`.themes.kanagawa.dragon`. Which palette is live is decided once, by `active_theme`.
+
+## Theme Selection
+
+The active palette is chosen in ONE place — the `active_theme` selector at the top
+of `home/.chezmoidata/colors.yaml`:
+
+```yaml
+active_theme:
+  family: kanagawa
+  variant: dragon
+```
+
+To re-theme the entire environment, repoint these two lines and run `chezmoi apply`.
+No template edits, no semantic-layer edits — all ~18 templated configs follow at once.
+Adding a new palette (gruvbox, nord, ...) means defining its color names under
+`themes:`; the semantic layer maps onto it unchanged.
 
 ## Semantic Terminal Colors
 
@@ -46,7 +65,7 @@ Each terminal color slot has a PURPOSE:
 - **Perfect Unity**: nmtui background = Waybar background = Alacritty background (#181616)
 - **Perfect Contrast**: Lazygit selections use reverse video - always readable
 - **Semantic Consistency**: color14 is focus/active (green), not selection background
-- **Maintainability**: Change theme by updating single file
+- **Maintainability**: Re-theme the whole environment by repointing `active_theme` in one file
 - **Extensibility**: Easy to add new apps with consistent theming
 - **Semantic Truth**: Colors represent intentions, not traditional ANSI meanings
 

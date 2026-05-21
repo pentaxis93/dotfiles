@@ -141,8 +141,9 @@ When creating ANY new application configuration, you MUST use the semantic syste
 **Semantic Colors (MANDATORY)**:
 - **NEVER** hardcode hex colors in new configs
 - **ALWAYS** use `{{ template "color-hex.tmpl" (index $theme $s.semantic.category) }}`
+- **ALWAYS** bind the active palette via the selector — `{{- $theme := index .themes $.active_theme.family $.active_theme.variant -}}` — NEVER hardcode `.themes.kanagawa.dragon`
 - Define semantic meaning first, let theme provide color
-- Single source of truth: `home/.chezmoidata/colors.yaml`
+- Single source of truth: `home/.chezmoidata/colors.yaml` (palette + the `active_theme` selector that chooses which palette is live)
 - See @docs/ai-context/systems/colors.md for complete system
 
 **Semantic Keybindings (MANDATORY)**:

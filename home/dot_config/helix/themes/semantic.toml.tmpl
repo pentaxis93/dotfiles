@@ -1,5 +1,5 @@
 {{- /* Helix Theme: Kanagawa Dragon (Semantic Color System) */ -}}
-{{- $c := .themes.kanagawa.dragon -}}
+{{- $c := index .themes $.active_theme.family $.active_theme.variant -}}
 {{- $s := .semantic -}}
 
 # Kanagawa Dragon theme for Helix

@@ -1,4 +1,4 @@
-{{- $theme := .themes.kanagawa.dragon -}}
+{{- $theme := index .themes $.active_theme.family $.active_theme.variant -}}
 {{- $s := .semantic -}}
 # Wiremix Configuration - Modern TUI Audio Mixer for PipeWire
 # Themed with theme-agnostic semantic colors and Helix-native vi keybindings

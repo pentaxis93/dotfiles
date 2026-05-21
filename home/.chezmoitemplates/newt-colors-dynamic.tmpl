@@ -1,7 +1,7 @@
 {{- /* Dynamic NEWT_COLORS Template - Uses centralized color palette */ -}}
 {{- /* Generates NEWT_COLORS string from semantic mappings in colors.yaml */ -}}
 {{- /* Each component uses terminal color indices (color0-color15) */ -}}
-{{- $newt := .themes.kanagawa.dragon.newt -}}
+{{- $newt := index .themes $.active_theme.family $.active_theme.variant "newt" -}}
 {{- "" -}}
 {{- /* Build NEWT_COLORS as a single line with spaces between components */ -}}
 {{- "root=" -}}{{- template "color-index.tmpl" $newt.root_fg -}},{{- template "color-index.tmpl" $newt.root_bg -}} {{- " " -}}

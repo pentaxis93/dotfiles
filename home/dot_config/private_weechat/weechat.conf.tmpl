@@ -1,6 +1,6 @@
 {{- /* WeeChat main configuration with Kanagawa theme and DCC settings */ -}}
 {{- /* Ultra-Zen: Mindful IRC with semantic colors and secure downloads */ -}}
-{{- $c := .themes.kanagawa.dragon -}}
+{{- $c := index .themes $.active_theme.family $.active_theme.variant -}}
 
 #
 # weechat -- weechat.conf
