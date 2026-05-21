@@ -84,7 +84,7 @@ disambiguation only where needed.
 - **Provider**: OVHcloud
 - **OS**: Fedora CoreOS
 - **User**: `core`
-- **Authentication**: SSH key (entry in operator vault)
+- **Authentication**: hardware-backed SSH key (`ed25519-sk`, YubiKey-bound — see SSH access below)
 
 Components installed on babbie:
 
@@ -110,16 +110,46 @@ Components installed on babbie:
 2. Restart agentd: `systemctl --user restart agentd`
 3. Loader fetches the new value on restart; no manual key handling needed
 
+### SSH access
+
+Operator machines authenticate to GitHub and the VPSes using **hardware-backed
+SSH keys** (`ed25519-sk`). The private key material is bound to the YubiKey:
+every connection requires a physical touch, and the key is unusable if the
+machine is stolen without the YubiKey present.
+
+- **Keys are per-device.** Each operator machine generates its own key,
+  registered/authorized under its hostname. No private key is ever copied
+  between machines — granular revocation, minimal key travel. oreb is done;
+  mami gets its own key when provisioned.
+- **oreb** authenticates to `github.com`, `babbie`, and `weforge` via
+  `~/.ssh/id_ed25519_sk` — registered on GitHub as "oreb"; public key in each
+  VPS's `~/.ssh/authorized_keys`.
+- `~/.ssh/config` pins every host to its key with `IdentitiesOnly yes`, so SSH
+  offers only the named key rather than the full keyring (avoids auth-attempt
+  exhaustion, no public-key leakage).
+- VPSes (Fedora CoreOS) read both `~/.ssh/authorized_keys` and the
+  Ignition-provisioned `~/.ssh/authorized_keys.d/ignition`. The original
+  software keys were removed from the latter.
+- VPSes use SSH for **administrative access only**. Git operations from a VPS
+  use HTTPS + `gh` — no SSH key belongs on a VPS for git.
+- The superseded software key (`id_ed25519`) is retained on oreb as
+  `id_ed25519.deprecated` through an observation window, then deleted.
+
 ### Operator-critical accounts — 2FA state
 
 | Account | 2FA methods registered |
 |---|---|
-| Bitwarden | TOTP (Authenticator) + email; YubiKey FIDO2 pending |
-| Google primary | Authenticator + Google Prompt + Passkey + backup codes |
-| Google honey | Authenticator + Google Prompt + Passkey + backup codes |
+| Bitwarden | TOTP (Authenticator) + email + YubiKey (FIDO2) |
+| Google primary | Authenticator + Google Prompt + Passkey + backup codes + YubiKey |
+| Google honey | Authenticator + Google Prompt + Passkey + backup codes + YubiKey |
+| GitHub | TOTP (Authenticator) + recovery codes + YubiKey |
+| OVH | TOTP + recovery codes + YubiKey |
+| Namecheap | YubiKey (sole 2FA method) + recovery codes |
 
-Backup codes stored as Hidden custom fields on the respective Bitwarden
-entries. GitHub, OVH, Anthropic, OpenRouter 2FA inventory pending.
+Backup codes are stored in the Notes field of the respective Bitwarden
+entries. For single-2FA-method accounts (e.g. Namecheap), the recovery codes
+*are* the second factor — not optional backup. Anthropic, OpenRouter, and
+other lower-tier accounts register the YubiKey on a migrate-on-touch basis.
 
 ---
 
@@ -132,14 +162,32 @@ entries. GitHub, OVH, Anthropic, OpenRouter 2FA inventory pending.
 - Without paper backup: account recovery email path via the
   Bitwarden-registered email (primary Gmail, which is hardened)
 
-### Lost YubiKey (post-arrival)
+### Lost YubiKey
 
-Alternative 2FA methods remain available on every account:
+**2FA access** — alternative methods remain on every account:
 - Bitwarden: TOTP + email
 - Google accounts: Authenticator + Google Prompt + Passkey + backup codes
+- GitHub / OVH: TOTP + recovery codes
+- Namecheap: recovery codes (the YubiKey was its sole 2FA method)
 
-Re-register a replacement YubiKey when obtained; remove the lost key's
-registration on each account.
+**SSH access** — the YubiKey is the only key for `github.com`, `babbie`, and
+`weforge`. This is recoverable, not a lockout:
+- *GitHub*: `gh` on oreb authenticates over HTTPS independently of the
+  YubiKey; HTTPS git operations keep working. Web access has other 2FA.
+- *babbie / weforge*: the VPSes keep running — only administrative SSH is
+  affected. Recover via OVH rescue mode: boot the VPS into rescue, mount the
+  disk, add a fresh public key to `~/.ssh/authorized_keys`, reboot. (This is
+  how babbie was originally provisioned.) The OVH account itself stays
+  reachable via TOTP. Note: FCOS's `core` user has no password, so the OVH
+  web console alone cannot log in — recovery goes through rescue mode.
+
+Recovery sequence: obtain a replacement YubiKey → generate a new `ed25519-sk`
+key → re-register on GitHub via `gh` → re-authorize on each VPS via rescue
+mode → remove the lost key's registrations everywhere.
+
+A break-glass recovery key (private half encrypted offline, public half in
+each VPS's `authorized_keys`) would reduce VPS recovery from ~an hour to
+minutes — deferred to the global recovery substrate workshop.
 
 ### Lost phone
 
@@ -156,7 +204,9 @@ registration on each account.
 If babbie becomes unrecoverable:
 
 1. Provision new VPS (FCOS or equivalent)
-2. Restore SSH key from operator vault
+2. Authorize operator SSH keys on the new host — oreb's `id_ed25519_sk.pub`,
+   plus any other operator machines — via the Ignition config or
+   `~/.ssh/authorized_keys`
 3. Restore Secrets Manager token from operator vault entry
 4. Re-deploy agentd Quadlet + loader script from this dotfiles repo
 5. If the project name in Secrets Manager differs (new host name), update
@@ -232,7 +282,7 @@ physical paper backup in the global recovery substrate.
 ## Update discipline
 
 This doc reflects the operator credential architecture established
-through the Operator Secrets Workshop (May 8–12, 2026). Update when:
+through the Operator Secrets Workshop (May 8–21, 2026). Update when:
 
 - Storage architecture changes (new vault layer, new platform)
 - New operator-critical accounts come online
