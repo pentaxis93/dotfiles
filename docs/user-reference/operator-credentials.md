@@ -124,6 +124,9 @@ machine is stolen without the YubiKey present.
 - **oreb** authenticates to `github.com`, `babbie`, and `weforge` via
   `~/.ssh/id_ed25519_sk` — registered on GitHub as "oreb"; public key in each
   VPS's `~/.ssh/authorized_keys`.
+- The WeForge git endpoint (`git.weforge.build`) authenticates with the same
+  hardware-backed key — registered in the WeForge account, separate from the
+  GitHub registration.
 - `~/.ssh/config` pins every host to its key with `IdentitiesOnly yes`, so SSH
   offers only the named key rather than the full keyring (avoids auth-attempt
   exhaustion, no public-key leakage).
@@ -132,8 +135,9 @@ machine is stolen without the YubiKey present.
   software keys were removed from the latter.
 - VPSes use SSH for **administrative access only**. Git operations from a VPS
   use HTTPS + `gh` — no SSH key belongs on a VPS for git.
-- The superseded software key (`id_ed25519`) is retained on oreb as
-  `id_ed25519.deprecated` through an observation window, then deleted.
+- The superseded software key (`id_ed25519`) has been fully removed — from
+  oreb and from every host/account where it was authorized (GitHub, the
+  VPSes, the WeForge account).
 
 ### Operator-critical accounts — 2FA state
 
