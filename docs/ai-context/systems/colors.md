@@ -7,7 +7,7 @@
 ## Architecture
 - **Single Source of Truth**: All Kanagawa Dragon colors defined in `home/.chezmoidata/colors.yaml`
 - **Format Converters**: Template fragments handle format conversions for different config syntaxes
-- **Templated Configs**: Waybar CSS, Kitty conf, tmux, and Niri KDL use centralized colors
+- **Templated Configs**: Waybar CSS, Kitty conf, Zellij, and Niri KDL use centralized colors
 - **Ultra-Zen Terminal Colors**: Terminal colors (0-15) map to actual theme colors, not traditional ANSI
 
 ## Usage Pattern

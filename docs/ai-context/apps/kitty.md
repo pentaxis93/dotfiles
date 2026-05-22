@@ -19,12 +19,11 @@
 - **Main Config**: `home/dot_config/kitty/kitty.conf.tmpl` → `~/.config/kitty/kitty.conf`
 - **Scrollback Helper**: `home/dot_local/bin/executable_kitty-scrollback-helix` → `~/.local/bin/kitty-scrollback-helix`
 - **SSH Aliases**: `home/dot_config/zsh/aliases.zsh.tmpl` (`babbie`, `weforge` → `kitten ssh`)
-- **tmux Passthrough**: `home/dot_config/tmux/tmux.conf.tmpl` (`allow-passthrough on`, `xterm-kitty:RGB`)
 - **Host Gate**: `home/.chezmoiignore` (excludes `.config/kitty` off oreb)
 - **Package**: `home/.chezmoidata/packages.yaml` — `kitty` under `cachyos.pacman`
 
 ## Semantic Color Integration
-The config mirrors the integration pattern used by tmux and the former
+The config mirrors the integration pattern used by Zellij and the former
 Alacritty config. The header binds the palette and semantic layer:
 
 ```go-template
@@ -43,7 +42,7 @@ A theme change made solely in `colors.yaml` propagates to Kitty on the next
 `chezmoi apply` with no edit to `kitty.conf.tmpl`. The 16-color palette maps to
 the semantic terminal slots (`color0` = background, `color14` = focus, …); tabs
 and borders draw from `mode`, `border`, and `state` categories so Kitty's chrome
-matches tmux.
+matches Zellij.
 
 ### Selection — Reverse Video
 Both `selection_foreground` and `selection_background` are set to `none`,
@@ -70,7 +69,7 @@ yankable to the Wayland clipboard.
 
 **Scrollback division — important.** This binding captures **Kitty's own**
 scrollback buffer and is meant for **bare-terminal** use (including outside any
-multiplexer). Inside Zellij or tmux, the multiplexer owns the scrollback; use
+multiplexer). Inside Zellij, the multiplexer owns the scrollback; use
 *its* scrollback/copy-mode tool there. Kitty's binding does not replace it, and
 inside a multiplexer would only see the mux's redraw region.
 
@@ -79,7 +78,7 @@ Kitty has no terminal vi-mode, so the Alacritty vi-mode/search/clear-selection
 keybindings do not translate — Helix *becomes* the scrollback interface, and the
 whole `keybind-alacritty.tmpl` apparatus collapses into this one mapping.
 "Open scrollback in editor" has no semantic category in `keybindings.yaml`, so —
-exactly like tmux's hardcoded `y` — it is an application-specific binding,
+exactly like Zellij's hardcoded copy key — it is an application-specific binding,
 hardcoded with this justification rather than templated.
 
 ## Remote Terminfo via `kitten ssh`
@@ -99,13 +98,11 @@ alias babbie='kitten ssh babbie'
 alias weforge='kitten ssh weforge'
 ```
 
-### tmux caveat
-When launched from inside tmux, the multiplexer can intercept the escape
-handshake `kitten ssh` uses to transmit terminfo. Two mitigations are in place
-and available:
-- `tmux.conf` sets `allow-passthrough on` so the handshake survives.
-- The most reliable path is to run `kitten ssh` from a **plain Kitty window**
-  (outside tmux).
+### Multiplexer caveat
+When launched from inside a multiplexer (Zellij), the escape handshake
+`kitten ssh` uses to transmit terminfo can be intercepted. Zellij has no
+tmux-style passthrough toggle, so the reliable path is to run `kitten ssh`
+from a **plain Kitty window** (outside Zellij).
 
 ### Manual fallback
 If a remote ever still lacks the entry (and provisioning that host is out of
@@ -115,7 +112,7 @@ copy works:
 infocmp -a xterm-kitty | ssh babbie  tic -x -o ~/.terminfo /dev/stdin
 infocmp -a xterm-kitty | ssh weforge tic -x -o ~/.terminfo /dev/stdin
 ```
-Restart any existing Zellij/tmux session on the remote afterward so it picks up
+Restart any existing Zellij session on the remote afterward so it picks up
 the new terminfo.
 
 ## Bell

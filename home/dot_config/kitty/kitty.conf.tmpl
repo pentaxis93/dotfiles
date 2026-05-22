@@ -66,9 +66,9 @@ enable_audio_bell yes
 # fully navigable, selectable, and yankable. The wrapper spools the piped buffer
 # to a temp file because Helix cannot read stdin as a buffer.
 #
-# This captures KITTY's scrollback — for bare-terminal use. Inside Zellij or
-# tmux, use the multiplexer's own scrollback/copy-mode instead; this binding
-# does not replace it.
+# This captures KITTY's scrollback — for bare-terminal use. Inside Zellij,
+# use the multiplexer's own scrollback/copy-mode instead; this binding does
+# not replace it.
 map kitty_mod+h launch --type=overlay --stdin-source=@screen_scrollback {{ .chezmoi.homeDir }}/.local/bin/kitty-scrollback-helix
 
 # ============================================================================
@@ -110,7 +110,7 @@ active_border_color    {{ template "color-hex.tmpl" (index $theme $s.border.focu
 inactive_border_color  {{ template "color-hex.tmpl" (index $theme $s.border.default) }}
 bell_border_color      {{ template "color-hex.tmpl" (index $theme $s.state.warning) }}
 
-# Tabs — active tab in mode.normal green on inverted text (mirrors tmux)
+# Tabs — active tab in mode.normal green on inverted text (mirrors Zellij)
 active_tab_foreground    {{ template "color-hex.tmpl" (index $theme $s.text.inverted) }}
 active_tab_background    {{ template "color-hex.tmpl" (index $theme $s.mode.normal) }}
 inactive_tab_foreground  {{ template "color-hex.tmpl" (index $theme $s.text.secondary) }}

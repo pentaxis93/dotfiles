@@ -1,0 +1,6 @@
+# dev — enter a Zellij session by project name, creating it if absent.
+#
+# `attach --create` is idempotent: it attaches if the session exists and
+# creates it otherwise, so one command serves both cases. Every session is
+# named for its project; `zellij ls` lists them. Defaults to "main".
+zellij attach --create "${1:-main}"

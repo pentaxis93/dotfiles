@@ -74,7 +74,7 @@ map U unselect  # Unselect all
 map L :open_with  # Choose app from available handlers
 map W $printf "%s" "$fx" | wl-copy  # Copy paths to clipboard (Wayland)
 {{ else -}}
-# VPS: No GUI handlers, copy paths to tmux buffer or echo
+# VPS: No GUI handlers, copy paths via OSC 52 or echo
 map W $printf "%s" "$fx" | tee /dev/stderr  # Show paths (no clipboard on VPS)
 {{ end }}
 

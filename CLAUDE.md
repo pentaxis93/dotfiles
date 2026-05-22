@@ -297,7 +297,7 @@ claude
 - @docs/ai-context/apps/lf.md - Terminal file manager
 - @docs/ai-context/apps/lazygit.md - Git TUI with reverse video
 - @docs/ai-context/apps/kitty.md - Terminal emulator (oreb) with semantic colors, scrollback→Helix, and kitten ssh terminfo
-- @docs/ai-context/apps/tmux.md - Terminal multiplexer with vi copy-mode routing to Wayland clipboard
+- @docs/ai-context/apps/zellij.md - Terminal multiplexer (replaces tmux) with Kanagawa theme and wl-copy/OSC 52 clipboard
 
 ### System Tools
 - @docs/ai-context/apps/automation.md - System automation (ydotool, wev, socat, slurp, grim)

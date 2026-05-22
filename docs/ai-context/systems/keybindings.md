@@ -78,7 +78,7 @@ The following applications now use semantic keybinding templates:
 - **Helix Editor** (`config.toml`) - Native modal editing
   - SPACE leader for commands
   - Full Helix semantic navigation
-- **Kitty Terminal** (`kitty.conf.tmpl`, oreb) - No in-terminal vi-mode; scrollback opens in Helix (Ctrl+Shift+H) for full Helix-native navigation. The single binding is application-specific (like tmux's `y`), not template-migrated.
+- **Kitty Terminal** (`kitty.conf.tmpl`, oreb) - No in-terminal vi-mode; scrollback opens in Helix (Ctrl+Shift+H) for full Helix-native navigation. The single binding is application-specific (like Zellij's copy key), not template-migrated.
 
 ## Zsh Shell (no vi mode)
 The shell uses **robbyrussell** with stock emacs-mode bindings, by deliberate design.
