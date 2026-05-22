@@ -10,7 +10,7 @@ system and the recovery paths. Secrets themselves live in Bitwarden.
 
 ## Storage architecture
 
-Three storage layers, each with its own scope and audience.
+Four storage layers, each with its own scope and audience.
 
 ### Personal vault (Bitwarden)
 
@@ -43,6 +43,23 @@ Manager vault (different product within the same Bitwarden org).
 - The token itself is stored in the operator Password Manager vault as a
   recovery substrate, in addition to being installed on the host
 
+### Host-local secret store (`pass`)
+
+Host-local secrets consumed on a specific execution host when Bitwarden
+CLI is not a suitable non-interactive substrate. This complements
+Bitwarden; it does not replace the personal vault, operator vault, or
+Bitwarden Secrets Manager.
+
+- Password store lives under the host user's `~/.password-store`
+- Entries are encrypted to a host-local GPG key for that user
+- `pass` operations require an accessible `gpg-agent` in the invoking
+  session, including non-interactive systemd or script contexts
+- Paths are host-scoped and service-scoped; current convention:
+  `weforge/<service>/<purpose>`
+- Current weforge entry: `weforge/todosrht/db-password`
+- Current materialized Podman secret:
+  `weforge-todosrht-db-password`
+
 ---
 
 ## Naming convention
@@ -74,6 +91,9 @@ disambiguation only where needed.
   - Examples: `operator/babbie/ssh-core`, `personal/google/primary/login`
   - Scope words `personal` / `operator` appear only in references; never
     as folder names, prefixes, or anywhere in Bitwarden UI
+- **Host-local `pass` paths** use `<host>/<service>/<purpose>`. Current
+  weforge convention: `weforge/<service>/<purpose>`; for example,
+  `weforge/todosrht/db-password`.
 
 ---
 
