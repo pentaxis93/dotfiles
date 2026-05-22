@@ -90,7 +90,7 @@ mask it by forcing a generic TERM.
 `kitten ssh` does this: on connect it transmits the `xterm-kitty` terminfo
 (bundled with the kitten — no local terminfo package required) into the remote
 user's `~/.terminfo`, then launches the login shell. It is a drop-in for `ssh`
-and honors `~/.ssh/config` (HostName, User, IdentityFile, ForwardAgent). The
+and honors `~/.ssh/config` (HostName, User, IdentityFile, IdentitiesOnly). The
 `babbie` and `weforge` aliases route through it on oreb:
 
 ```sh

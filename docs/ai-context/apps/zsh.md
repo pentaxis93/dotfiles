@@ -63,7 +63,7 @@ The zshrc exports `SSH_AUTH_SOCK` pointing at the socket. Keys are loaded manual
 
 ```bash
 systemctl --user status ssh-agent     # Check status
-ssh-add ~/.ssh/id_ed25519             # Add a key
+ssh-add ~/.ssh/id_ed25519_sk          # Add the hardware key
 ssh-add -l                            # List loaded keys
 ```
 

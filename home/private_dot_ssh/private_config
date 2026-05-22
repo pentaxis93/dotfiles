@@ -1,22 +1,26 @@
 # SSH Configuration
 # Managed by chezmoi
 
-Host gallery
-    HostName 138.197.99.109
-    User pentaxis
-    IdentityFile ~/.ssh/id_rsa
-
 Host babbie
     HostName 57.131.33.144
     User core
-    IdentityFile ~/.ssh/id_ed25519
-    ForwardAgent yes
+    IdentityFile ~/.ssh/id_ed25519_sk
+    IdentitiesOnly yes
 
 Host weforge
     HostName 162.19.220.109
     User core
-    IdentityFile ~/.ssh/id_ed25519
-    ForwardAgent yes
+    IdentityFile ~/.ssh/id_ed25519_sk
+    IdentitiesOnly yes
+
+Host git.weforge.build
+    User git
+    IdentityFile ~/.ssh/id_ed25519_sk
+    IdentitiesOnly yes
+
+Host github.com
+    IdentityFile ~/.ssh/id_ed25519_sk
+    IdentitiesOnly yes
 
 Host *
     ServerAliveInterval 60
