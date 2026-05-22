@@ -123,6 +123,7 @@ packages:
       - slurp  # Interactive region selection for Wayland screenshots (pairs with grim)
       - satty  # Screenshot annotation tool for quick edits
       - gimp  # Full-featured image editor for advanced editing
+      - awww  # Wayland wallpaper daemon (awww-daemon) spawned by niri at startup; upstream rename of swww (Replaces: swww)
 
       # System Automation - Agentic process and app manipulation
       - ydotool  # Wayland input automation for keyboard/mouse simulation across all GUI apps
