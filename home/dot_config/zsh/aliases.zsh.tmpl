@@ -26,7 +26,12 @@ alias bwh='bw-help'                 # Bitwarden help (semantic: learn)
 # ---------------------------------------------------------------------------
 # Remote hosts
 # ---------------------------------------------------------------------------
+{{ if eq .chezmoi.hostname "oreb" -}}
+alias babbie='kitten ssh babbie'    # Kitty SSH — transmits xterm-kitty terminfo
+alias weforge='kitten ssh weforge'  # Kitty SSH — transmits xterm-kitty terminfo
+{{- else -}}
 alias babbie='ssh babbie'           # SSH to VPS (semantic: connect)
+{{- end }}
 
 # ---------------------------------------------------------------------------
 # IRC semantic aliases

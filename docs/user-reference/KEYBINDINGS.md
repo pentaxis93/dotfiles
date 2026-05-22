@@ -73,7 +73,7 @@ MOD Keys:             Super (left hand), PrtSc (right hand)
 
 | Intention | Key | Context | Launches |
 |-----------|-----|---------|----------|
-| `invoke.terminal` | `MOD+RETURN` | Niri | Alacritty terminal |
+| `invoke.terminal` | `MOD+RETURN` | Niri | Kitty terminal |
 | `invoke.launcher` | `MOD+SPACE` | Niri | Application launcher (wofi) |
 | `invoke.browser` | `MOD+B` | Niri | Qutebrowser |
 | `invoke.files` | `MOD+E` | Niri | File manager |
@@ -174,7 +174,7 @@ MOD Keys:             Super (left hand), PrtSc (right hand)
 ╰─────────────────────────────────────╯
 
 ╭─────────────── INVOKE ─────────────╮
-│ MOD+RETURN  Terminal (Alacritty)   │
+│ MOD+RETURN  Terminal (Kitty)       │
 │ MOD+SPACE   Launcher (wofi)        │
 │ MOD+B       Browser (qutebrowser)  │
 │ MOD+E       File manager           │
@@ -367,28 +367,22 @@ Extensions active:
 - **zsh-syntax-highlighting** — valid (green) / invalid (red) command coloring
 - **zsh-completions** — additional completion definitions
 
-### Alacritty Terminal (Vi Mode)
-**Toggle Vi Mode**: `Ctrl+Shift+Space`
+### Kitty Terminal (Scrollback → Helix)
+**Open scrollback in Helix**: `Ctrl+Shift+H` (bare windows; inside Zellij/tmux use the multiplexer's own scrollback)
 
 ```
 ╭─────────────── SCROLLBACK ─────────╮
-│ gg          Top of history         │
-│ Shift+E     Bottom (Helix ge!)     │
-│ Shift+G     Bottom (traditional)   │
-│ Ctrl+U/D    Half-page up/down      │
-│ j/k         Line down/up           │
-╰─────────────────────────────────────╯
-
-╭─────────────── SEARCH ─────────────╮
-│ /           Search forward         │
-│ ?           Search backward        │
-│ n/N         Next/prev match        │
+│ Ctrl+Shift+H  Open buffer in Helix │
+│ then: gg/ge   Top/bottom (Helix)   │
+│       / ?     Search fwd/back      │
+│       v / y   Select / yank        │
+│       :q      Close the view       │
 ╰─────────────────────────────────────╯
 
 ╭─────────────── SELECTION ──────────╮
-│ v           Visual selection       │
-│ y           Yank to clipboard      │
-│ ESC         Exit vi mode           │
+│ mouse-drag    Copy to clipboard    │
+│ Ctrl+Shift+C  Copy                 │
+│ Ctrl+Shift+V  Paste                │
 ╰─────────────────────────────────────╯
 ```
 
@@ -460,7 +454,7 @@ Extensions active:
 |---------|---------|------------|--------|
 | Niri (WM) | `MOD` | `MOD+CTRL` | `CTRL+ALT` |
 | Helix | `SPACE` (leader) | `g` (goto) | `z` (view) |
-| Alacritty | `CTRL` | `CTRL+SHIFT` | `ALT` |
+| Kitty | `CTRL` | `CTRL+SHIFT` | `ALT` |
 | Zsh | None (emacs mode) | `CTRL` | `ALT` |
 
 ## Vi Mode Everywhere
@@ -471,10 +465,9 @@ Extensions active:
   - Mode indicator: `[N]` (green), `[I]` (blue), `[V]` (yellow)
   - Cursor changes: Block (normal), Line (insert), Underscore (visual)
 
-- **Alacritty Terminal**: Vi mode with visual feedback
-  - Toggle: `CTRL+SHIFT+SPACE`
-  - Vi cursor: Green block when active
-  - Supports Helix `ge` for end navigation
+- **Kitty Terminal**: No in-terminal vi-mode
+  - Scrollback opens in Helix: `Ctrl+Shift+H` (full Helix-native navigation over the buffer)
+  - For bare windows; inside Zellij/tmux use the multiplexer's scrollback
 
 - **Helix Editor**: Native modal editing (already perfect)
 

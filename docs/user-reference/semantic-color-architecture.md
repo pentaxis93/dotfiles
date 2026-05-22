@@ -372,7 +372,7 @@ Returns: Array of N hex colors
 **Order** (by impact):
 1. waybar → semantic (spectrum already done)
 2. qutebrowser → semantic (~120 references)
-3. alacritty → semantic (~22 references)
+3. kitty → semantic (terminal palette, borders, tabs)
 4. niri → semantic (~5 references)
 5. wiremix → semantic (~30 references)
 6. wofi → semantic (~8 references)
@@ -431,7 +431,7 @@ color: {{ index $spectrum 0 }};
 - qutebrowser/config.py.tmpl: ~120 references
 - wiremix/wiremix.toml.tmpl: ~30 references
 - waybar/style.css.tmpl: ~25 references (semantic) + 9 (spectrum)
-- alacritty/alacritty.toml.tmpl: ~22 references
+- kitty/kitty.conf.tmpl: ~29 references
 
 **Minor** (<10 references):
 - wofi/style.css.tmpl: ~8 references

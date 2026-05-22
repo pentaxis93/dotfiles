@@ -16,7 +16,7 @@ Just as colors became semantic purposes, keybindings are semantic **intentions**
 - **Template System**: Format-specific templates in `home/.chezmoitemplates/keybind-*.tmpl` transform semantic definitions to app-specific syntax
 - **Helix-Native**: Follow Helix's thoughtful semantic improvements as our foundation
 - **Context Manifestation**: Same intention manifests appropriately per application
-- **Vi Mode Selectively**: Alacritty terminal, Helix editor, LF, and MPV use vi-style navigation. Zsh shell uses stock robbyrussell with emacs-mode bindings (no vi mode by design).
+- **Vi Mode Selectively**: Helix editor, LF, and MPV use vi-style navigation. The terminal (Kitty) has no in-terminal vi-mode; its scrollback opens in Helix (Ctrl+Shift+H) instead. Zsh shell uses stock robbyrussell with emacs-mode bindings (no vi mode by design).
 
 ## Core Semantic Categories
 - **Navigate**: Move focus without changing state (hjkl universally)
@@ -43,7 +43,6 @@ Just as colors became semantic purposes, keybindings are semantic **intentions**
 
 Format-specific templates in `home/.chezmoitemplates/` transform semantic keybinding definitions into application-specific syntax:
 
-- **`keybind-alacritty.tmpl`**: Generates TOML `[[keyboard.bindings]]` blocks for Alacritty vi mode
 - **`keybind-lf.tmpl`**: Generates `map` commands for LF file manager
 - **`keybind-qutebrowser.tmpl`**: Generates Python `config.bind()` statements
 - **`keybind-mpv.tmpl`**: Generates aligned input.conf bindings with comment formatting
@@ -60,10 +59,6 @@ Each template:
 
 The following applications now use semantic keybinding templates:
 
-- **Alacritty Terminal** (`alacritty.toml.tmpl`) - Vi mode with semantic templates
-  - 7 vi mode bindings migrated (navigate, search, transform)
-  - Toggle: `CTRL+SHIFT+SPACE`
-  - Semantic navigation: ge/gg, /, clear selection
 - **LF File Manager** (`lf/lfrc.tmpl`) - Semantic navigation and selection
   - 13 core bindings migrated (navigate, select, discover, transform)
   - Helix-native: h/j/k/l, gg/ge, gh/gl for directories
@@ -83,7 +78,7 @@ The following applications now use semantic keybinding templates:
 - **Helix Editor** (`config.toml`) - Native modal editing
   - SPACE leader for commands
   - Full Helix semantic navigation
-- **Alacritty Terminal** (`alacritty.toml.tmpl`) - Vi mode with semantic templates
+- **Kitty Terminal** (`kitty.conf.tmpl`, oreb) - No in-terminal vi-mode; scrollback opens in Helix (Ctrl+Shift+H) for full Helix-native navigation. The single binding is application-specific (like tmux's `y`), not template-migrated.
 
 ## Zsh Shell (no vi mode)
 The shell uses **robbyrussell** with stock emacs-mode bindings, by deliberate design.

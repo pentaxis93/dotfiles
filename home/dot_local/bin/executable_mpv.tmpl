@@ -79,9 +79,9 @@ LFSCRIPT
 
 chmod +x /tmp/lf-mpv-select.sh
 
-# Check if alacritty is available, otherwise use default terminal
-if command -v alacritty &>/dev/null; then
-    alacritty -T "Select video for mpv" -e /tmp/lf-mpv-select.sh "$SELECTION_FILE" "$START_DIR"
+# Check if kitty is available, otherwise use default terminal
+if command -v kitty &>/dev/null; then
+    kitty -T "Select video for mpv" /tmp/lf-mpv-select.sh "$SELECTION_FILE" "$START_DIR"
 else
     # Try to use default terminal
     if [[ -n "$TERMINAL" ]]; then

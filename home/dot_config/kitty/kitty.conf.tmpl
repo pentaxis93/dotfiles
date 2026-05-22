@@ -1,0 +1,118 @@
+{{- $theme := .themes.kanagawa.dragon -}}
+{{- $s := .semantic -}}
+# ============================================================================
+# Kitty — Terminal Emulator (oreb)
+# ============================================================================
+# "The terminal advertises its true nature; scrollback flows into the editor."
+#
+# Deployed by chezmoi; edit the .tmpl, not ~/.config/kitty/kitty.conf.
+# Colors are sourced from colors.yaml through the semantic layer — no hardcoded
+# hex appears in this file. Change the palette centrally and it propagates on
+# the next `chezmoi apply`, with no edit here.
+#
+# Scope: oreb only (gated in .chezmoiignore on hostname).
+# Full rationale: docs/ai-context/apps/kitty.md
+
+# ----------------------------------------------------------------------------
+# Fonts
+# ----------------------------------------------------------------------------
+font_family      monospace
+font_size        20.0
+
+# ----------------------------------------------------------------------------
+# Shell — zsh as a login shell (matches the prior Alacritty intent)
+# ----------------------------------------------------------------------------
+shell            /usr/bin/zsh --login
+
+# ----------------------------------------------------------------------------
+# Window, cursor, scrollback
+# ----------------------------------------------------------------------------
+window_padding_width 4
+cursor_shape         underline
+scrollback_lines     10000
+
+# ----------------------------------------------------------------------------
+# Selection
+# ----------------------------------------------------------------------------
+# Reverse video — "let the fish and water exchange places." Setting BOTH to
+# `none` swaps fg/bg per cell, guaranteeing perfect contrast without painting a
+# background. Honors the repo's selection philosophy and needs no theme data,
+# so a palette change still propagates correctly (the swapped fg/bg ARE themed).
+selection_foreground none
+selection_background none
+# Mouse selection also lands on the system clipboard (carries forward
+# Alacritty's save_to_clipboard) — independent of the scrollback→Helix binding.
+copy_on_select       clipboard
+
+# ----------------------------------------------------------------------------
+# Bell — audible is the requirement
+# ----------------------------------------------------------------------------
+# Kitty's built-in audio bell plays through the audio server (self-contained,
+# unlike Alacritty which had no built-in sound). If it is silent on oreb's
+# PipeWire stack, uncomment the line below (the sound file is present on oreb):
+#   command_on_bell paplay /usr/share/sounds/freedesktop/stereo/complete.oga
+enable_audio_bell yes
+
+# ----------------------------------------------------------------------------
+# TERM — intentionally NOT overridden
+# ----------------------------------------------------------------------------
+# Kitty advertises `xterm-kitty`. Remote terminfo is resolved by `kitten ssh`
+# (see ~/.config/zsh aliases + ~/.ssh/config), never by forcing a generic TERM.
+
+# ----------------------------------------------------------------------------
+# Scrollback → Helix (the single app-specific binding)
+# ----------------------------------------------------------------------------
+# Ctrl+Shift+H opens THIS window's own scrollback buffer in Helix, where it is
+# fully navigable, selectable, and yankable. The wrapper spools the piped buffer
+# to a temp file because Helix cannot read stdin as a buffer.
+#
+# This captures KITTY's scrollback — for bare-terminal use. Inside Zellij or
+# tmux, use the multiplexer's own scrollback/copy-mode instead; this binding
+# does not replace it.
+map kitty_mod+h launch --type=overlay --stdin-source=@screen_scrollback {{ .chezmoi.homeDir }}/.local/bin/kitty-scrollback-helix
+
+# ============================================================================
+# Theme — Kanagawa Dragon via semantic colors (no hardcoded hex)
+# ============================================================================
+
+# Core surfaces & text
+foreground            {{ template "color-hex.tmpl" (index $theme $s.text.primary) }}
+background            {{ template "color-hex.tmpl" (index $theme $s.surface.primary) }}
+
+# Cursor
+cursor                {{ template "color-hex.tmpl" (index $theme $s.text.primary) }}
+cursor_text_color     {{ template "color-hex.tmpl" (index $theme $s.surface.primary) }}
+
+# URLs (semantic accent.link)
+url_color             {{ template "color-hex.tmpl" (index $theme $s.accent.link) }}
+
+# 16-color terminal palette — semantic terminal colors (see colors.yaml).
+# The slots are intentions, not hues: color0=background, color14=focus, etc.
+color0   {{ template "color-hex.tmpl" $theme.black }}
+color1   {{ template "color-hex.tmpl" $theme.red }}
+color2   {{ template "color-hex.tmpl" $theme.green }}
+color3   {{ template "color-hex.tmpl" $theme.yellow }}
+color4   {{ template "color-hex.tmpl" $theme.blue }}
+color5   {{ template "color-hex.tmpl" $theme.magenta }}
+color6   {{ template "color-hex.tmpl" $theme.cyan }}
+color7   {{ template "color-hex.tmpl" $theme.white }}
+color8   {{ template "color-hex.tmpl" $theme.bright_black }}
+color9   {{ template "color-hex.tmpl" $theme.bright_red }}
+color10  {{ template "color-hex.tmpl" $theme.bright_green }}
+color11  {{ template "color-hex.tmpl" $theme.bright_yellow }}
+color12  {{ template "color-hex.tmpl" $theme.bright_blue }}
+color13  {{ template "color-hex.tmpl" $theme.bright_magenta }}
+color14  {{ template "color-hex.tmpl" $theme.bright_cyan }}
+color15  {{ template "color-hex.tmpl" $theme.bright_white }}
+
+# Window borders
+active_border_color    {{ template "color-hex.tmpl" (index $theme $s.border.focus) }}
+inactive_border_color  {{ template "color-hex.tmpl" (index $theme $s.border.default) }}
+bell_border_color      {{ template "color-hex.tmpl" (index $theme $s.state.warning) }}
+
+# Tabs — active tab in mode.normal green on inverted text (mirrors tmux)
+active_tab_foreground    {{ template "color-hex.tmpl" (index $theme $s.text.inverted) }}
+active_tab_background    {{ template "color-hex.tmpl" (index $theme $s.mode.normal) }}
+inactive_tab_foreground  {{ template "color-hex.tmpl" (index $theme $s.text.secondary) }}
+inactive_tab_background  {{ template "color-hex.tmpl" (index $theme $s.surface.primary) }}
+tab_bar_background       {{ template "color-hex.tmpl" (index $theme $s.surface.primary) }}

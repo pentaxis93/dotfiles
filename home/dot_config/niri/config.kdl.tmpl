@@ -59,7 +59,7 @@ binds {
 
     // ─── Applications ───
     // Semantic invocations - launch applications
-    {{ template "keybind-invoke.tmpl" (dict "action" "terminal" "context" "niri" "keybindings" $kb) }} hotkey-overlay-title="Open Terminal: alacritty" { spawn-sh "alacritty"; }
+    {{ template "keybind-invoke.tmpl" (dict "action" "terminal" "context" "niri" "keybindings" $kb) }} hotkey-overlay-title="Open Terminal: kitty" { spawn-sh "kitty"; }
     {{ template "keybind-invoke.tmpl" (dict "action" "launcher" "context" "niri" "keybindings" $kb) }} hotkey-overlay-title="Open App Launcher: wofi" { spawn-sh "wofi"; }
     {{ template "keybind-invoke.tmpl" (dict "action" "browser" "context" "niri" "keybindings" $kb) }} hotkey-overlay-title="Open Browser: zen-browser" { spawn-sh "zen-browser"; }
     MOD+ALT+L                           hotkey-overlay-title="Lock Screen: swaylock" { spawn-sh "swaylock"; }

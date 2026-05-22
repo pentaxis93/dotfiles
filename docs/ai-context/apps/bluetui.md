@@ -8,12 +8,12 @@
 - **Vi Navigation** - Intuitive keyboard-driven interface with hjkl movement
 - **BlueZ Integration** - Direct integration with Linux bluetooth stack
 - **Device Pairing** - Interactive pairing and connection management
-- **Waybar Integration** - Click bluetooth widget to launch bluetui in Alacritty
+- **Waybar Integration** - Click bluetooth widget to launch bluetui in Kitty
 
 ## Configuration
 - **Package**: `home/.chezmoidata/packages.yaml` - Declaratively managed
 - **Zsh Function**: `bt` - Launch bluetui TUI manager
-- **Waybar Integration**: Click bluetooth widget to launch bluetui in Alacritty
+- **Waybar Integration**: Click bluetooth widget to launch bluetui in Kitty
 
 ## Usage
 ```bash
