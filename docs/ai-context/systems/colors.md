@@ -7,7 +7,7 @@
 ## Architecture
 - **Single Source of Truth**: All Kanagawa Dragon colors defined in `home/.chezmoidata/colors.yaml`
 - **Format Converters**: Template fragments handle format conversions for different config syntaxes
-- **Templated Configs**: Waybar CSS, Alacritty TOML, and Niri KDL use centralized colors
+- **Templated Configs**: Waybar CSS, Kitty conf, tmux, and Niri KDL use centralized colors
 - **Ultra-Zen Terminal Colors**: Terminal colors (0-15) map to actual theme colors, not traditional ANSI
 
 ## Usage Pattern
@@ -43,7 +43,7 @@ Each terminal color slot has a PURPOSE:
 - Apps express themselves through intentions, not raw colors
 
 ## Benefits
-- **Perfect Unity**: nmtui background = Waybar background = Alacritty background (#181616)
+- **Perfect Unity**: nmtui background = Waybar background = Kitty background (#181616)
 - **Perfect Contrast**: Lazygit selections use reverse video - always readable
 - **Semantic Consistency**: color14 is focus/active (green), not selection background
 - **Maintainability**: Change theme by updating single file
@@ -61,6 +61,6 @@ Located in `home/.chezmoitemplates/`:
 
 ## Color-Templated Applications
 - **Waybar** (`style.css.tmpl`) - Full spectrum color usage for module theming
-- **Alacritty** (`alacritty.toml.tmpl`) - Terminal base colors (0-15 + extended)
+- **Kitty** (`kitty.conf.tmpl`) - Terminal base colors (0-15), borders, tabs + reverse-video selection (oreb)
 - **Niri** (`config.kdl.tmpl`) - Focus ring and selection colors
 - **nmtui** (via `dot_zshrc.tmpl`) - NEWT UI components with semantic mappings

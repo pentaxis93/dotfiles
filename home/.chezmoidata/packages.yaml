@@ -91,6 +91,9 @@ packages:
       # Media - Video playback with resuming and history
       - mpv  # Media player with position save, file browser, and subtitle support
 
+      # Terminal Emulator - GPU-accelerated terminal (replaces Alacritty)
+      - kitty  # Pulls kitty-terminfo; config scoped to oreb via .chezmoiignore
+
       # Terminal Sessions - Persistent multiplexed shells with clipboard integration
       - tmux  # Terminal multiplexer; vi copy-mode routes to wl-copy via Kanagawa-themed config
 

@@ -1,0 +1,16 @@
+#!/bin/sh
+# kitty-scrollback-helix — open Kitty's scrollback buffer in Helix.
+#
+# Invoked by a kitty `launch --stdin-source=@screen_scrollback` mapping, which
+# pipes the window's full scrollback to our stdin. Helix cannot read stdin as an
+# editable buffer, so we materialize a temp file and open it. The file is
+# removed when Helix exits.
+#
+# Calls `helix` (the binary), not the interactive-only `hx` shell alias.
+set -eu
+
+tmpfile=$(mktemp -t kitty-scrollback.XXXXXX) || exit 1
+trap 'rm -f "$tmpfile"' EXIT INT TERM
+
+cat > "$tmpfile"
+helix "$tmpfile"

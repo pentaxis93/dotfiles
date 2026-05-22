@@ -7,11 +7,15 @@
 # Reload in a running session with:  tmux source ~/.config/tmux/tmux.conf
 
 # ============================================================================
-# Terminal Capabilities — true color in Alacritty and friends
+# Terminal Capabilities — true color in Kitty and friends
 # ============================================================================
 set -g default-terminal "tmux-256color"
-set -as terminal-features ",alacritty*:RGB"
+set -as terminal-features ",xterm-kitty:RGB"
 set -as terminal-features ",xterm-256color:RGB"
+
+# Pass escape sequences through to the outer terminal so `kitten ssh`'s terminfo
+# handshake survives when SSHing to a remote host from inside tmux.
+set -g allow-passthrough on
 
 # ============================================================================
 # Ergonomics
@@ -59,7 +63,7 @@ bind -T copy-mode-vi Escape  send-keys -X cancel
 # Clipboard Integration — the load-bearing part
 # ============================================================================
 # OSC 52 passthrough lets tmux-inside-SSH (e.g. on babbie) write to the
-# local terminal's clipboard. Alacritty accepts OSC 52 by default.
+# local terminal's clipboard. Kitty accepts OSC 52 by default.
 set -g set-clipboard on
 
 {{ if .has_gui -}}

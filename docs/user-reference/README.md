@@ -10,7 +10,7 @@ Complete semantic keybinding reference with application-specific quick reference
 - **Philosophy**: Semantic intentions that manifest as context-appropriate keys
 - **Helix-Native**: Uses `ge`, `gh/gl` for improved navigation
 - **Universal Patterns**: Same intentions across all applications
-- **Quick References**: Cheat sheets for Niri, Qutebrowser, MPV, LF, Zsh, Alacritty, Lazygit, and Wiremix
+- **Quick References**: Cheat sheets for Niri, Qutebrowser, MPV, LF, Zsh, Kitty, Lazygit, and Wiremix
 - **Conflict Resolution**: Documentation of intentional context-dependent meanings
 
 ### [semantic-color-architecture.md](./semantic-color-architecture.md)

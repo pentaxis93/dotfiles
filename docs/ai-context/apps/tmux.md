@@ -51,9 +51,9 @@ wl-paste                                             → text appears
 
 ### Inside tmux inside SSH to `babbie`
 ```
-tmux on babbie → OSC 52 escape → SSH tunnel → Alacritty on oreb → wl-copy
+tmux on babbie → OSC 52 escape → SSH tunnel → Kitty on oreb → wl-copy
 ```
-No config on babbie beyond `set-clipboard on` — Alacritty honors OSC 52 writes natively.
+No config on babbie beyond `set-clipboard on` — Kitty honors OSC 52 writes natively.
 
 ## Multi-Machine Notes
 - **Desktop / laptop**: full wl-copy pipeline (`.has_gui = true`)

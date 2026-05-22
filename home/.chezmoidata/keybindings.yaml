@@ -106,7 +106,7 @@ modifiers:
       monitor: "MOD+SHIFT"   # Cross-monitor operations
       system: "CTRL+ALT"     # System-level operations
 
-    # Terminal (Alacritty/General)
+    # Terminal (Kitty/General)
     terminal:
       system: "CTRL+SHIFT"   # Terminal system operations
       app: "CTRL"            # Application-level operations

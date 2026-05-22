@@ -311,7 +311,7 @@ cmd usage %du -sh "$f" | less
 map ee $$EDITOR "$f"  # Edit in editor
 {{ if .has_gui -}}
 map sv $mpv .  # Play all videos in current dir
-map sT &alacritty --working-directory "$PWD"  # Open new terminal window
+map sT &kitty --directory "$PWD"  # Open new terminal window
 {{ end }}
 map st !bash  # Open terminal here
 

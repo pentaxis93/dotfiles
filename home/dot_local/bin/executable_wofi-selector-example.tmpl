@@ -20,7 +20,7 @@ case "$choice" in
         zsh -i -c "vps"
         ;;
     "Launch Terminal")
-        alacritty &
+        kitty &
         ;;
     "Take Screenshot")
         grim -g "$(slurp)" "$HOME/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"

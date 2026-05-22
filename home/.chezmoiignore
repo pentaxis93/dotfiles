@@ -11,7 +11,6 @@
 .config/niri
 .config/waybar
 .config/wofi
-.config/alacritty
 .config/gtk-3.0
 .config/gtk-4.0
 .config/handlr
@@ -163,6 +162,17 @@ claude-code.sh
 # =============================================================================
 {{ if .is_arch }}
 # Nothing specific yet
+{{ end }}
+
+# =============================================================================
+# Host-specific ignores (per-hostname targeting)
+# =============================================================================
+# Kitty is the scoped terminal for oreb only (replacing Alacritty). Exclude its
+# config and scrollback helper everywhere else. This is the repo's first
+# hostname conditional; other machines carry no managed terminal config.
+{{ if ne .chezmoi.hostname "oreb" }}
+.config/kitty
+.local/bin/kitty-scrollback-helix
 {{ end }}
 
 # =============================================================================

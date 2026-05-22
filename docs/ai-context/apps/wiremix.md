@@ -10,7 +10,7 @@
 ## Configuration
 - **File**: `home/dot_config/wiremix/wiremix.toml.tmpl` - Extensive customization
 - **Zsh Functions**: `vol` (launch mixer), `volu/vold` (volume up/down), `volm` (mute toggle), `vols` (status)
-- **Waybar Integration**: Click volume widget to launch wiremix in Alacritty
+- **Waybar Integration**: Click volume widget to launch wiremix in Kitty
 
 ## Features
 - Peak meters with visual audio level monitoring
