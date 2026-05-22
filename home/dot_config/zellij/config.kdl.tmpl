@@ -1,0 +1,52 @@
+{{- $theme := .themes.kanagawa.dragon -}}
+{{- $s := .semantic -}}
+// ============================================================================
+// Zellij — Terminal Multiplexer
+// "Sessions persist by name; panes tile; copied text flows to the clipboard."
+// ============================================================================
+// Deployed by chezmoi; edit the .tmpl, not ~/.config/zellij/config.kdl.
+// Colors are sourced from colors.yaml through the semantic layer — no hardcoded
+// hex appears here; change the palette centrally and it propagates on the next
+// `chezmoi apply`.
+//
+// Replaces tmux. The `dev` zsh function enters/creates a session per project
+// (`zellij attach --create`). Full rationale: docs/ai-context/apps/zellij.md
+
+// ----------------------------------------------------------------------------
+// Behavior — defaults made explicit, plus tmux carry-forwards
+// ----------------------------------------------------------------------------
+default_shell "zsh"
+mouse_mode true            // tmux had `mouse on`
+copy_on_select true        // selection copies on mouse release (tmux parity)
+{{ if .has_gui -}}
+copy_command "wl-copy"     // route copied text to the Wayland clipboard (was tmux's wl-copy pipe)
+{{- else -}}
+// VPS / headless: no Wayland. Zellij falls back to OSC 52, carrying copied text
+// to the attached terminal's clipboard (mirrors tmux `set-clipboard on`).
+{{- end }}
+// Scrollback edits in $EDITOR — which is Helix (see dot_zshrc.tmpl) — the same
+// "scrollback flows into Helix" intent as Kitty's Ctrl+Shift+H, at no cost here.
+
+// ----------------------------------------------------------------------------
+// Theme — Kanagawa Dragon via semantic colors (no hardcoded hex)
+// ----------------------------------------------------------------------------
+// Simple (legacy) theme spec: version-portable; Zellij derives the status/tab/
+// frame UI from this palette. The per-component spec is available for finer
+// control if ever wanted.
+theme "kanagawa-dragon"
+
+themes {
+    kanagawa-dragon {
+        fg {{ template "color-quoted.tmpl" (index $theme $s.text.primary) }}
+        bg {{ template "color-quoted.tmpl" (index $theme $s.surface.primary) }}
+        black {{ template "color-quoted.tmpl" $theme.black }}
+        red {{ template "color-quoted.tmpl" $theme.red }}
+        green {{ template "color-quoted.tmpl" $theme.green }}
+        yellow {{ template "color-quoted.tmpl" $theme.yellow }}
+        blue {{ template "color-quoted.tmpl" $theme.blue }}
+        magenta {{ template "color-quoted.tmpl" $theme.magenta }}
+        cyan {{ template "color-quoted.tmpl" $theme.cyan }}
+        white {{ template "color-quoted.tmpl" $theme.white }}
+        orange {{ template "color-quoted.tmpl" $theme.orange }}
+    }
+}

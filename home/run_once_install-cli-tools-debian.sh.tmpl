@@ -78,6 +78,15 @@ else
     echo "  ✓ lsd already installed"
 fi
 
+# Zellij - terminal multiplexer (replaces tmux; not reliably in Debian apt)
+if ! has_cmd zellij; then
+    echo "  → Installing zellij..."
+    cargo install --locked zellij
+    echo "  ✓ zellij installed"
+else
+    echo "  ✓ zellij already installed"
+fi
+
 echo ""
 echo "📦 Installing tools from GitHub releases..."
 

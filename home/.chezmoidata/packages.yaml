@@ -22,7 +22,6 @@ packages:
       - zsh  # Interactive shell (oh-my-zsh + robbyrussell + universal trio extensions)
       - git  # Version control (usually pre-installed)
       - git-lfs  # Large file storage for git
-      - tmux  # Terminal multiplexer for persistent sessions
       - fzf  # Fuzzy finder for navigation
       - ripgrep  # Fast content search
       - jq  # JSON processor
@@ -95,7 +94,7 @@ packages:
       - kitty  # Pulls kitty-terminfo; config scoped to oreb via .chezmoiignore
 
       # Terminal Sessions - Persistent multiplexed shells with clipboard integration
-      - tmux  # Terminal multiplexer; vi copy-mode routes to wl-copy via Kanagawa-themed config
+      - zellij  # Terminal multiplexer (replaces tmux); Kanagawa-themed, wl-copy/OSC 52 clipboard
 
       # File Management - Terminal file browser with rich previews
       - lf  # Terminal file manager with vi navigation and semantic keybindings

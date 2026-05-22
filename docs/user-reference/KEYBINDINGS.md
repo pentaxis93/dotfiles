@@ -368,7 +368,7 @@ Extensions active:
 - **zsh-completions** — additional completion definitions
 
 ### Kitty Terminal (Scrollback → Helix)
-**Open scrollback in Helix**: `Ctrl+Shift+H` (bare windows; inside Zellij/tmux use the multiplexer's own scrollback)
+**Open scrollback in Helix**: `Ctrl+Shift+H` (bare windows; inside Zellij use the multiplexer's own scrollback)
 
 ```
 ╭─────────────── SCROLLBACK ─────────╮
@@ -467,7 +467,7 @@ Extensions active:
 
 - **Kitty Terminal**: No in-terminal vi-mode
   - Scrollback opens in Helix: `Ctrl+Shift+H` (full Helix-native navigation over the buffer)
-  - For bare windows; inside Zellij/tmux use the multiplexer's scrollback
+  - For bare windows; inside Zellij use the multiplexer's scrollback
 
 - **Helix Editor**: Native modal editing (already perfect)
 
