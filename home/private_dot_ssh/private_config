@@ -6,6 +6,7 @@ Host babbie
     User core
     IdentityFile ~/.ssh/id_ed25519_sk
     IdentitiesOnly yes
+    ForwardAgent yes
 
 Host weforge
     HostName 162.19.220.109
