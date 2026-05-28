@@ -180,6 +180,7 @@ packages:
     aur:
       # System & Security - Foundation for secure operations
       - zfs-auto-snapshot  # Automated ZFS snapshots for time-machine backups
+      - yubikey-touch-detector  # Notifies when the YubiKey awaits a touch (ssh-agent sk-keys sign silently; git, sudo)
 
       # Torrenting - Terminal UI for Transmission
       - tremc  # TUI for transmission with vi-like keybindings

@@ -301,8 +301,10 @@ claude
 
 ### System Tools
 - @docs/ai-context/apps/automation.md - System automation (ydotool, wev, socat, slurp, grim)
+- @docs/ai-context/apps/xdg-desktop-portal.md - Wayland portal backend routing (FileChooser/AppChooser → gtk on Niri; gnome backend crashes)
 - @docs/ai-context/apps/vpn.md - OpenVPN with Bitwarden secrets
 - @docs/ai-context/apps/tor.md - Tor anonymity with .onion browsing and CLI wrapping
+- @docs/ai-context/apps/yubikey-touch.md - Desktop notification for silent FIDO2 touch (ssh-agent sk-keys, git, sudo)
 - @docs/ai-context/apps/wiremix.md - PipeWire audio mixer TUI
 - @docs/ai-context/apps/bluetui.md - Bluetooth device manager TUI
 - @docs/ai-context/apps/ratbagctl.md - Gaming peripheral configuration (RGB silenced via libratbag)

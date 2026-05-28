@@ -1,0 +1,30 @@
+{{- if not .is_vps -}}
+#!/bin/bash
+# Enable the yubikey-touch-detector user service.
+# It watches for FIDO2/GPG touch requests and fires a desktop notification —
+# restoring the cue the ssh-agent removed when it began signing sk-keys silently.
+# Notification behavior is configured in ~/.config/yubikey-touch-detector/service.conf.
+
+set -euo pipefail
+
+echo "🔑 Setting up yubikey-touch-detector user service..."
+
+# Reload systemd to pick up the package-shipped unit
+systemctl --user daemon-reload
+
+# Enable and start the persistent daemon.
+# The .service (not the .socket) is enabled: with notification-only use there is
+# no socket consumer to trigger socket activation, so the daemon must run on its
+# own to watch the key. The .socket remains available for a future Waybar reader.
+systemctl --user enable --now yubikey-touch-detector.service
+
+# Verify
+if systemctl --user is-active --quiet yubikey-touch-detector.service; then
+    echo "✓ yubikey-touch-detector.service is active"
+    echo "  Touch your YubiKey during 'ssh babbie' — a notification should appear."
+else
+    echo "✗ yubikey-touch-detector.service failed to start"
+    echo "  Check: journalctl --user -u yubikey-touch-detector -n 20"
+    exit 1
+fi
+{{- end }}

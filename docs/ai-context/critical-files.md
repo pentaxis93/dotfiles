@@ -43,6 +43,8 @@ Located in `home/.chezmoitemplates/`:
 - `home/dot_config/systemd/user/tor.service.tmpl` - Tor on-demand user service
 - `home/dot_local/state/private_secrets/` - Isolated secrets directory
 - `home/dot_local/state/private_secrets/openvpn/goosevpn-auth.tmpl` - VPN credentials from Bitwarden
+- `home/dot_config/yubikey-touch-detector/service.conf` - Enables libnotify cue for silent FIDO2 touches
+- `home/run_once_setup-yubikey-touch-detector.sh.tmpl` - Enables yubikey-touch-detector.service (GUI machines)
 
 ## Application Configs
 - `home/dot_config/helix/config.toml.tmpl` - Helix editor settings and keybindings
@@ -56,6 +58,7 @@ Located in `home/.chezmoitemplates/`:
 - `home/dot_config/transmission-daemon/settings.json.tmpl` - Transmission daemon config
 - `home/dot_config/lazygit/config.yml` - Lazygit TUI with reverse video selections
 - `home/dot_config/lf/lfrc.tmpl` - LF file manager configuration
+- `home/dot_config/xdg-desktop-portal/niri-portals.conf` - Routes FileChooser/AppChooser/Settings to the gtk backend on Niri (the gnome backend crashes; fixes vanished Firefox file-upload dialogs)
 
 ## Scripts & Utilities
 - `scripts/generate-spectrum.py` - LAB color interpolation for spectrums

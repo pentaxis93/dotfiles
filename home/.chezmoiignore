@@ -13,6 +13,7 @@
 .config/wofi
 .config/gtk-3.0
 .config/gtk-4.0
+.config/xdg-desktop-portal
 .config/handlr
 
 # Desktop applications
@@ -117,6 +118,9 @@ run_after_claude-code.sh
 .config/fish/functions/tor-status.fish
 .local/bin/waybar-tor-check
 
+# YubiKey touch detector (desktop-only — libnotify needs a graphical session)
+.config/yubikey-touch-detector
+
 # Desktop-only secrets/configs
 .local/state/secrets/env/vpn-config
 .local/state/secrets/openvpn
@@ -136,6 +140,7 @@ setup-keyd.sh
 setup-syncthing.sh
 setup-ydotool.sh
 setup-tor.sh
+setup-yubikey-touch-detector.sh
 setup-zen-browser.sh
 setup-zfs-automation.sh
 claude-code.sh
