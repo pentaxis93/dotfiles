@@ -211,8 +211,9 @@ diff ~/.bashrc /home/.zfs/snapshot/before-upgrade/pentaxis93/.bashrc
 │   └── zsh/
 │       ├── aliases.zsh.tmpl           # Aliases (fish abbreviation port)
 │       ├── conf.d/*.zsh.tmpl          # Auto-loaded hooks (secrets, VPN, ...)
-│       └── functions/                 # 57 autoload functions
+│       └── functions/                 # 58 autoload functions on oreb
 │           ├── bw-*                   # Bitwarden utilities
+│           ├── ssh                    # Kitty-aware SSH wrapper on oreb
 │           ├── tstart, tstatus, ...   # Transmission management
 │           ├── vpc, vpn-connect, ...  # VPN wrappers
 │           └── zsnap, zlist, ...      # ZFS time travel

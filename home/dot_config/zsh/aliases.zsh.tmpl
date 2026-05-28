@@ -27,8 +27,8 @@ alias bwh='bw-help'                 # Bitwarden help (semantic: learn)
 # Remote hosts
 # ---------------------------------------------------------------------------
 {{ if eq .chezmoi.hostname "oreb" -}}
-alias babbie='kitten ssh babbie'    # Kitty SSH — transmits xterm-kitty terminfo
-alias weforge='kitten ssh weforge'  # Kitty SSH — transmits xterm-kitty terminfo
+alias babbie='ssh babbie'           # SSH wrapper routes plain Kitty through kitten ssh
+alias weforge='ssh weforge'         # SSH wrapper routes plain Kitty through kitten ssh
 {{- else -}}
 alias babbie='ssh babbie'           # SSH to VPS (semantic: connect)
 {{- end }}

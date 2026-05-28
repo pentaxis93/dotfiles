@@ -18,7 +18,8 @@
 ## Configuration Files
 - **Main Config**: `home/dot_config/kitty/kitty.conf.tmpl` → `~/.config/kitty/kitty.conf`
 - **Scrollback Helper**: `home/dot_local/bin/executable_kitty-scrollback-helix` → `~/.local/bin/kitty-scrollback-helix`
-- **SSH Aliases**: `home/dot_config/zsh/aliases.zsh.tmpl` (`babbie`, `weforge` → `kitten ssh`)
+- **SSH Wrapper**: `home/dot_config/zsh/functions/ssh` (oreb-only; plain Kitty → `kitten ssh`)
+- **SSH Aliases**: `home/dot_config/zsh/aliases.zsh.tmpl` (`babbie`, `weforge` → `ssh <host>`, then the wrapper decides)
 - **Host Gate**: `home/.chezmoiignore` (excludes `.config/kitty` off oreb)
 - **Package**: `home/.chezmoidata/packages.yaml` — `kitty` under `cachyos.pacman`
 
@@ -90,13 +91,22 @@ mask it by forcing a generic TERM.
 `kitten ssh` does this: on connect it transmits the `xterm-kitty` terminfo
 (bundled with the kitten — no local terminfo package required) into the remote
 user's `~/.terminfo`, then launches the login shell. It is a drop-in for `ssh`
-and honors `~/.ssh/config` (HostName, User, IdentityFile, IdentitiesOnly). The
-`babbie` and `weforge` aliases route through it on oreb:
+and honors `~/.ssh/config` (HostName, User, IdentityFile, IdentitiesOnly).
+
+On oreb, the autoloaded `ssh` function routes ordinary interactive `ssh ...`
+commands through `kitten ssh` only when all of these are true: the shell is in a
+Kitty window, the shell is not already inside local Zellij, stdin/stdout are real
+TTYs, and `kitten` exists. Otherwise it delegates to OpenSSH. The `babbie` and
+`weforge` aliases intentionally use ordinary `ssh` so the same guard applies:
 
 ```sh
-alias babbie='kitten ssh babbie'
-alias weforge='kitten ssh weforge'
+alias babbie='ssh babbie'
+alias weforge='ssh weforge'
 ```
+
+This covers the muscle-memory path `ssh babbie`, which otherwise bypasses the
+old host aliases and can leave the VPS trying to render `xterm-kitty` without
+Kitty's terminfo.
 
 ### Multiplexer caveat
 When launched from inside a multiplexer (Zellij), the escape handshake
@@ -138,7 +148,7 @@ with `printf '\a'` in a Kitty window.
 kitty                       # Launch (from niri: MOD+RETURN)
 Ctrl+Shift+H                # Open this window's scrollback in Helix
 # mouse-select              # Text copied to system clipboard
-kitten ssh babbie           # SSH with xterm-kitty terminfo transmitted
+ssh babbie                  # In plain Kitty on oreb: routes through kitten ssh
 ```
 
 ## Relationship to the Former Alacritty Config

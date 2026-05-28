@@ -8,6 +8,10 @@
 - **Kanagawa Dragon theme** — defined inline in `config.kdl` from semantic colors in `colors.yaml`; no hardcoded hex. A palette change propagates on the next `chezmoi apply`.
 - **Wayland clipboard** — `copy_command "wl-copy"` on machines with a GUI; OSC 52 fallback on headless/VPS, carrying copied text to the attached terminal's clipboard.
 - **Scrollback → Helix** — Zellij's edit-scrollback opens `$EDITOR` (Helix), the same intent as Kitty's `Ctrl+Shift+H`, at no config cost.
+- **Remote Kitty terminfo depends on SSH entry** — from oreb, enter babbie with
+  the zsh `ssh` wrapper (`ssh babbie` or the `babbie` alias) before starting
+  remote Zellij. Existing remote sessions created before terminfo repair should
+  be restarted.
 - **Replaces tmux** — full migration; the tmux config, package entry, and docs were removed in the same change.
 
 ## Configuration Files
@@ -53,6 +57,13 @@ The `themes { kanagawa-dragon { … } }` block maps Zellij's simple palette to s
 ## Multi-Machine Notes
 - **Desktop / laptop** (CachyOS): `zellij` via pacman; full wl-copy clipboard.
 - **VPS** (Debian): `zellij` via cargo (`run_once_install-cli-tools-debian.sh.tmpl`), since it is not reliably in apt; OSC 52 clipboard. **Note:** the cargo build is heavier than tmux's apt install.
+
+When the VPS session is reached from Kitty, the outer SSH connection must have a
+valid Kitty terminfo entry on the remote before Zellij starts. On oreb this is
+handled by the zsh `ssh` wrapper. If a Zellij session was created from a raw
+OpenSSH connection while `TERM=xterm-kitty` was unknown remotely, reconnect via
+the wrapper and restart that Zellij session; resizing full-screen TUIs such as
+Codex can otherwise leave stale cells or overdrawn text.
 
 ## Design Decisions
 

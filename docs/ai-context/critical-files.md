@@ -27,7 +27,8 @@ Located in `home/.chezmoitemplates/`:
 ## Shell Configuration
 - `home/dot_zshrc.tmpl` - Templated zsh configuration (oh-my-zsh + robbyrussell + universal trio)
 - `home/dot_config/zsh/aliases.zsh.tmpl` - Aliases (port of fish abbreviations)
-- `home/dot_config/zsh/functions/*` - 57 autoload functions (ls, mp, vpc, tstart, zsnap, ...)
+- `home/dot_config/zsh/functions/*` - Autoload functions (ls, ssh on oreb, mp, vpc, tstart, zsnap, ...)
+- `home/dot_config/zsh/functions/ssh` - oreb-only Kitty-aware wrapper; routes interactive plain-Kitty SSH through `kitten ssh` so remotes receive Kitty terminfo
 - `home/dot_config/zsh/conf.d/*.zsh.tmpl` - Auto-loaded hooks (secrets, VPN killswitch, transmission aliases)
 - `home/dot_config/zsh/functions/bw-*` - Bitwarden wrapper functions
 - `home/dot_config/zsh/functions/{vpc,vpd,vps,vpn-connect,vpn-disconnect,vpn-status}` - VPN functions

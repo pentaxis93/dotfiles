@@ -296,7 +296,7 @@ claude
 - @docs/ai-context/apps/transmission.md - BitTorrent with VPN killswitch
 - @docs/ai-context/apps/lf.md - Terminal file manager
 - @docs/ai-context/apps/lazygit.md - Git TUI with reverse video
-- @docs/ai-context/apps/kitty.md - Terminal emulator (oreb) with semantic colors, scrollback→Helix, and kitten ssh terminfo
+- @docs/ai-context/apps/kitty.md - Terminal emulator (oreb) with semantic colors, scrollback→Helix, and Kitty-aware SSH terminfo
 - @docs/ai-context/apps/zellij.md - Terminal multiplexer (replaces tmux) with Kanagawa theme and wl-copy/OSC 52 clipboard
 
 ### System Tools

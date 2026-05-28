@@ -12,12 +12,14 @@
   - `zsh-syntax-highlighting` — valid/invalid command coloring
   - `zsh-completions` — additional completion definitions
 - **systemd-managed ssh-agent** — uniform across CachyOS and Debian
+- **Kitty-aware SSH on oreb** — interactive `ssh` from plain Kitty routes
+  through `kitten ssh`; local Zellij panes and non-Kitty shells keep OpenSSH
 - **No vi-mode mode indicators** — by design; pure robbyrussell prompt
 
 ## Configuration files
 - **Main config**: `home/dot_zshrc.tmpl` → `~/.zshrc` (templated for machine-type, semantic colors, PATH)
 - **Aliases**: `home/dot_config/zsh/aliases.zsh.tmpl` → `~/.config/zsh/aliases.zsh`
-- **Autoload functions**: `home/dot_config/zsh/functions/*` → `~/.config/zsh/functions/*` (57 functions)
+- **Autoload functions**: `home/dot_config/zsh/functions/*` → `~/.config/zsh/functions/*` (58 functions on oreb; `ssh` is host-gated)
 - **conf.d hooks**: `home/dot_config/zsh/conf.d/*.zsh.tmpl`
   - `00-secrets.zsh.tmpl` — loads env files from `~/.local/state/secrets/env/`
   - `10-transmission-vpn.zsh.tmpl` — VPN killswitch for transmission
@@ -27,7 +29,7 @@
 - **ssh-agent setup**: `home/run_once_setup-ssh-agent.sh.tmpl`
 - **Package**: `zsh` declared in `home/.chezmoidata/packages.yaml` for both `cachyos.pacman` and `debian.apt`
 
-## Function set (57 total)
+## Function set
 Ported one-to-one from fish. Each lives in `~/.config/zsh/functions/<name>` and is loaded via `autoload -Uz` from the zshrc. The semantic naming convention is preserved:
 
 | Domain | Functions |
@@ -43,7 +45,7 @@ Ported one-to-one from fish. Each lives in `~/.config/zsh/functions/<name>` and 
 | Browser | `qb`, `qbp`, `qbs` |
 | OpenCode | `oca`, `occ`, `ocr` |
 | File manager | `lf`, `lfcd` |
-| Other | `ls` (lsd wrapper), `bt` (bluetui), `nmtui` (banner wrapper) |
+| Other | `ls` (lsd wrapper), `ssh` (oreb Kitty wrapper), `bt` (bluetui), `nmtui` (banner wrapper) |
 
 ## Aliases
 Silent aliases (no inline expansion) port the 22 fish abbreviations. Defined in `~/.config/zsh/aliases.zsh`:
@@ -52,6 +54,14 @@ Silent aliases (no inline expansion) port the 22 fish abbreviations. Defined in 
 - GUI: `bwu`, `bwl`, `bwc`, `bwg`, `bws`, `bwlist`, `bwh`, `babbie`, `i`, `is`, `id`, `idl`, `idc`
 - VPS: `p='pass'`, `ps='pass show'`, `pc='pass -c'`
 - Transmission (conf.d/20): `taa`, `tc`, `tp`, `tr`, `tl`, `ts`
+
+On oreb, `babbie` and `weforge` expand to `ssh <host>`. The host-gated
+`ssh` function then chooses the transport:
+
+- Plain Kitty window with a real TTY → `kitten ssh`, so the remote receives
+  Kitty's terminfo before Zellij or other TUIs start.
+- Local Zellij, non-Kitty terminals, non-TTY commands, or missing `kitten` →
+  OpenSSH.
 
 ## SSH agent
 Managed by a user-level systemd unit:
@@ -85,6 +95,7 @@ omz plugin list                            # → git, zsh-autosuggestions, ...
 which vpc                                  # → vpn-connect (function)
 systemctl --user status ssh-agent          # → active
 echo $SSH_AUTH_SOCK                        # → /run/user/1000/ssh-agent.socket
+zsh tests/test_ssh_wrapper.zsh           # → wrapper routing test
 ```
 
 ## Cross-machine notes
@@ -107,7 +118,7 @@ The OMZ `ssh-agent` plugin spawns a new agent per shell. The systemd user servic
 Both Arch and Debian have apt/pacman packages for the three extensions, but the installed paths differ. Git-cloning to `$ZSH/custom/plugins/` produces a single path that works identically on both systems.
 
 ### `unalias ls` after oh-my-zsh
-Oh-my-zsh's `lib/theme-and-appearance.zsh` unconditionally aliases `ls='ls --color=tty'` on Linux. Our autoload `ls` function delegates to `lsd`, which only accepts `always|auto|never` for `--color`. After alias expansion zsh forwards `--color=tty` into the function, into `lsd`, into an error. `dot_zshrc.tmpl` strips the alias with `unalias ls 2>/dev/null` immediately after the autoload block, leaving the broader `LSCOLORS`/`LS_COLORS` exports from the same lib file intact (other tools still need them). `ls` is the only one of our 57 autoload functions shadowed by an oh-my-zsh alias.
+Oh-my-zsh's `lib/theme-and-appearance.zsh` unconditionally aliases `ls='ls --color=tty'` on Linux. Our autoload `ls` function delegates to `lsd`, which only accepts `always|auto|never` for `--color`. After alias expansion zsh forwards `--color=tty` into the function, into `lsd`, into an error. `dot_zshrc.tmpl` strips the alias with `unalias ls 2>/dev/null` immediately after the autoload block, leaving the broader `LSCOLORS`/`LS_COLORS` exports from the same lib file intact (other tools still need them). `ls` was the first autoload function shadowed by shell defaults; the oreb-only `ssh` wrapper is intentionally introduced as a command shadow with its own fallback to `command ssh`.
 
 ---
 

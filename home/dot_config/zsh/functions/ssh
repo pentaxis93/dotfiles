@@ -1,0 +1,6 @@
+# Interactive SSH from oreb's Kitty should teach remotes Kitty's terminfo.
+if [[ -n "${KITTY_WINDOW_ID:-}" && -z "${ZELLIJ:-}" && -t 0 && -t 1 ]] && command -v kitten >/dev/null 2>&1; then
+    command kitten ssh "$@"
+else
+    command ssh "$@"
+fi

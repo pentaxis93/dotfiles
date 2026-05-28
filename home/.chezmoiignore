@@ -173,6 +173,7 @@ claude-code.sh
 {{ if ne .chezmoi.hostname "oreb" }}
 .config/kitty
 .local/bin/kitty-scrollback-helix
+.config/zsh/functions/ssh
 {{ end }}
 
 # =============================================================================
