@@ -1,0 +1,44 @@
+#!/bin/sh
+# agent-context — am I running inside an AI coding agent?
+#
+# Exit 0 (yes) when the calling process descends from an AI agent, 1 (no)
+# otherwise. ~/.ssh/config calls this from `Match exec` to route SSH auth away
+# from the YubiKey (human-only) toward a software deploy key (agents).
+#
+# Detection is two-layered, because an env marker is a claim and ancestry is a
+# fact:
+#
+#   1. Environment markers — each agent stamps these onto the processes it
+#      spawns; a human's interactive shell carries none. Fast, but depends on the
+#      agent advertising itself.
+#   2. Process ancestry — walk up /proc and look for the agent's own process.
+#      This holds even when an agent sets no recognizable variable, so a new or
+#      reconfigured agent is still caught structurally.
+#
+# Over-matching is the safe direction: a false "yes" merely sends a human down
+# the software-key path; a false "no" would let an agent reach the YubiKey.
+
+# --- Layer 1: environment markers ------------------------------------------
+[ -n "$CLAUDECODE" ]      && exit 0   # Claude Code
+[ -n "$AI_AGENT" ]        && exit 0   # Claude Code (and other agent runtimes)
+[ -n "$CODEX_HOME" ]      && exit 0   # OpenAI Codex CLI
+[ -n "$CODEX_THREAD_ID" ] && exit 0   # OpenAI Codex CLI
+[ -n "$CODEX_SANDBOX" ]   && exit 0   # OpenAI Codex CLI (sandboxed exec)
+
+# --- Layer 2: process ancestry ---------------------------------------------
+# Match the agent's own process name (comm, truncated to 15 chars by the kernel).
+# Only exact agent names — never a runtime like "node" — to avoid catching a
+# human's own tooling.
+pid=$$
+n=0
+while [ "$pid" -gt 1 ] && [ "$n" -lt 25 ]; do
+    comm=$(cat "/proc/$pid/comm" 2>/dev/null) || break
+    case "$comm" in
+        claude|codex) exit 0 ;;
+    esac
+    pid=$(awk '/^PPid:/{print $2; exit}' "/proc/$pid/status" 2>/dev/null)
+    [ -n "$pid" ] || break
+    n=$((n + 1))
+done
+
+exit 1

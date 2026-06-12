@@ -64,6 +64,51 @@ notification-only there is no consumer — so socket activation would never star
 daemon, and no notifications would fire. Enabling the `.service` directly runs the daemon
 persistently from login, watching the key on its own.
 
+## Keeping Agents Off the Key
+
+The detector restored the *cue*. A second, deeper problem remained: the key is for
+the human, yet **AI agents** (Claude Code, Codex) running in the same session would
+trigger it. An agent's `git fetch` or `ssh` loaded `id_ed25519_sk` exactly as the
+human's would, and the terminal blocked on a PIN/touch prompt the agent could neither
+satisfy nor explain — a hijack.
+
+The resolution is to give the two callers *different keys* and route by who is asking:
+
+- **Human** → the YubiKey (`~/.ssh/id_ed25519_sk`), exactly as before.
+- **AI agent** → a passphraseless software deploy key (`~/.ssh/id_ed25519`), with
+  agent access and forwarding disabled. The hardware key is unreachable on this path,
+  so no PIN/touch is ever demanded.
+
+### How the caller is identified
+`~/.ssh/agent-context` (`home/private_dot_ssh/executable_agent-context`) is a probe
+that exits 0 inside an agent. It detects in two layers — *a marker is a claim, ancestry
+is a fact*:
+
+1. **Environment markers** each agent stamps onto the processes it spawns
+   (`CLAUDECODE`, `AI_AGENT`, `CODEX_HOME`, …). A human's interactive shell carries none.
+2. **Process ancestry** — walks `/proc` for the agent's own process (`comm` =
+   `claude`/`codex`). This holds even when an agent advertises no variable, so Codex is
+   caught structurally regardless of its env. A new agent is taught by adding one line.
+
+`~/.ssh/config` calls the probe from two mutually-exclusive `Match exec` blocks placed
+*before* every `Host` block (for `IdentityFile`/`IdentityAgent`/`ForwardAgent` the first
+value obtained wins, so the gate decides identity before any host default). The agent
+branch sets `IdentitiesOnly yes` + `IdentityAgent none`, guaranteeing it can reach *only*
+the software key even for unlisted hosts. **Fails closed:** if `id_ed25519` is absent the
+agent is denied (`publickey`), never fallen back to the YubiKey.
+
+### Relationship to forwarding
+This narrows the `ForwardAgent yes` on `babbie` to humans only — agents get
+`ForwardAgent no`. The forwarding tension above (a forwarded key signs silently) is now
+moot for agents, which never touch the hardware key at all.
+
+### The software key
+`~/.ssh/id_ed25519` is a per-host secret, deliberately **not** chezmoi-managed (it must
+never enter the repo). `home/run_once_generate-agent-softkey.sh.tmpl` creates it if absent
+(idempotent — regenerating would orphan already-registered public keys). Its **public**
+half must be authorized by hand on each remote agents reach (GitHub account keys; the
+`core` user's `authorized_keys` on babbie/weforge; the `git` user's on git.weforge.build).
+
 ## Machine Scope
 - **Desktop / laptop** (`mani`, `oreb`): full stack — AUR package, `service.conf`,
   enabled service. Notifications require a running notification daemon (already present;

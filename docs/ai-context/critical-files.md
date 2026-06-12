@@ -33,6 +33,9 @@ Located in `home/.chezmoitemplates/`:
 - `home/dot_config/zsh/functions/bw-*` - Bitwarden wrapper functions
 - `home/dot_config/zsh/functions/{vpc,vpd,vps,vpn-connect,vpn-disconnect,vpn-status}` - VPN functions
 - `home/dot_config/systemd/user/ssh-agent.service.tmpl` - User-level ssh-agent service
+- `home/private_dot_ssh/private_config` - SSH client config; routes auth by caller — human → YubiKey, AI agent → software deploy key (`Match exec` on the agent-context probe)
+- `home/private_dot_ssh/executable_agent-context` - Probe (exit 0 inside an agent); detects via env markers + `/proc` ancestry so agents never reach the hardware key
+- `home/run_once_generate-agent-softkey.sh.tmpl` - Generates the agent software key `~/.ssh/id_ed25519` if absent (per-host secret, not repo-tracked)
 - `home/run_once_install-oh-my-zsh.sh.tmpl` - Installs oh-my-zsh + universal trio
 - `home/run_once_setup-ssh-agent.sh.tmpl` - Enables ssh-agent.service
 

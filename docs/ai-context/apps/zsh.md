@@ -19,7 +19,7 @@
 ## Configuration files
 - **Main config**: `home/dot_zshrc.tmpl` → `~/.zshrc` (templated for machine-type, semantic colors, PATH)
 - **Aliases**: `home/dot_config/zsh/aliases.zsh.tmpl` → `~/.config/zsh/aliases.zsh`
-- **Autoload functions**: `home/dot_config/zsh/functions/*` → `~/.config/zsh/functions/*` (58 functions on oreb; `ssh` is host-gated)
+- **Autoload functions**: `home/dot_config/zsh/functions/*` → `~/.config/zsh/functions/*` (`ssh` is host-gated to oreb)
 - **conf.d hooks**: `home/dot_config/zsh/conf.d/*.zsh.tmpl`
   - `00-secrets.zsh.tmpl` — loads env files from `~/.local/state/secrets/env/`
   - `10-transmission-vpn.zsh.tmpl` — VPN killswitch for transmission
@@ -42,9 +42,11 @@ Ported one-to-one from fish. Each lives in `~/.config/zsh/functions/<name>` and 
 | Bitwarden | `bw-copy`, `bw-generate`, `bw-help`, `bw-lock`, `bw-unlock` |
 | WeeChat | `wcc`, `wcd`, `wcs` |
 | ZFS | `zsnap`, `zlist`, `zclean`, `zfsstatus` |
+| Vault | `vault-unlock`, `vault-lock`, `vault-eject`, `vault-status` (no short forms — `vlock` collides with `/usr/bin/vlock` from the kbd package). `vault-eject` adds power-off to `vault-lock`: unmount → lock → spin down the physical disk for safe unplugging |
 | Browser | `qb`, `qbp`, `qbs` |
 | OpenCode | `oca`, `occ`, `ocr` |
 | File manager | `lf`, `lfcd` |
+| Phone | `phone-mv` (adb pull-then-delete; single files move atomically, directories move file-by-file and resume seamlessly if interrupted — the phone's remaining contents are the to-do list) |
 | Other | `ls` (lsd wrapper), `ssh` (oreb Kitty wrapper), `bt` (bluetui), `nmtui` (banner wrapper) |
 
 ## Aliases
@@ -76,6 +78,14 @@ systemctl --user status ssh-agent     # Check status
 ssh-add ~/.ssh/id_ed25519_sk          # Add the hardware key
 ssh-add -l                            # List loaded keys
 ```
+
+### Human vs. agent identity
+`~/.ssh/config` routes SSH auth by *who is calling*: the human gets the YubiKey
+(`id_ed25519_sk`), AI agents (Claude Code, Codex) get a passphraseless software key
+(`id_ed25519`) with the hardware key unreachable — so agents can no longer trip the
+YubiKey's PIN/touch prompt and hijack the terminal. The split is decided by the
+`~/.ssh/agent-context` probe (env markers + `/proc` ancestry). See
+`docs/ai-context/apps/yubikey-touch.md` → *Keeping Agents Off the Key*.
 
 ## Vi mode
 Not enabled. Robbyrussell is delivered as-is, with stock emacs-mode bindings.
