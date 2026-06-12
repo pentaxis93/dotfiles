@@ -1,0 +1,38 @@
+# Report state of the encrypted vault drive
+# Semantic: Reveal the layers — device, cipher, mount
+
+local luks_uuid="a65e00a8-c317-4ee6-93d3-c4330bad1678"
+local by_uuid="/dev/disk/by-uuid/$luks_uuid"
+
+echo "vault status:"
+
+if [ ! -b "$by_uuid" ]; then
+    echo "  device:    not connected"
+    return 0
+fi
+
+local device
+device=$(readlink -f "$by_uuid")
+echo "  device:    connected ($device)"
+
+local mapper
+mapper=$(lsblk -lnpo NAME,TYPE "$by_uuid" 2>/dev/null | awk '$2=="crypt"{print $1; exit}')
+
+if [ -z "$mapper" ]; then
+    echo "  container: locked"
+    return 0
+fi
+
+echo "  container: unlocked ($mapper)"
+
+local mount_target
+mount_target=$(findmnt -nro TARGET --source "$mapper" 2>/dev/null)
+
+if [ -n "$mount_target" ]; then
+    echo "  mount:     active at $mount_target"
+    local usage
+    usage=$(df -h "$mount_target" | tail -1 | awk '{printf "%s used / %s total (%s)", $3, $2, $5}')
+    echo "  usage:     $usage"
+else
+    echo "  mount:     not mounted"
+fi

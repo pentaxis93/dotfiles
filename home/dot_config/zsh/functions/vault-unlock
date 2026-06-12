@@ -1,0 +1,37 @@
+# Unlock and mount the encrypted vault drive
+# Semantic: Open the cipher, surface the data
+
+local luks_uuid="a65e00a8-c317-4ee6-93d3-c4330bad1678"
+local by_uuid="/dev/disk/by-uuid/$luks_uuid"
+
+if [ ! -b "$by_uuid" ]; then
+    echo "vault: drive not connected"
+    return 1
+fi
+
+# Discover the cleartext mapper if already unlocked. The name depends on
+# whoever opened it: udisksctl uses "luks-<UUID>", a manual `cryptsetup open`
+# uses whatever name was passed. Looking it up via lsblk handles both.
+local mapper
+mapper=$(lsblk -lnpo NAME,TYPE "$by_uuid" 2>/dev/null | awk '$2=="crypt"{print $1; exit}')
+
+if [ -z "$mapper" ]; then
+    echo "vault: unlocking container..."
+    udisksctl unlock -b "$by_uuid" || return $?
+    mapper=$(lsblk -lnpo NAME,TYPE "$by_uuid" 2>/dev/null | awk '$2=="crypt"{print $1; exit}')
+fi
+
+if [ -z "$mapper" ]; then
+    echo "vault: unlock succeeded but no mapper appeared — investigate manually"
+    return 1
+fi
+
+# Mount via udisksctl unless something else already mounted it.
+local mount_target
+mount_target=$(findmnt -nro TARGET --source "$mapper" 2>/dev/null)
+
+if [ -z "$mount_target" ]; then
+    udisksctl mount -b "$mapper" || return $?
+else
+    echo "vault: already mounted at $mount_target"
+fi

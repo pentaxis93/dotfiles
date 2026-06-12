@@ -1,0 +1,30 @@
+# Unmount and lock the encrypted vault drive
+# Semantic: Seal the cipher, ready the drive for departure
+
+local luks_uuid="a65e00a8-c317-4ee6-93d3-c4330bad1678"
+local by_uuid="/dev/disk/by-uuid/$luks_uuid"
+
+if [ ! -b "$by_uuid" ]; then
+    echo "vault: drive not connected"
+    return 0
+fi
+
+local mapper
+mapper=$(lsblk -lnpo NAME,TYPE "$by_uuid" 2>/dev/null | awk '$2=="crypt"{print $1; exit}')
+
+if [ -z "$mapper" ]; then
+    echo "vault: already locked"
+    return 0
+fi
+
+local mount_target
+mount_target=$(findmnt -nro TARGET --source "$mapper" 2>/dev/null)
+
+if [ -n "$mount_target" ]; then
+    echo "vault: unmounting $mount_target..."
+    udisksctl unmount -b "$mapper" || return $?
+fi
+
+echo "vault: locking container..."
+udisksctl lock -b "$by_uuid" || return $?
+echo "vault: locked — safe to disconnect"

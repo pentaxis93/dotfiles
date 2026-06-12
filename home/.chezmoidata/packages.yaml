@@ -132,6 +132,9 @@ packages:
       - wev  # Wayland event viewer for debugging and understanding input events
       - socat  # Socket manipulation for advanced IPC and service communication
 
+      # Mobile - Android device bridge over USB
+      - android-tools  # Provides adb for browsing phone storage and the phone-mv pull-then-delete function
+
       # Communication - IRC with XDCC support and messaging
       - weechat  # Modern IRC client with superior vi-mode and extensibility
       - telegram-desktop  # Telegram messaging client for secure group and direct messaging

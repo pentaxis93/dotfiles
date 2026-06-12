@@ -1,0 +1,41 @@
+# Unmount, lock, and power off the encrypted vault drive for physical removal
+# Semantic: Seal the cipher, still the platters, release the drive to the world
+
+local luks_uuid="a65e00a8-c317-4ee6-93d3-c4330bad1678"
+local by_uuid="/dev/disk/by-uuid/$luks_uuid"
+
+if [ ! -b "$by_uuid" ]; then
+    echo "vault: drive not connected"
+    return 0
+fi
+
+# Resolve the physical parent disk while the device is still present — power-off
+# acts on the whole disk (e.g. /dev/sda), not the LUKS partition it carries.
+local device parent
+device=$(readlink -f "$by_uuid")
+parent=$(lsblk -ndpo PKNAME "$device" 2>/dev/null)
+
+if [ -z "$parent" ]; then
+    echo "vault: could not determine parent disk for $device — power off manually"
+    return 1
+fi
+
+# Unwind the stack top-down: unmount the filesystem (flushing writes), then lock
+# the container. Skipped cleanly if the drive is already locked.
+local mapper mount_target
+mapper=$(lsblk -lnpo NAME,TYPE "$by_uuid" 2>/dev/null | awk '$2=="crypt"{print $1; exit}')
+
+if [ -n "$mapper" ]; then
+    mount_target=$(findmnt -nro TARGET --source "$mapper" 2>/dev/null)
+    if [ -n "$mount_target" ]; then
+        echo "vault: unmounting $mount_target..."
+        udisksctl unmount -b "$mapper" || return $?
+    fi
+    echo "vault: locking container..."
+    udisksctl lock -b "$by_uuid" || return $?
+fi
+
+# Spin down and detach the physical drive — after this it is safe to unplug.
+echo "vault: powering off $parent..."
+udisksctl power-off -b "$parent" || return $?
+echo "vault: powered off — safe to physically disconnect"

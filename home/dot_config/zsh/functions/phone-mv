@@ -1,0 +1,88 @@
+# Move files off an Android phone over adb: pull to the computer, then delete on the phone.
+# A single file moves atomically. A directory moves file-by-file, deleting each from the
+# phone the instant it lands — so the phone's remaining contents ARE the to-do list, and an
+# interrupted move resumes seamlessly on re-run (no checkpoint file; the source self-tracks).
+# "The bridge cannot relocate, only replicate; so we replicate, confirm, and release — one file at a time."
+
+if [ $# -ne 2 ]; then
+    printf '\033[34mUsage:\033[0m phone-mv <phone-path> <local-dest>\n'
+    printf '\033[34mFile:\033[0m  phone-mv /sdcard/Download/report.pdf ~/Downloads/\n'
+    printf '\033[34mDir:\033[0m   phone-mv /sdcard/DCIM/Camera ~/Pictures/phone-camera   (resumable)\n'
+    return 1
+fi
+
+local src="${1%/}"      # normalize: strip any trailing slash
+local dest="$2"
+
+# Lantern: refuse to act without an authorized bridge. Define failure before walking.
+if [ "$(adb get-state 2>/dev/null)" != "device" ]; then
+    printf '\033[31m✗\033[0m No authorized device. Connect the phone and check: adb devices\n'
+    return 1
+fi
+
+# --- Single file: one atomic pull-then-delete. Remote path single-quoted for spaces. ---
+if ! adb shell "test -d '$src'" 2>/dev/null; then
+    printf '\033[34mPulling:\033[0m %s \033[90m→\033[0m %s\n' "$src" "$dest"
+    if ! adb pull "$src" "$dest"; then
+        printf '\033[31m✗\033[0m Pull failed — phone copy left intact.\n'
+        return 1
+    fi
+    if adb shell "rm '$src'"; then
+        printf '\033[32m✓\033[0m Moved: %s \033[90m→\033[0m %s\n' "$src" "$dest"
+    else
+        printf '\033[33m!\033[0m Pulled, but delete failed — file still on phone: %s\n' "$src"
+        return 1
+    fi
+    return 0
+fi
+
+# --- Directory: per-file, resumable. ---
+# Enumerate with exec-out (no PTY → no CR translation) and read in the CURRENT shell via
+# process substitution; a `cmd | while` would run the loop in a subshell and lose the array.
+local -a files
+local line
+while IFS= read -r line; do
+    line="${line%$'\r'}"
+    [[ -n "$line" ]] && files+=("$line")
+done < <(adb exec-out "find '$src' -type f" 2>/dev/null)
+
+local total=${#files[@]}
+if (( total == 0 )); then
+    adb shell "rm -r '$src'" 2>/dev/null
+    printf '\033[32m✓\033[0m Emptied (no files): %s\n' "$src"
+    return 0
+fi
+
+printf '\033[34mMoving %d files (resumable):\033[0m %s \033[90m→\033[0m %s\n' "$total" "$src" "$dest"
+
+local f rel i=0
+for f in "${files[@]}"; do
+    (( i++ ))
+    rel="${f#$src/}"                                   # path relative to the source root
+    printf '\033[90m[%d/%d]\033[0m %s\n' "$i" "$total" "$rel"
+    if ! mkdir -p "$dest/${rel:h}"; then
+        printf '\033[31m✗\033[0m Cannot create local dir for %s — stopping.\n' "$rel"
+        return 1
+    fi
+    # Pull THIS file, then delete THIS file. The delete cannot fire on a failed pull.
+    if ! adb pull "$f" "$dest/$rel" >/dev/null 2>&1; then
+        printf '\033[31m✗\033[0m Pull failed at %s — stopping. Re-run to resume.\n' "$rel"
+        return 1
+    fi
+    if ! adb shell "rm '$f'"; then
+        printf '\033[33m!\033[0m Pulled but delete failed at %s — stopping. Re-run to resume.\n' "$rel"
+        return 1
+    fi
+done
+
+# Every enumerated file is across. Remove the empty directory shells — but ONLY if nothing
+# new arrived on the phone meanwhile; a fresh photo or download must never be deleted unpulled.
+local leftover
+leftover=$(adb exec-out "find '$src' -type f" 2>/dev/null | grep -c .)
+if (( leftover == 0 )); then
+    adb shell "rm -r '$src'" 2>/dev/null
+    printf '\033[32m✓\033[0m Moved %d files: %s \033[90m→\033[0m %s\n' "$total" "$src" "$dest"
+else
+    printf '\033[33m!\033[0m Moved %d files, but %d new file(s) appeared on the phone; directory left in place: %s\n' "$total" "$leftover" "$src"
+    return 1
+fi
