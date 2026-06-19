@@ -387,7 +387,7 @@ claude
 ### Desktop/Laptop Differences
 
 **Display Configuration** (Niri):
-- **Desktop**: Dual monitors - HDMI-A-1 (primary, right) and DP-1 (secondary, left)
+- **Desktop**: Dual monitors - HDMI-A-1 (primary, left) and DP-1 (secondary, right)
   - Per-monitor workspaces: Each monitor has independent workspace 1-9
   - Monitor focus: `MOD+;` (left) / `MOD+'` (right)
 - **Laptop**: Single eDP-1 display with auto-detected resolution

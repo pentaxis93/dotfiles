@@ -30,18 +30,18 @@ input {
 
 {{- if not .is_laptop }}
 // Desktop: Dual monitor configuration (bottom-aligned)
-// DP-1 (Dell P2214H): 1920x1080 on the left
-// HDMI-A-1 (AOC Q27G2WG4): 2560x1440 on the right
+// HDMI-A-1 (AOC Q27G2WG4): 2560x1440 on the left
+// DP-1 (Dell P2214H): 1920x1080 on the right
 output "HDMI-A-1" {
-    mode "2560x1440@60.000" // Primary monitor (right side)
+    mode "2560x1440@60.000" // Primary monitor (left side)
     scale 1
-    position x=1920 y=0 // Position to the right of DP-1 (1920px wide)
+    position x=0 y=0
 }
 
 output "DP-1" {
-    mode "1920x1080@60.000" // Secondary monitor (left side)
+    mode "1920x1080@60.000" // Secondary monitor (right side)
     scale 1
-    position x=0 y=277 // Offset -83px to align physical monitor bottoms
+    position x=2560 y=277 // Offset to align physical monitor bottoms
 }
 {{- else }}
 // Laptop: Single display configuration
