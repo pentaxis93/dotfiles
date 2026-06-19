@@ -104,7 +104,7 @@ disambiguation only where needed.
 - **Provider**: OVHcloud
 - **OS**: Fedora CoreOS
 - **User**: `core`
-- **Authentication**: hardware-backed SSH key (`ed25519-sk`, YubiKey-bound — see SSH access below)
+- **Authentication**: per-device software SSH key (`ed25519`) from each operator machine — see SSH access below
 
 Components installed on babbie:
 
@@ -132,32 +132,38 @@ Components installed on babbie:
 
 ### SSH access
 
-Operator machines authenticate to GitHub and the VPSes using **hardware-backed
-SSH keys** (`ed25519-sk`). The private key material is bound to the YubiKey:
-every connection requires a physical touch, and the key is unusable if the
-machine is stolen without the YubiKey present.
+Operator machines authenticate to GitHub and the VPSes using a **per-device
+software SSH key** (`~/.ssh/id_ed25519`). The hardware key is **not** in the
+daily SSH path: the YubiKey is reserved for account 2FA and for logging in from
+a machine you don't own, and is no longer any machine's default SSH identity.
 
-- **Keys are per-device.** Each operator machine generates its own key,
-  registered/authorized under its hostname. No private key is ever copied
-  between machines — granular revocation, minimal key travel. oreb is done;
-  mami gets its own key when provisioned.
-- **oreb** authenticates to `github.com`, `babbie`, and `weforge` via
-  `~/.ssh/id_ed25519_sk` — registered on GitHub as "oreb"; public key in each
-  VPS's `~/.ssh/authorized_keys`.
-- The WeForge git endpoint (`git.weforge.build`) authenticates with the same
-  hardware-backed key — registered in the WeForge account, separate from the
-  GitHub registration.
-- `~/.ssh/config` pins every host to its key with `IdentitiesOnly yes`, so SSH
-  offers only the named key rather than the full keyring (avoids auth-attempt
-  exhaustion, no public-key leakage).
+- **Keys are per-device.** Each operator machine has its own `ed25519` key,
+  generated on the machine and authorized under its hostname. No private key is
+  ever copied between machines — granular revocation, minimal key travel.
+  **oreb** and **mani** are both done.
+- Each machine authenticates to `github.com`, `babbie`, `weforge`, and the
+  WeForge git endpoint (`git.weforge.build`) with its own `~/.ssh/id_ed25519`.
+  The public half is registered on GitHub (titled by hostname), in each VPS's
+  `~/.ssh/authorized_keys`, and in the WeForge account's SSH keys (labeled by
+  hostname: `babbie` / `oreb` / `mani` / `weforge`).
+- Note the two distinct WeForge surfaces: `ssh weforge` (admin to the host) uses
+  the host's `~/.ssh/authorized_keys`; `git@git.weforge.build` (the git service)
+  uses keys registered in the **WeForge account** — different authorizations.
+- `~/.ssh/config` pins every host to `~/.ssh/id_ed25519` with `IdentitiesOnly
+  yes`, so SSH offers only that key (avoids auth-attempt exhaustion, no
+  public-key leakage). Authorize a new machine's key on a remote **before**
+  switching its config to the new key, or `IdentitiesOnly` locks it out.
+- The **YubiKey** (`id_ed25519_sk`) remains authorized in the VPSes'
+  `~/.ssh/authorized_keys` so it still works for borrowed-machine admin login.
+  It was retired as a *git* credential — removed from GitHub and the WeForge
+  account SSH keys. Its role as account 2FA is unchanged.
 - VPSes (Fedora CoreOS) read both `~/.ssh/authorized_keys` and the
-  Ignition-provisioned `~/.ssh/authorized_keys.d/ignition`. The original
-  software keys were removed from the latter.
+  Ignition-provisioned `~/.ssh/authorized_keys.d/ignition`.
 - VPSes use SSH for **administrative access only**. Git operations from a VPS
   use HTTPS + `gh` — no SSH key belongs on a VPS for git.
-- The superseded software key (`id_ed25519`) has been fully removed — from
-  oreb and from every host/account where it was authorized (GitHub, the
-  VPSes, the WeForge account).
+- The workstation SSH config is managed by the `dotfiles` chezmoi
+  (`private_dot_ssh/private_config`); the VPSes' own client config is babbie-ops'
+  responsibility, not dotfiles.
 
 ### Operator-critical accounts — 2FA state
 
@@ -194,24 +200,16 @@ other lower-tier accounts register the YubiKey on a migrate-on-touch basis.
 - GitHub / OVH: TOTP + recovery codes
 - Namecheap: recovery codes (the YubiKey was its sole 2FA method)
 
-**SSH access** — the YubiKey is the only key for `github.com`, `babbie`, and
-`weforge`. This is recoverable, not a lockout:
-- *GitHub*: `gh` on oreb authenticates over HTTPS independently of the
-  YubiKey; HTTPS git operations keep working. Web access has other 2FA.
-- *babbie / weforge*: the VPSes keep running — only administrative SSH is
-  affected. Recover via OVH rescue mode: boot the VPS into rescue, mount the
-  disk, add a fresh public key to `~/.ssh/authorized_keys`, reboot. (This is
-  how babbie was originally provisioned.) The OVH account itself stays
-  reachable via TOTP. Note: FCOS's `core` user has no password, so the OVH
-  web console alone cannot log in — recovery goes through rescue mode.
+**SSH access** — unaffected. The YubiKey is no longer the SSH credential for
+`github.com`, `babbie`, or `weforge`; each machine's software `id_ed25519` is.
+Losing the YubiKey costs you only its borrowed-machine login convenience and a
+2FA factor (alternatives above remain on every account). The per-device
+software keys keep working; nothing to recover for git or VPS admin from your
+own machines.
 
-Recovery sequence: obtain a replacement YubiKey → generate a new `ed25519-sk`
-key → re-register on GitHub via `gh` → re-authorize on each VPS via rescue
-mode → remove the lost key's registrations everywhere.
-
-A break-glass recovery key (private half encrypted offline, public half in
-each VPS's `authorized_keys`) would reduce VPS recovery from ~an hour to
-minutes — deferred to the global recovery substrate workshop.
+When a replacement YubiKey arrives, re-enroll it as a 2FA factor on the accounts
+above; re-adding it as an SSH key is optional (only if you want borrowed-machine
+SSH login again).
 
 ### Lost phone
 
@@ -228,8 +226,8 @@ minutes — deferred to the global recovery substrate workshop.
 If babbie becomes unrecoverable:
 
 1. Provision new VPS (FCOS or equivalent)
-2. Authorize operator SSH keys on the new host — oreb's `id_ed25519_sk.pub`,
-   plus any other operator machines — via the Ignition config or
+2. Authorize operator SSH keys on the new host — oreb's and mani's
+   `id_ed25519.pub`, plus any other operator machines — via the Ignition config or
    `~/.ssh/authorized_keys`
 3. Restore Secrets Manager token from operator vault entry
 4. Re-deploy agentd Quadlet + loader script from this dotfiles repo
