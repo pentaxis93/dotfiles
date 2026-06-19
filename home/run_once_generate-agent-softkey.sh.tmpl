@@ -1,40 +1,42 @@
 {{- if not .is_vps -}}
 #!/bin/bash
-# Generate the AI-agent software SSH key (~/.ssh/id_ed25519) if absent.
+# Generate this machine's software SSH key (~/.ssh/id_ed25519) if absent.
 #
-# This key is what Claude Code, Codex and other agents authenticate with — never
-# the YubiKey. ~/.ssh/config routes every agent session to it (see the agent-context
-# probe and its Match blocks). The key is deliberately *not* chezmoi-managed: it is
-# a per-host secret that must never enter the repository. This script only ensures
-# it exists; the public half still has to be authorized on each remote by hand.
+# This single per-device key authenticates every remote — GitHub, the VPSes,
+# the WeForge git endpoint. ~/.ssh/config points every host at it. The YubiKey
+# is not in the daily SSH path; it is reserved for account 2FA and for logging
+# in from machines you don't own. The key is deliberately *not* chezmoi-managed:
+# it is a per-host secret that must never enter the repository. This script only
+# ensures it exists; the public half still has to be authorized on each remote
+# by hand.
 #
-# Idempotent: regenerating would invalidate already-registered public keys, so an
-# existing key is left untouched.
+# Idempotent: regenerating would invalidate already-registered public keys, so
+# an existing key is left untouched.
 
 set -euo pipefail
 
 key="$HOME/.ssh/id_ed25519"
 
 if [ -f "$key" ]; then
-    echo "✓ Agent software key already present: $key"
+    echo "✓ Software SSH key already present: $key"
     exit 0
 fi
 
-echo "🔑 Generating agent software key (passphraseless ed25519)..."
+echo "🔑 Generating this machine's software SSH key (ed25519)..."
 mkdir -p "$HOME/.ssh"
 chmod 700 "$HOME/.ssh"
-ssh-keygen -t ed25519 -N "" -f "$key" -C "pentaxis93@{{ .chezmoi.hostname }}-agent"
+ssh-keygen -t ed25519 -N "" -f "$key" -C "pentaxis93@{{ .chezmoi.hostname }}"
 
 echo "✓ Created $key"
 echo ""
-echo "  Authorize the PUBLIC half on the remotes agents need to reach:"
+echo "  Authorize the PUBLIC half on every remote this machine reaches:"
 echo "    $(cat "${key}.pub")"
 echo ""
 echo "    • GitHub  → https://github.com/settings/keys"
 echo "    • babbie / weforge → append to ~core/.ssh/authorized_keys"
-echo "    • git.weforge.build → append to the git user's authorized_keys"
+echo "    • git.weforge.build → register in the WeForge account"
 {{- else -}}
 #!/bin/bash
-# No AI-agent software key on the VPS — agents do not originate SSH here.
+# The VPS's SSH config and keys are managed by babbie-ops, not dotfiles.
 exit 0
 {{- end -}}

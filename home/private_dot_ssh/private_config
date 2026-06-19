@@ -1,49 +1,31 @@
 # SSH Configuration
 # Managed by chezmoi
-
-# --- Identity routing: human vs. AI agent ----------------------------------
-# The YubiKey (id_ed25519_sk) is for the human at the keyboard alone. AI agents
-# (Claude Code, Codex, …) stamp their own environment markers onto every process
-# they spawn; an interactive human shell never carries them. The ~/.ssh/agent-context
-# probe reads those markers and routes auth accordingly:
 #
-#   • Agent session  → software deploy key (id_ed25519), no agent, no forwarding.
-#                      The hardware key is unreachable, so no PIN/touch is ever
-#                      demanded — agents can no longer hijack the terminal.
-#   • Human session  → the YubiKey, exactly as before.
-#
-# These two Match blocks precede every Host block on purpose: for IdentityFile,
-# IdentityAgent and ForwardAgent the first value obtained wins, so the gate
-# decides the identity before any host default can. IdentitiesOnly + IdentityAgent
-# none in the agent branch guarantee that branch can reach *only* the software key
-# — even for hosts not named below. Fails closed: if id_ed25519 is absent, the
-# agent is simply denied (publickey), never fallen back to the hardware key.
-Match exec "~/.ssh/agent-context"
-    IdentitiesOnly yes
-    IdentityAgent none
-    IdentityFile ~/.ssh/id_ed25519
-    ForwardAgent no
-
-Match exec "! ~/.ssh/agent-context"
-    IdentityFile ~/.ssh/id_ed25519_sk
-# ---------------------------------------------------------------------------
+# One software key per machine (~/.ssh/id_ed25519) authenticates every host —
+# no hardware key in the daily path. The YubiKey is reserved for account 2FA
+# and for logging in from machines you don't own; it stays authorized on these
+# remotes but is never this machine's default SSH identity. IdentitiesOnly yes
+# offers only the named key, avoiding auth-attempt exhaustion and key leakage.
 
 Host babbie
     HostName 57.131.33.144
     User core
+    IdentityFile ~/.ssh/id_ed25519
     IdentitiesOnly yes
-    ForwardAgent yes
 
 Host weforge
     HostName 162.19.220.109
     User core
+    IdentityFile ~/.ssh/id_ed25519
     IdentitiesOnly yes
 
 Host git.weforge.build
     User git
+    IdentityFile ~/.ssh/id_ed25519
     IdentitiesOnly yes
 
 Host github.com
+    IdentityFile ~/.ssh/id_ed25519
     IdentitiesOnly yes
 
 Host *

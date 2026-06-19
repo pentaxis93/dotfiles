@@ -7,6 +7,9 @@
 # VPS-specific ignores (no GUI, no Wayland, no desktop apps)
 # =============================================================================
 {{ if .is_vps }}
+# SSH client config is babbie-ops' responsibility on the VPS, not dotfiles
+.ssh/config
+
 # Wayland/GUI configs
 .config/niri
 .config/waybar
